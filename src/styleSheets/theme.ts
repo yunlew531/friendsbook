@@ -1,6 +1,15 @@
 export const light = {
   color: {
     primary: '#1877F2',
+    yellow_100: '#FFE300',
+    black_100: '#383100',
+    black_200: '#58595F',
+    black_300: '#4B4B4B',
+    black_400: '#535354',
+    white_100: '#fff',
+    gray_100: '#D0D0D6',
+    gray_200: '#FAF8FD',
+    gray_300: '#959599',
   },
   bgColor: '#E5E5E5',
 };
@@ -12,7 +21,7 @@ export const dark = {
   bgColor: '#06283D',
 };
 
-export default {
+const theme = {
   ...light,
   fontSizes: {
     fs_1: '20px',
@@ -22,3 +31,7 @@ export default {
     fs_5: '12px',
   },
 };
+
+export default theme;
+
+export type ThemeProps = { theme?: typeof theme, as?: React.ElementType<any> };

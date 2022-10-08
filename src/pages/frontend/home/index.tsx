@@ -1,11 +1,9 @@
 import React from 'react';
+import Banner from './components/Banner';
 
-const Home: React.FC = () => {
-  const text = 'this is home';
-
-  return (
-    <div>{text}</div>
-  );
-};
+// eslint-disable-next-line arrow-body-style
+const Home: React.FC = () => (
+  <Banner />
+);
 
 export default Home;
