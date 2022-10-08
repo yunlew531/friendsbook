@@ -1,0 +1,49 @@
+{
+  "extends": [
+    "airbnb",
+    "airbnb-typescript"
+],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [".js", ".jsx", "tsx"]
+      }
+    ],
+    "import/no-unresolved": [
+      2,
+      {
+        "ignore": ["^@?"]
+      }
+    ],
+    "no-console": [
+      1,
+      {
+        "allow": ["log", "warn", "error"]
+      }
+    ],
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": [
+          "state" // redux state
+        ]
+      }
+    ]
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  }
+}
