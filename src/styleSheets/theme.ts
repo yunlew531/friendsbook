@@ -34,5 +34,3 @@ const theme = {
 };
 
 export default theme;
-
-export type ThemeProps = { theme?: typeof theme, as?: React.ElementType<any> };

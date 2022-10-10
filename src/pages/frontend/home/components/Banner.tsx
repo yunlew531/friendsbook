@@ -1,9 +1,8 @@
 import styled from '@emotion/styled';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import type { ThemeProps } from 'styleSheets/theme';
 
-const Wrap = styled.div<ThemeProps>`
+const Wrap = styled.div<IThemeProps>`
   display: flex;
   height: 100vh;
   background-color: ${({ theme }) => theme.color.gray_200};
@@ -13,7 +12,7 @@ const Aside = styled.aside`
   width: 250px;
 `;
 
-const AsideTitleContainer = styled.div<ThemeProps>`
+const AsideTitleContainer = styled.div<IThemeProps>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,7 +26,7 @@ const AsideTitle = styled.h1`
   text-transform: Uppercase;
 `;
 
-const AsideNav = styled.nav<ThemeProps>`
+const AsideNav = styled.nav<IThemeProps>`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -56,7 +55,7 @@ const MainSection = styled.div`
   align-items: center;
 `;
 
-const MainSectionContent = styled.div<ThemeProps>`
+const MainSectionContent = styled.div<IThemeProps>`
   position: absolute;
   top: 150px;
   right: 0;
@@ -65,20 +64,20 @@ const MainSectionContent = styled.div<ThemeProps>`
   z-index: 1;
   `;
 
-const MainSectionTitle = styled.p<ThemeProps>`
+const MainSectionTitle = styled.p<IThemeProps>`
   text-transform: uppercase;
   font-size: 100px;
   margin-bottom: 20px;
 `;
 
-const MainSectionSubTitle = styled.p<ThemeProps>`
+const MainSectionSubTitle = styled.p<IThemeProps>`
   width: 250px;
   color: ${({ theme }) => theme.color.gray_300};
   font-weight: 700;
   margin-left: auto;
 `;
 
-const MainSectionCircle = styled.div<ThemeProps>`
+const MainSectionCircle = styled.div<IThemeProps>`
   position: relative;
   height: 800px;
   width: 800px;
@@ -115,7 +114,7 @@ const LoginBtnContainer = styled.div`
   width: 100%;
   `;
 
-const LoginAndSignInLink = styled(Link)<ThemeProps>`
+const LoginAndSignInLink = styled(Link)<IThemeProps>`
   position: absolute;
   left: 0;
   right: 0;

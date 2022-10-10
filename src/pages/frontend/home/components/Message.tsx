@@ -1,12 +1,11 @@
 import styled from '@emotion/styled';
 import React from 'react';
-import { ThemeProps } from 'styleSheets/theme';
 
 interface IContainerProps {
   align?: 'right' | 'left';
 }
 
-const Container = styled.li<ThemeProps & IContainerProps>`
+const Container = styled.li<IThemeProps & IContainerProps>`
   position: relative;
   background: ${({ theme }) => theme.color.gray_400};
   border-radius: ${({ align }) => (align === 'left' ? '30px 30px 30px 0' : '30px 30px 0 30px')};
@@ -36,7 +35,7 @@ const Container = styled.li<ThemeProps & IContainerProps>`
   }
 `;
 
-const Content = styled.p<ThemeProps>`
+const Content = styled.p<IThemeProps>`
   font-size: ${({ theme }) => theme.fontSizes.fs_1};
 `;
 

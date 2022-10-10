@@ -1,9 +1,8 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { ThemeProps } from 'styleSheets/theme';
 import Message from './Message';
 
-const Wrap = styled.div<ThemeProps>`
+const Wrap = styled.div<IThemeProps>`
   position: relative;
   background-color: ${({ theme }) => theme.color.white_100};
 `;
@@ -15,7 +14,7 @@ const TitleContainer = styled.div`
   height: 100vh;
 `;
 
-const Title = styled.p<ThemeProps>`
+const Title = styled.p<IThemeProps>`
   color: ${({ theme }) => theme.color.black_100};
   font-size: 40px;
   font-weight: 700;
@@ -26,7 +25,6 @@ const MessagesContainer = styled.ul`
   flex-direction: column;
   list-style: none;
   padding: 0 180px;
-  margin-bottom: -50px;
 `;
 
 const BackgroundImage = styled.img`
