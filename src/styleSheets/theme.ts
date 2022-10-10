@@ -10,6 +10,7 @@ export const light = {
     gray_100: '#D0D0D6',
     gray_200: '#FAF8FD',
     gray_300: '#959599',
+    gray_400: '#EEEEEE',
   },
   bgColor: '#E5E5E5',
 };

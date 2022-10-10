@@ -40,7 +40,8 @@
           "state" // redux state
         ]
       }
-    ]
+    ],
+    "react/jsx-one-expression-per-line": "off"
   },
   "env": {
     "browser": true,

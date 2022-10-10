@@ -24,10 +24,7 @@ const AsideTitleContainer = styled.div<ThemeProps>`
 const AsideTitle = styled.h1`
   font-size: 26px;
   font-family: 'Exo 2', sans-serif;
-  span {
-    display: block;
-    text-transform: Uppercase;
-  }
+  text-transform: Uppercase;
 `;
 
 const AsideNav = styled.nav<ThemeProps>`
@@ -137,12 +134,7 @@ const Banner: React.FC = () => {
     <Wrap>
       <Aside>
         <AsideTitleContainer>
-          <AsideTitle>
-            <h1>
-              <span>friends</span>
-              <span>book</span>
-            </h1>
-          </AsideTitle>
+          <AsideTitle>friends<br />book</AsideTitle>
         </AsideTitleContainer>
         <AsideNav>
           <Link to="/home">首頁</Link>
@@ -154,8 +146,7 @@ const Banner: React.FC = () => {
         <MainSectionContent>
           <MainSectionTitle>friends books</MainSectionTitle>
           <MainSectionSubTitle>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nobis, ob
-            caecati.
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nobis, ob caecati.
           </MainSectionSubTitle>
         </MainSectionContent>
         <MainSectionCircle />
