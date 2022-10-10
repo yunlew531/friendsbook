@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 
 const Wrap = styled.div<IThemeProps>`
-  background-color: ${({ theme }) => theme.color.gray_200};
+  background-color: ${({ theme }) => theme.color.white_100};
   padding: 100px 150px;
 `;
 
@@ -22,7 +22,7 @@ const SceneryList = styled.ul`
   width: 100%;
   height: 650px;
   list-style: none;
-  margin: 0 30px;
+  margin: 0 30px 0 60px;
 `;
 
 const SceneryItem = styled.li<IThemeProps & { rotate?: number }>`
@@ -42,13 +42,14 @@ const SceneryItem = styled.li<IThemeProps & { rotate?: number }>`
 const ArticleList = styled.ul`
   max-width: 800px;
   width: 100%;
+  margin: 0 30px 0 60px;
 `;
 
 const ArticleItem = styled.li<IThemeProps>`
   list-style: none;
-  padding: 20px;
+  padding: 30px;
   background-color: ${({ theme }) => theme.color.white_100};
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 8px 8px rgba(0, 0, 0, 0.1), -2px 0px 12px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   margin-bottom: 30px;
 `;
@@ -111,6 +112,9 @@ const ArticleBtn = styled.button`
   span {
     font-size: 25px;
   }
+  &:last-of-type {
+    margin-right: 0;
+  }
 `;
 
 // eslint-disable-next-line arrow-body-style
@@ -132,8 +136,8 @@ const ScenerySection: React.FC = () => {
         </SceneryList>
         <ArticleList>
           {
-            Array(3).fill(null).map(() => (
-              <ArticleItem>
+            Array(3).fill(null).map((item, idx) => (
+              <ArticleItem key={item + idx.toString()}>
                 <ArticleHeader>
                   <ArticleHeaderUser>
                     <ArticleHeaderUserPhoto src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" />

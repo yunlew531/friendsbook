@@ -4,11 +4,12 @@ import Banner from './components/Banner';
 import MessagesWall from './components/MessagesWall';
 import ScenerySection from './components/ScenerySection';
 
-const SubTitleContainer = styled.div`
+const SubTitleContainer = styled.div<IThemeProps>`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background-color: ${({ theme }) => theme.color.white_100};
 `;
 
 const Title = styled.p<IThemeProps>`

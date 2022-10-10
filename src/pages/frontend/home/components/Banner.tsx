@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 const Wrap = styled.div<IThemeProps>`
   display: flex;
   height: 100vh;
-  background-color: ${({ theme }) => theme.color.gray_200};
+  background-color: ${({ theme }) => theme.color.white_100};
+  overflow: hidden;
 `;
 
 const Aside = styled.aside`
@@ -33,18 +34,6 @@ const AsideNav = styled.nav<IThemeProps>`
   align-items: stretch;
   height: 50%;
   text-align: end;
-  a {
-    font-size: ${({ theme }) => theme.fontSizes.fs_1};
-    text-decoration: none;
-    color: ${({ theme }) => theme.color.black_200};
-    font-weight: 700;
-    padding: 10px;
-    transition: color .2s, background-color .3s;
-    &:hover {
-      background-color: ${({ theme }) => theme.color.black_300};
-      color: ${({ theme }) => theme.color.white_100};
-    }
-  }
 `;
 
 const MainSection = styled.div`
@@ -114,6 +103,45 @@ const LoginBtnContainer = styled.div`
   width: 100%;
   `;
 
+const AsideLink = styled(Link)<IThemeProps>`
+  position: relative;
+  font-size: ${({ theme }) => theme.fontSizes.fs_1};
+  text-decoration: none;
+  font-weight: 700;
+  height: 45px;
+  transition: color .2s, background-color .3s;
+  overflow: hidden;
+  span {
+    position: absolute;
+    display: block;
+    right: 10px;
+    top: 50%;
+    color: ${({ theme }) => theme.color.black_200};
+    transition: .3s transform ease-out, .2s color linear;
+    transform: translateY(-50%);
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: ${({ theme }) => theme.color.black_300};
+    border-radius: 3px;
+    transform: translateX(-100%);
+    transition: .2s ease-out;
+  }
+  &:hover {
+    span {
+      color: ${({ theme }) => theme.color.white_100};
+      transform: translateX(5px) translateY(-50%);
+    }
+    &::before {
+      transform: translateX(0);
+    }
+  }
+`;
+
 const LoginAndSignInLink = styled(Link)<IThemeProps>`
   position: absolute;
   left: 0;
@@ -125,6 +153,11 @@ const LoginAndSignInLink = styled(Link)<IThemeProps>`
   border-radius: 5px 0 0 5px;
   padding: 30px;
   text-decoration: none;
+  transition: .2s transform ease-out, filter .2s ease-out;
+  &:hover {
+    transform: translateX(5px);
+    filter: brightness(0.97);
+  }
 `;
 
 // eslint-disable-next-line arrow-body-style
@@ -136,9 +169,9 @@ const Banner: React.FC = () => {
           <AsideTitle>friends<br />book</AsideTitle>
         </AsideTitleContainer>
         <AsideNav>
-          <Link to="/home">首頁</Link>
-          <Link to="/">lorem</Link>
-          <Link to="/">lorem</Link>
+          <AsideLink to="/home"><span>首頁</span></AsideLink>
+          <AsideLink to="/"><span>lorem</span></AsideLink>
+          <AsideLink to="/"><span>lorem</span></AsideLink>
         </AsideNav>
       </Aside>
       <MainSection>
