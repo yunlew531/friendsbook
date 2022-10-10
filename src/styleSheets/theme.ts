@@ -25,6 +25,7 @@ export const dark = {
 const theme = {
   ...light,
   fontSizes: {
+    l: '50px',
     fs_1: '20px',
     fs_2: '18px',
     fs_3: '16px',

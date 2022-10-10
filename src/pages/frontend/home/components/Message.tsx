@@ -22,6 +22,9 @@ const Container = styled.li<IThemeProps & IContainerProps>`
       transform: scale(1);
     }
   }
+  &:last-of-type {
+    margin: ${({ align }) => (align === 'left' ? '0 auto 0 0' : '0 0 0 auto')};
+  }
   &::before {
     content: '';
     position: absolute;

@@ -5,26 +5,19 @@ import Message from './Message';
 const Wrap = styled.div<IThemeProps>`
   position: relative;
   background-color: ${({ theme }) => theme.color.white_100};
+  padding: 100px 150px;
 `;
 
-const TitleContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+const Title = styled.h2<IThemeProps>`
+  font-size: ${({ theme }) => theme.fontSizes.l};
+  margin-bottom: 100px;
 `;
 
-const Title = styled.p<IThemeProps>`
-  color: ${({ theme }) => theme.color.black_100};
-  font-size: 40px;
-  font-weight: 700;
-`;
-
-const MessagesContainer = styled.ul`
+const MessagesList = styled.ul`
   display: flex;
   flex-direction: column;
   list-style: none;
-  padding: 0 180px;
+  padding: 0 45px;
 `;
 
 const BackgroundImage = styled.img`
@@ -80,10 +73,8 @@ const MessagesWall: React.FC = () => {
   return (
     <Wrap>
       <BackgroundImage src={`${process.env.PUBLIC_URL}/images/message-wall-bg.jpeg`} />
-      <TitleContainer>
-        <Title>在 Friendsbook 你可以?</Title>
-      </TitleContainer>
-      <MessagesContainer>
+      <Title>熱絡聊天不間斷</Title>
+      <MessagesList>
         {
           messages.map((message, idx) => (
             <Message
@@ -92,7 +83,7 @@ const MessagesWall: React.FC = () => {
             />
           ))
         }
-      </MessagesContainer>
+      </MessagesList>
     </Wrap>
   );
 };

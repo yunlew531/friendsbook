@@ -1,4 +1,6 @@
 @import './styleSheets/fonts';
+@import 'material-icons/iconfont/material-icons.css';
+
 
 body {
   margin: 0;
@@ -13,4 +15,9 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+img {
+  width: 100%;
+  object-fit: cover;
 }
