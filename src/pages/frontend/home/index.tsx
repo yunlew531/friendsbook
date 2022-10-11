@@ -3,6 +3,7 @@ import React from 'react';
 import Banner from './components/Banner';
 import MessagesWall from './components/MessagesWall';
 import ScenerySection from './components/ScenerySection';
+import FansPageSection from './FansPageSection';
 
 const SubTitleContainer = styled.div<IThemeProps>`
   display: flex;
@@ -13,7 +14,6 @@ const SubTitleContainer = styled.div<IThemeProps>`
 `;
 
 const Title = styled.p<IThemeProps>`
-  color: ${({ theme }) => theme.color.black_100};
   font-size: 40px;
   font-weight: 700;
 `;
@@ -27,6 +27,7 @@ const Home: React.FC = () => (
     </SubTitleContainer>
     <MessagesWall />
     <ScenerySection />
+    <FansPageSection />
   </>
 );
 

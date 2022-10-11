@@ -29,7 +29,7 @@ const SceneryItem = styled.li<IThemeProps & { rotate?: number }>`
   position: absolute;
   background: linear-gradient(308deg, ${({ theme }) => theme.color.gray_400}, ${({ theme }) => theme.color.gray_200});
   border-radius: 3px;
-  box-shadow: 3px 6px 10px rgba(0, 0, 0, .3);
+  box-shadow: ${({ theme }) => theme.shadow.m};
   padding: 40px 30px 100px;
   transform: rotate(${({ rotate = 0 }) => rotate}deg);
   img {
@@ -49,7 +49,7 @@ const ArticleItem = styled.li<IThemeProps>`
   list-style: none;
   padding: 30px;
   background-color: ${({ theme }) => theme.color.white_100};
-  box-shadow: 4px 8px 8px rgba(0, 0, 0, 0.1), -2px 0px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadow.m};
   border-radius: 8px;
   margin-bottom: 30px;
 `;
@@ -69,7 +69,7 @@ const ArticleHeaderUserPhoto = styled.img<IThemeProps>`
   border-radius: 100%;
   padding: 3px;
   background-color: ${({ theme }) => theme.color.white_100};
-  box-shadow: 3px 6px 10px rgba(0, 0, 0, .3);
+  box-shadow: ${({ theme }) => theme.shadow.m};
   margin-right: 20px;
 `;
 
@@ -136,29 +136,29 @@ const ScenerySection: React.FC = () => {
         </SceneryList>
         <ArticleList>
           {
-            Array(3).fill(null).map((item, idx) => (
-              <ArticleItem key={item + idx.toString()}>
-                <ArticleHeader>
-                  <ArticleHeaderUser>
-                    <ArticleHeaderUserPhoto src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" />
-                    <ArticleHeaderUserNameGroup>
-                      <p className="name">Tomas</p>
-                      <p className="time">45 分鐘前</p>
-                    </ArticleHeaderUserNameGroup>
-                  </ArticleHeaderUser>
-                  <span className="material-icons-outlined">more_horiz</span>
-                </ArticleHeader>
-                <ArticleMain>
-                  <p>這個週末我到這裡來玩！</p>
-                  <img src={`${process.env.PUBLIC_URL}/images/message-wall-bg.jpeg`} alt="scenery" />
-                </ArticleMain>
-                <ArticleFooter>
-                  <ArticleBtn type="button"><span className="material-icons-outlined">thumb_up</span></ArticleBtn>
-                  <ArticleBtn type="button"><span className="material-icons-outlined">textsms</span></ArticleBtn>
-                  <ArticleBtn type="button"><span className="material-icons-outlined">share</span></ArticleBtn>
-                </ArticleFooter>
-              </ArticleItem>
-            ))
+           new Array(3).fill(null).map((item, idx) => (
+             <ArticleItem key={item + idx.toString()}>
+               <ArticleHeader>
+                 <ArticleHeaderUser>
+                   <ArticleHeaderUserPhoto src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" />
+                   <ArticleHeaderUserNameGroup>
+                     <p className="name">Tomas</p>
+                     <p className="time">45 分鐘前</p>
+                   </ArticleHeaderUserNameGroup>
+                 </ArticleHeaderUser>
+                 <span className="material-icons-outlined">more_horiz</span>
+               </ArticleHeader>
+               <ArticleMain>
+                 <p>這個週末我到這裡來玩！</p>
+                 <img src={`${process.env.PUBLIC_URL}/images/message-wall-bg.jpeg`} alt="scenery" />
+               </ArticleMain>
+               <ArticleFooter>
+                 <ArticleBtn type="button"><span className="material-icons-outlined">thumb_up</span></ArticleBtn>
+                 <ArticleBtn type="button"><span className="material-icons-outlined">textsms</span></ArticleBtn>
+                 <ArticleBtn type="button"><span className="material-icons-outlined">share</span></ArticleBtn>
+               </ArticleFooter>
+             </ArticleItem>
+           ))
           }
         </ArticleList>
       </Container>

@@ -147,7 +147,6 @@ const LoginAndSignInLink = styled(Link)<IThemeProps>`
   left: 0;
   right: 0;
   bottom: 25%;
-  color: ${({ theme }) => theme.color.black_100};
   font-size: ${({ theme }) => theme.fontSizes.fs_1};
   background-color: ${({ theme }) => theme.color.yellow_100};
   border-radius: 5px 0 0 5px;
