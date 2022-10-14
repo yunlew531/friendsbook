@@ -3,12 +3,12 @@ import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 
 const Wrap = styled.div<IThemeProps>`
-  background-color: ${({ theme }) => theme.color.black_100};
+  background-color: ${({ theme }) => theme.color.black_500};
   padding: 100px 150px;
 `;
 
 const Title = styled.p<IThemeProps>`
-  font-size: 40px;
+  font-size: 50px;
   font-weight: 700;
   color: ${({ theme }) => theme.color.white_100};
   margin-bottom: 100px;
@@ -106,6 +106,10 @@ const Member = styled.li<IThemeProps>`
   border-radius: 5px;
   padding: 10px;
   box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.05), ${({ theme }) => theme.shadow.s};
+  background-color: ${({ theme }) => theme.color.white_100};
+  &:hover {
+    filter: brightness(0.98);
+  }
 `;
 
 const MemberPhoto = styled.img`
@@ -148,7 +152,7 @@ const SendMessageBtn = styled(Btn)`
 const FansPageSection: React.FC = () => {
   return (
     <Wrap>
-      <Title>尋找聚集相關同好</Title>
+      <Title>尋找、聚集相關同好</Title>
       <FansPagePanel>
         <FansPageHeader>
           <div>
