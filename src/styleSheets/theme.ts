@@ -12,9 +12,10 @@ export const light = {
     gray_200: '#FAF8FD',
     gray_300: '#959599',
     gray_400: '#EEEEEE',
+    gray_500: '#788292',
     blue_100: '#00527b',
   },
-  bgColor: '#E5E5E5',
+  bgColor: '#fff',
 };
 
 export const dark = {
@@ -36,9 +37,9 @@ const theme = {
     fs_5: '12px',
   },
   shadow: {
-    s: '0 .125rem .25rem rgba(0, 0, 0, .075);',
-    m: '0 .5rem 1rem rgba(0, 0, 0, .15);',
     l: '0 1rem 3rem rgba(0, 0,0 , .175);',
+    m: '0 .5rem 1rem rgba(0, 0, 0, .15);',
+    s: '0 .125rem .25rem rgba(0, 0, 0, .075);',
   },
 };
 
