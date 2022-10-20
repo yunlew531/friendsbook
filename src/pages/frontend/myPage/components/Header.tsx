@@ -20,9 +20,10 @@ const Nav = styled.nav<IThemeProps>`
     text-decoration: none;
     color: ${({ theme }) => theme.color.gray_500};
     border-top: 2px transparent solid;
-    padding: 0 20px 2px;
     transition: .2s filter ease-in-out;
     background-color: ${({ theme }) => theme.color.white_100};
+    cursor: default;
+    padding: 0 20px 2px;
     &.active {
       color: ${({ theme }) => theme.color.primary};
       border-top: 2px solid ${({ theme }) => theme.color.primary};

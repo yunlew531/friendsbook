@@ -14,8 +14,10 @@ export const light = {
     gray_400: '#EEEEEE',
     gray_500: '#788292',
     blue_100: '#00527b',
+    blue_200: '#F0F7FF',
   },
   bgColor: '#fff',
+  cardColor: '#fff',
 };
 
 export const dark = {
@@ -37,7 +39,7 @@ const theme = {
     fs_5: '12px',
   },
   shadow: {
-    l: '0 1rem 3rem rgba(0, 0,0 , .175);',
+    l: '0 1rem 1rem rgba(0, 0, 0, .175);',
     m: '0 .5rem 1rem rgba(0, 0, 0, .15);',
     s: '0 .125rem .25rem rgba(0, 0, 0, .075);',
   },
