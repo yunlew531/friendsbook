@@ -1,6 +1,7 @@
 export const light = {
   color: {
-    primary: '#1877F2',
+    primary: '#DE8971',
+    secondary: '#FFC286',
     yellow_100: '#FFE300',
     black_100: '#000',
     black_200: '#58595F',
@@ -16,7 +17,7 @@ export const light = {
     blue_100: '#00527b',
     blue_200: '#F0F7FF',
     blue_300: '#203758',
-    green_100: '#23BE7E',
+    green_100: '#00ABB3',
   },
   bgColor: '#F7F7FA',
   cardColor: '#fff',

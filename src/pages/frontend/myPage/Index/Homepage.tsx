@@ -1,5 +1,6 @@
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import React from 'react';
+import QuillEditor from 'pages/frontend/myPage/components/QuillEditor';
 
 const Wrap = styled.div<IThemeProps>`
   display: flex;
@@ -69,11 +70,11 @@ const FriendItem = styled.li<IThemeProps>`
   }
 `;
 
-const FriendItemPhoto = styled.div<IThemeProps>`
+const FriendItemPhoto = styled.div<IThemeProps & { online: boolean }>`
   width: 40px;
   height: 40px;
   border-radius: 100%;
-  border: 1px solid ${({ theme }) => theme.color.green_100};
+  border: 2px solid ${({ online, theme: { color: { green_100 } } }) => (online ? green_100 : 'transparent')};
   overflow: hidden;
   margin-right: 15px;
   img {
@@ -90,8 +91,74 @@ const FriendItemContent = styled.p<IThemeProps>`
   cursor: default;
 `;
 
-// eslint-disable-next-line arrow-body-style
+const MainContent = styled.main`
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+`;
+
+const ArticlesSection = styled.div`
+  max-width: 800px;
+  width: 100%;
+  min-width: 380px;
+  margin: 0 30px;
+`;
+
+const PublishPanel = styled.div<IThemeProps>`
+  background-color: ${({ theme }) => theme.cardColor};
+  border: 1.5px solid ${({ theme }) => theme.color.gray_400};
+  border-radius: 8px;
+  padding: 20px;
+`;
+
+const PublishPanelHeader = styled.div<IThemeProps>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  p {
+    color: ${({ theme }) => theme.color.gray_500};
+  }
+  .expand-less-icon, .expand-more-icon, p {
+    cursor: default;
+  }
+`;
+
+const PublicPanelFooter = styled.div<{ show:boolean }>`
+  display: ${({ show }) => (show ? 'flex' : 'none')};
+  justify-content: end;
+`;
+
+const PublishBtn = styled.button<IThemeProps>`
+  display: flex;
+  align-items: center;
+  color: ${({ theme }) => theme.color.gray_200};
+  border-radius: 5px;
+  border: none;
+  box-shadow: ${({ theme }) => theme.shadow.s};
+  background-color: ${({ theme }) => theme.color.secondary};
+  transition: filter .2s ease-in-out, transform .2s ease-in-out;
+  padding: 5px 15px;
+  .send-icon {
+    margin-left: 5px;
+    font-size: ${({ theme }) => theme.fontSizes.fs_4};
+  }
+  &:hover {
+    filter: brightness(0.97);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const StoriesSection = styled.div`
+  max-width: 360px;
+  width: 100%;
+  border: 1px dashed red;
+`;
+
 const Homepage: React.FC = () => {
+  const [isPublishShow, setIsPublishShow] = useState(false);
+
   return (
     <Wrap>
       <Contact>
@@ -103,9 +170,10 @@ const Homepage: React.FC = () => {
         </ContactHeader>
         <FriendList>
           {
-            new Array(10).fill(null).map(() => (
-              <FriendItem>
-                <FriendItemPhoto>
+            new Array(10).fill(null).map((item, idx) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <FriendItem key={idx}>
+                <FriendItemPhoto online={idx !== 3}>
                   {/* TODO: change alt */}
                   <img
                     src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
@@ -118,6 +186,25 @@ const Homepage: React.FC = () => {
           }
         </FriendList>
       </Contact>
+      <MainContent>
+        <ArticlesSection>
+          <PublishPanel>
+            <PublishPanelHeader onClick={() => setIsPublishShow(!isPublishShow)}>
+              <div />
+              <p>Tom , 你想發佈些什麼 ?</p>
+              {isPublishShow ? <span className="material-icons-outlined expand-less-icon">expand_less</span>
+                : <span className="material-icons-outlined expand-more-icon">expand_more</span>}
+            </PublishPanelHeader>
+            <QuillEditor isPublishShow={isPublishShow} />
+            <PublicPanelFooter show={isPublishShow}>
+              <PublishBtn type="button">發佈
+                <span className="material-icons-outlined send-icon">send</span>
+              </PublishBtn>
+            </PublicPanelFooter>
+          </PublishPanel>
+        </ArticlesSection>
+      </MainContent>
+      <StoriesSection>動態</StoriesSection>
     </Wrap>
   );
 };
