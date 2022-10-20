@@ -15,8 +15,10 @@ export const light = {
     gray_500: '#788292',
     blue_100: '#00527b',
     blue_200: '#F0F7FF',
+    blue_300: '#203758',
+    green_100: '#23BE7E',
   },
-  bgColor: '#fff',
+  bgColor: '#F7F7FA',
   cardColor: '#fff',
 };
 

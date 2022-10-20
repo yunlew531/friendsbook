@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 const Wrap = styled.header<IThemeProps>`
   display: flex;
   justify-content: space-between;
-  background-color: ${({ theme }) => theme.bgColor};
+  background-color: ${({ theme }) => theme.cardColor};
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   padding: 0 17px 0 75px;
 `;
