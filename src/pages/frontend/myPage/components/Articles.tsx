@@ -10,7 +10,7 @@ const ArticleList = styled.ul`
 const Articles: React.FC = () => {
   return (
     <ArticleList>
-      <Article />
+      {new Array(10).fill(null).map(() => <Article />)}
     </ArticleList>
   );
 };

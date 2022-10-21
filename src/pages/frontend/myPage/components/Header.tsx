@@ -3,6 +3,10 @@ import styled from '@emotion/styled';
 import { NavLink } from 'react-router-dom';
 
 const Wrap = styled.header<IThemeProps>`
+  position: fixed;
+  right: 0;
+  left: 0;
+  z-index: 99;
   display: flex;
   justify-content: space-between;
   background-color: ${({ theme }) => theme.cardColor};

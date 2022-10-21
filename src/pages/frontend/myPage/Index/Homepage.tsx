@@ -167,7 +167,7 @@ const Homepage: React.FC = () => {
         </ContactHeader>
         <FriendList>
           {
-            new Array(10).fill(null).map((item, idx) => (
+            new Array(30).fill(null).map((item, idx) => (
               // eslint-disable-next-line react/no-array-index-key
               <FriendItem key={idx}>
                 <FriendItemPhoto online={idx !== 3}>

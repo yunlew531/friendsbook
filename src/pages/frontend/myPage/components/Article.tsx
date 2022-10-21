@@ -7,6 +7,7 @@ const ArticleCard = styled(Card)<IThemeProps>`
   border-left: none;
   border-bottom: none;
   padding: 20px 0 0;
+  margin-bottom: 20px;
 `;
 
 const Header = styled.div`

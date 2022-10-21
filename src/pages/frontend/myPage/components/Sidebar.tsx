@@ -6,6 +6,7 @@ const Wrap = styled.aside<IThemeProps>`
   left: 0;
   top: 0;
   bottom: 0;
+  z-index: 100;
   width: 75px;
   display: flex;
   flex-direction: column;

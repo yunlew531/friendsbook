@@ -7,7 +7,7 @@ import SideBar from './components/Sidebar';
 const MainContainer = styled.div`
   background-color: transparent;
   margin-left: 75px;
-  padding: 22px 30px;
+  padding: 92px 30px 20px;
 `;
 
 // eslint-disable-next-line arrow-body-style
