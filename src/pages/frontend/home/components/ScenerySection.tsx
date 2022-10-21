@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import Btn from 'components/Btn';
+import Btn, { MoreBtn } from 'components/Btn';
 
 const Wrap = styled.div<IThemeProps>`
   background-color: ${({ theme }) => theme.color.white_100};
@@ -90,6 +90,11 @@ const ArticleHeaderUserNameGroup = styled.div<IThemeProps>`
   }
 `;
 
+const ArticleMoreBtn = styled(MoreBtn)<IThemeProps>`
+  align-self: flex-start;
+  background-color: ${({ theme }) => theme.color.white_100};
+`;
+
 const ArticleMain = styled.div`
   padding: 30px 0;
   p {
@@ -108,6 +113,13 @@ const ArticleFooter = styled.div`
 
 const ArticleBtn = styled(Btn)`
   margin-right: 20px;
+  transition: transform .1s ease-in-out;
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
   span {
     font-size: 25px;
   }
@@ -145,16 +157,18 @@ const ScenerySection: React.FC = () => {
                      <p className="time">45 分鐘前</p>
                    </ArticleHeaderUserNameGroup>
                  </ArticleHeaderUser>
-                 <span className="material-icons-outlined">more_horiz</span>
+                 <ArticleMoreBtn anime>
+                   <span className="material-icons-outlined">more_horiz</span>
+                 </ArticleMoreBtn>
                </ArticleHeader>
                <ArticleMain>
                  <p>這個週末我到這裡來玩！</p>
                  <img src={`${process.env.PUBLIC_URL}/images/message-wall-bg.jpeg`} alt="scenery" />
                </ArticleMain>
                <ArticleFooter>
-                 <ArticleBtn type="button"><span className="material-icons-outlined">thumb_up</span></ArticleBtn>
-                 <ArticleBtn type="button"><span className="material-icons-outlined">textsms</span></ArticleBtn>
-                 <ArticleBtn type="button"><span className="material-icons-outlined">share</span></ArticleBtn>
+                 <ArticleBtn type="button" anime><span className="material-icons-outlined">thumb_up</span></ArticleBtn>
+                 <ArticleBtn type="button" anime><span className="material-icons-outlined">textsms</span></ArticleBtn>
+                 <ArticleBtn type="button" anime><span className="material-icons-outlined">share</span></ArticleBtn>
                </ArticleFooter>
              </ArticleItem>
            ))

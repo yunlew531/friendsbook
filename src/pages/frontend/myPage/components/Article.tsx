@@ -81,10 +81,18 @@ const FooterBtn = styled(Btn)<IThemeProps>`
   position: relative;
   color: ${({ theme }) => theme.color.gray_300};
   margin: 0 6px;
+  .material-icons-outlined {
+    transition: transform .1s ease-in-out;
+  }
   .interact-num {
     position: absolute;
     top: -5px;
     right: -3px;
+  }
+  &:hover {
+    .material-icons-outlined {
+      transform: scale(1.05);
+    }
   }
 `;
 

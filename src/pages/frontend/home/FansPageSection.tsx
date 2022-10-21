@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
+import Btn from 'components/Btn';
 
 const Wrap = styled.div<IThemeProps>`
   background-color: ${({ theme }) => theme.color.black_500};
@@ -46,13 +47,13 @@ const FansPageDesc = styled.p<IThemeProps>`
   }
 `;
 
-const FansPageBtn = styled.button<IThemeProps>`
+const FansPageBtn = styled(Btn)<IThemeProps>`
   display: flex;
   align-items: center;
   font-size: ${({ theme }) => theme.fontSizes.fs_3};
   font-weight: 700;
   border-radius: 10px;
-  border: none;
+  background-color: ${({ theme }) => theme.color.gray_400};
   padding: 8px 10px;
 `;
 
@@ -161,12 +162,12 @@ const FansPageSection: React.FC = () => {
               公開社團 11.7 萬位成員
             </FansPageDesc>
           </div>
-          <JoinGroupBtn type="button">
+          <JoinGroupBtn type="button" anime>
             <span className="material-icons-outlined groups-icon">groups</span>
             已加入
             <span className="material-icons-outlined expand-more-icon">expand_more</span>
           </JoinGroupBtn>
-          <InviteBtn type="button">
+          <InviteBtn type="button" anime>
             <span className="material-icons-outlined">add</span>
             邀請
           </InviteBtn>
@@ -187,13 +188,13 @@ const FansPageSection: React.FC = () => {
                 {
                  idx === 3 || idx === 6 || idx === 9
                    ? (
-                     <SendMessageBtn type="button">
+                     <SendMessageBtn type="button" anime>
                        <span className="material-icons-outlined chat-icon">chat</span>
                        發訊息
                      </SendMessageBtn>
                    )
                    : (
-                     <AddToFriendsBtn type="button">
+                     <AddToFriendsBtn type="button" anime>
                        <span className="material-icons-outlined person-add-icon">person_add</span>
                        加好友
                      </AddToFriendsBtn>

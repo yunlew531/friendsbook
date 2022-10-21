@@ -5,6 +5,7 @@ import ArticleList from 'pages/frontend/myPage/components/Articles';
 import Card from 'components/Card';
 import Stories from 'pages/frontend/myPage/components/Stories';
 import { MoreBtn } from 'components/Btn';
+import Events from '../components/Events';
 
 const Wrap = styled.div<IThemeProps>`
   display: flex;
@@ -130,6 +131,11 @@ const PublishBtn = styled.button<IThemeProps>`
   }
 `;
 
+const StoriesSection = styled.div`
+  flex-shrink: 0;
+  width: 360px;
+`;
+
 const Homepage: React.FC = () => {
   const [isPublishShow, setIsPublishShow] = useState(false);
 
@@ -179,7 +185,11 @@ const Homepage: React.FC = () => {
           <ArticleList />
         </ArticlesSection>
       </MainContent>
-      <Stories />
+      <StoriesSection>
+        <Stories />
+        <Events />
+
+      </StoriesSection>
     </Wrap>
   );
 };
