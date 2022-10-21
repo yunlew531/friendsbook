@@ -1,6 +1,7 @@
 import React from 'react';
 import Card from 'components/Card';
 import styled from '@emotion/styled';
+import Btn from 'components/Btn';
 
 const ArticleCard = styled(Card)<IThemeProps>`
   box-shadow: ${({ theme }) => theme.shadow.s};
@@ -76,23 +77,14 @@ const Footer = styled.div`
   padding: 0 20px 10px;
 `;
 
-const FooterBtn = styled.button<IThemeProps>`
+const FooterBtn = styled(Btn)<IThemeProps>`
   position: relative;
-  background-color: transparent;
-  border: none;
-  transition: transform .2s ease-in-out;
   color: ${({ theme }) => theme.color.gray_300};
   margin: 0 6px;
   .interact-num {
     position: absolute;
     top: -5px;
     right: -3px;
-  }
-  &:hover {
-    transform: scale(1.1);
-  }
-  &:active {
-    transform: scale(0.95);
   }
 `;
 
@@ -147,22 +139,15 @@ const CommentMainFooter = styled.div`
   align-items: center;
 `;
 
-const CommentFooterBtn = styled.button<IThemeProps>`
-  border: none;
-  background-color: transparent;
-  transition: transform .1s ease-in-out;
+const CommentFooterBtn = styled(Btn)<IThemeProps>`
   .material-icons-outlined {
     font-size: ${({ theme }) => theme.fontSizes.fs_3};
     color: ${({ theme }) => theme.color.gray_300};
   }
   &:hover {
-    transform: scale(1.1);
     .material-icons-outlined {
       color: ${({ theme }) => theme.color.black_100};
     }
-  }
-  &:active {
-    transform: scale(0.9);
   }
 `;
 
@@ -181,9 +166,7 @@ const CommentContent = styled.p`
   
 `;
 
-const CommentMoreBtn = styled.button<IThemeProps>`
-  background-color: transparent;
-  border: none;
+const CommentMoreBtn = styled(Btn)<IThemeProps>`
   padding: 5px 2px;
   border-radius: 3px;
   transition: background-color .1s ease-in-out;
@@ -221,15 +204,15 @@ const Article: React.FC = () => {
           Happy Father’s Day to all dads out there.
         </Content>
         <Footer>
-          <FooterBtn type="button">
+          <FooterBtn type="button" anime>
             <span className="interact-num">0</span>
             <span className="material-icons-outlined">thumb_up</span>
           </FooterBtn>
-          <FooterBtn type="button">
+          <FooterBtn type="button" anime>
             <span className="interact-num">0</span>
             <span className="material-icons-outlined">chat</span>
           </FooterBtn>
-          <FooterBtn type="button">
+          <FooterBtn type="button" anime>
             <span className="interact-num">0</span>
             <span className="material-icons-outlined">share</span>
           </FooterBtn>
@@ -249,10 +232,10 @@ const Article: React.FC = () => {
                 </CommentMainHeader>
                 <CommentMainFooter>
                   <CommentTime>2022-10-15 15:20</CommentTime>
-                  <CommentFooterBtn type="button">
+                  <CommentFooterBtn type="button" anime>
                     <span className="material-icons-outlined">thumb_up</span>
                   </CommentFooterBtn>
-                  <CommentFooterBtn type="button">
+                  <CommentFooterBtn type="button" anime>
                     <span className="material-icons-outlined">reply</span>
                   </CommentFooterBtn>
                 </CommentMainFooter>

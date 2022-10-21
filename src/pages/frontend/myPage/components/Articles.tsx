@@ -10,7 +10,10 @@ const ArticleList = styled.ul`
 const Articles: React.FC = () => {
   return (
     <ArticleList>
-      {new Array(10).fill(null).map(() => <Article />)}
+      {
+        // eslint-disable-next-line react/no-array-index-key
+      new Array(10).fill(null).map((item, idx) => <Article key={idx} />)
+}
     </ArticleList>
   );
 };

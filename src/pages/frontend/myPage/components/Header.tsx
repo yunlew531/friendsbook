@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { NavLink } from 'react-router-dom';
+import Btn from 'components/Btn';
 
 const Wrap = styled.header<IThemeProps>`
   position: fixed;
@@ -59,15 +60,13 @@ const SearchContainer = styled.div<IThemeProps>`
   }
 `;
 
-const SearchBtn = styled.button<IThemeProps>`
+const SearchBtn = styled(Btn)<IThemeProps>`
   position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
-  background-color: transparent;
-  border: none;
   .search-icon {
     font-size: ${({ theme }) => theme.fontSizes.s};
     color: ${({ theme }) => theme.color.gray_300};

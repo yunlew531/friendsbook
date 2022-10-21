@@ -16,7 +16,6 @@ const Title = styled.p<IThemeProps>`
 
 const FansPagePanel = styled.div<IThemeProps>`
   max-width: 800px;
-  border: 1px dashed red;
   border-radius: 20px;
   background-color: ${({ theme }) => theme.color.white_100};
   padding: 30px;
@@ -47,7 +46,7 @@ const FansPageDesc = styled.p<IThemeProps>`
   }
 `;
 
-const Btn = styled.button<IThemeProps>`
+const FansPageBtn = styled.button<IThemeProps>`
   display: flex;
   align-items: center;
   font-size: ${({ theme }) => theme.fontSizes.fs_3};
@@ -57,7 +56,7 @@ const Btn = styled.button<IThemeProps>`
   padding: 8px 10px;
 `;
 
-const JoinGroupBtn = styled(Btn)<IThemeProps>`
+const JoinGroupBtn = styled(FansPageBtn)<IThemeProps>`
   background-color: ${({ theme }) => theme.color.gray_100};
   padding: 8px 8px 8px 15px;
   margin-left: auto;
@@ -67,7 +66,7 @@ const JoinGroupBtn = styled(Btn)<IThemeProps>`
   }
 `;
 
-const InviteBtn = styled(Btn)<IThemeProps>`
+const InviteBtn = styled(FansPageBtn)<IThemeProps>`
   color: ${({ theme }) => theme.color.white_100};
   background-color: ${({ theme }) => theme.color.primary};
   padding-right: 15px;
@@ -130,7 +129,7 @@ const MemberInfo = styled.div<IThemeProps>`
   }
 `;
 
-const AddToFriendsBtn = styled(Btn)`
+const AddToFriendsBtn = styled(FansPageBtn)`
   font-size: ${({ theme }) => theme.fontSizes.fs_4};
   margin-left: auto;
   .person-add-icon {
@@ -139,7 +138,7 @@ const AddToFriendsBtn = styled(Btn)`
   }
 `;
 
-const SendMessageBtn = styled(Btn)`
+const SendMessageBtn = styled(FansPageBtn)`
   font-size: ${({ theme }) => theme.fontSizes.fs_4};
   margin-left: auto;
   .chat-icon {

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import Btn from 'components/Btn';
 
 const Wrap = styled.div<IThemeProps>`
   background-color: ${({ theme }) => theme.color.white_100};
@@ -105,9 +106,7 @@ const ArticleFooter = styled.div`
   text-align: end;
 `;
 
-const ArticleBtn = styled.button`
-  border: none;
-  background-color: transparent;
+const ArticleBtn = styled(Btn)`
   margin-right: 20px;
   span {
     font-size: 25px;
