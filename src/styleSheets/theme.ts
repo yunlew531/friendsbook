@@ -9,6 +9,7 @@ export const light = {
     black_400: '#535354',
     black_500: '#1C1C1C',
     white_100: '#fff',
+    white_200: '#f7f6f4',
     gray_100: '#D0D0D6',
     gray_200: '#FAF8FD',
     gray_300: '#959599',

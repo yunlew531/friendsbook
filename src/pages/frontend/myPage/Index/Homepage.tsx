@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import QuillEditor from 'pages/frontend/myPage/components/QuillEditor';
+import ArticleList from 'pages/frontend/myPage/components/Articles';
+import Card from 'components/Card';
 
 const Wrap = styled.div<IThemeProps>`
   display: flex;
@@ -31,7 +33,7 @@ const ContactMoreBtn = styled.button<IThemeProps>`
   background-color: ${({ theme }) => theme.bgColor};
   transition: background-color .2s ease-in-out, transform .1s ease-in-out;
   .more-horiz-icon {
-    font-size: ${({ theme }) => theme.fontSizes.s};
+    font-size: ${({ theme }) => theme.fontSizes.fs_1};
     color: ${({ theme }) => theme.color.gray_500}
   }
   &:hover {
@@ -104,12 +106,7 @@ const ArticlesSection = styled.div`
   margin: 0 30px;
 `;
 
-const PublishPanel = styled.div<IThemeProps>`
-  background-color: ${({ theme }) => theme.cardColor};
-  border: 1.5px solid ${({ theme }) => theme.color.gray_400};
-  border-radius: 8px;
-  padding: 20px;
-`;
+const PublishPanel = styled(Card)``;
 
 const PublishPanelHeader = styled.div<IThemeProps>`
   display: flex;
@@ -151,8 +148,8 @@ const PublishBtn = styled.button<IThemeProps>`
 `;
 
 const StoriesSection = styled.div`
-  max-width: 360px;
-  width: 100%;
+  flex-shrink: 0;
+  width: 360px;
   border: 1px dashed red;
 `;
 
@@ -202,6 +199,7 @@ const Homepage: React.FC = () => {
               </PublishBtn>
             </PublicPanelFooter>
           </PublishPanel>
+          <ArticleList />
         </ArticlesSection>
       </MainContent>
       <StoriesSection>動態</StoriesSection>

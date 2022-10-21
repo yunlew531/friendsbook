@@ -43,13 +43,15 @@ const AsideListItem = styled.li<IThemeProps>`
 const SettingBtn = styled.button<IThemeProps>`
   display: flex;
   align-items: center;
-  background-color: ${({ theme }) => theme.color.blue_200};
   border-radius: 100%;
   box-shadow: ${({ theme }) => theme.shadow.m};
   border: 1px solid ${({ theme }) => theme.color.white_100};
   padding: 10px;
   margin: auto 0 15px;
   transition: border-color .2s ease-in-out, transform .1s ease-in-out;
+  .settings-icon {
+    color: ${({ theme }) => theme.color.secondary}
+  }
   &:hover {
     border: 1px solid ${({ theme }) => theme.color.primary};
   }
@@ -77,8 +79,8 @@ const SideBar: React.FC = () => {
           <span className="material-icons-outlined">groups</span>
         </AsideListItem>
       </AsideList>
-      <SettingBtn>
-        <span className="material-icons-outlined">settings</span>
+      <SettingBtn type="button">
+        <span className="material-icons-outlined settings-icon">settings</span>
       </SettingBtn>
     </Wrap>
   );
