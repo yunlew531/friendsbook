@@ -1,6 +1,7 @@
+import React from 'react';
 import styled from '@emotion/styled';
 import { MoreBtn } from 'components/Btn';
-import React from 'react';
+import CardTitle from 'components/CardTitle';
 
 const StoriesHeader = styled.div`
   display: flex;
@@ -8,9 +9,7 @@ const StoriesHeader = styled.div`
   margin-bottom: 15px;
 `;
 
-const StoriesTitle = styled.h2<IThemeProps>`
-  color: ${({ theme }) => theme.color.black_300};
-  font-size: ${({ theme }) => theme.fontSizes.fs_2};
+const StoriesTitle = styled(CardTitle)<IThemeProps>`
   margin-right: auto;
 `;
 
@@ -19,6 +18,7 @@ const StoryList = styled.ul`
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   list-style: none;
+  margin-bottom: 35px;
 `;
 
 const Story = styled.li<IThemeProps & { imgUrl: string }>`

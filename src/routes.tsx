@@ -1,8 +1,9 @@
 import React from 'react';
 import type { RouteObject } from 'react-router-dom';
-import Homepage from 'pages/frontend/myPage/Index/Homepage';
-import Home from './pages/frontend/home';
-import MyPage from './pages/frontend/myPage';
+import Homepage from 'pages/frontend/MyPage/Index/Homepage';
+import Login from 'pages/frontend/Login';
+import Home from './pages/frontend/Home';
+import MyPage from './pages/frontend/MyPage';
 
 const routes: RouteObject[] = [
   {
@@ -18,6 +19,10 @@ const routes: RouteObject[] = [
   {
     path: '/home',
     element: <Home />,
+  },
+  {
+    path: '/login',
+    element: <Login />,
   },
 ];
 

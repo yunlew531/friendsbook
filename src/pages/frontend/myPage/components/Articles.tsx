@@ -1,5 +1,5 @@
 import React from 'react';
-import Article from 'pages/frontend/myPage/components/Article';
+import Article from 'pages/frontend/MyPage/components/Article';
 import styled from '@emotion/styled';
 
 const ArticleList = styled.ul`

@@ -19,6 +19,7 @@ export const light = {
     blue_200: '#F0F7FF',
     blue_300: '#203758',
     green_100: '#00ABB3',
+    orange_100: '#F6F2EA',
   },
   bgColor: '#F7F7FA',
   cardColor: '#fff',

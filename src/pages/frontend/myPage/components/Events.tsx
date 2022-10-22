@@ -1,17 +1,16 @@
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
+import CardTitle from 'components/CardTitle';
 import React from 'react';
 
-const EventsTitle = styled.h2<IThemeProps>`
-  color: ${({ theme }) => theme.color.black_300};
-  font-size: ${({ theme }) => theme.fontSizes.fs_2};
+const EventsTitle = styled(CardTitle)`
   margin-bottom: 15px;
 `;
 
 const EventsCard = styled.div`
-  /* height: 230px; */
   border-radius: 8px;
   overflow: hidden;
+  margin-bottom: 35px;
 `;
 
 const EventsCardMain = styled.div`

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import QuillEditor from 'pages/frontend/myPage/components/QuillEditor';
-import ArticleList from 'pages/frontend/myPage/components/Articles';
+import QuillEditor from 'pages/frontend/MyPage/components/QuillEditor';
+import ArticleList from 'pages/frontend/MyPage/components/Articles';
 import Card from 'components/Card';
-import Stories from 'pages/frontend/myPage/components/Stories';
+import Stories from 'pages/frontend/MyPage/components/Stories';
 import { MoreBtn } from 'components/Btn';
+import CardTitle from 'components/CardTitle';
 import Events from '../components/Events';
+import Follow from '../components/Follow';
 
 const Wrap = styled.div<IThemeProps>`
   display: flex;
@@ -21,11 +23,6 @@ const ContactHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-
-const ContactTitle = styled.h2<IThemeProps>`
-  color: ${({ theme }) => theme.color.black_300};
-  font-size: ${({ theme }) => theme.fontSizes.fs_2};
 `;
 
 const FriendList = styled.ul<IThemeProps>`
@@ -143,7 +140,7 @@ const Homepage: React.FC = () => {
     <Wrap>
       <Contact>
         <ContactHeader>
-          <ContactTitle>朋友</ContactTitle>
+          <CardTitle>朋友</CardTitle>
           <MoreBtn type="button" anime>
             <span className="material-icons-outlined more-horiz-icon">more_horiz</span>
           </MoreBtn>
@@ -188,7 +185,7 @@ const Homepage: React.FC = () => {
       <StoriesSection>
         <Stories />
         <Events />
-
+        <Follow />
       </StoriesSection>
     </Wrap>
   );
