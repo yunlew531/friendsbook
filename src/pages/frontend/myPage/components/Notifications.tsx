@@ -10,18 +10,24 @@ interface IWrap {
 
 const Wrap = styled(Card)<IThemeProps & IWrap>`
   display: ${({ isNotificationShow }) => (isNotificationShow ? 'block' : 'none')};
-  width: 450px;
+  width: 470px;
   position: absolute;
   left: 50%;
   bottom: 0;
   transform: translateX(-50%) translateY(100%);
   box-shadow: ${({ theme }) => theme.shadow.s};
+  padding: 20px 0;
 `;
 
 const Title = styled.h3<IThemeProps>`
   color: ${({ theme }) => theme.color.black_300};
   font-size: ${({ theme }) => theme.fontSizes.fs_2};
   margin-bottom: 10px;
+  padding: 0 25px;
+`;
+
+const ReadBtnGroup = styled.div`
+  padding: 0 25px;
 `;
 
 interface ReadBtnProps {
@@ -38,6 +44,8 @@ const ReadBtn = styled(Btn)<IThemeProps & ReadBtnProps>`
 `;
 
 const NotificationList = styled.ul`
+  max-height: 600px;
+  overflow-y: auto;
   list-style: none;
   margin: 10px 0 0;
 `;
@@ -53,6 +61,7 @@ const NotificationItem = styled.li<IThemeProps & INotificationItemProps>`
   border-radius: 5px;
   margin-bottom: 10px;
   padding: 5px;
+  margin: 5px 25px;
   img {
     flex-shrink: 0;
     width: 42px;
@@ -80,7 +89,9 @@ const NotificationItem = styled.li<IThemeProps & INotificationItemProps>`
 `;
 
 const RemoveNotificationBtn = styled(Btn)<IThemeProps>`
+  align-self: center;
   transition: transform .1s ease-in-out;
+  padding: 0;
   &:hover {
     transform: scale(1.1);
   }
@@ -153,9 +164,11 @@ const Notifications: React.FC<INotificationsProps> = ({ isNotificationShow }) =>
   return (
     <Wrap isNotificationShow={isNotificationShow}>
       <Title>通知</Title>
-      <ReadBtn type="button" anime active>全部</ReadBtn>
-      <ReadBtn type="button" anime active={false}>未讀</ReadBtn>
-      <ReadBtn type="button" anime active={false}>已讀</ReadBtn>
+      <ReadBtnGroup>
+        <ReadBtn type="button" anime active>全部</ReadBtn>
+        <ReadBtn type="button" anime active={false}>未讀</ReadBtn>
+        <ReadBtn type="button" anime active={false}>已讀</ReadBtn>
+      </ReadBtnGroup>
       <NotificationList>
         {/* 文章 tag */}
         <NotificationItem read>
@@ -211,22 +224,27 @@ const Notifications: React.FC<INotificationsProps> = ({ isNotificationShow }) =>
           </RemoveNotificationBtn>
         </NotificationItem>
         {/* 發佈新貼文 */}
-        <NotificationItem read>
-          <span className={`material-icons-outlined read-icon ${'data.read' ? 'read' : ''}`}>done_all</span>
-          <img src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3087&q=80" alt="notice" />
-          <NotificationMain>
-            <NotificationContent read>
-              <Link to="/user/id" className="notification-from">狗狗社團</Link>
-              發佈了一則新
-              <Link to="/post/articleId" className="article-link sentence-last">貼文</Link>
-              。
-            </NotificationContent>
-            <NotificationTime>2022-10-20 20:09:22</NotificationTime>
-          </NotificationMain>
-          <RemoveNotificationBtn type="button">
-            <span className="material-icons-outlined">do_not_disturb_on</span>
-          </RemoveNotificationBtn>
-        </NotificationItem>
+        {
+          new Array(20).fill(null).map(() => (
+            <NotificationItem read>
+              <span className={`material-icons-outlined read-icon ${'data.read' ? 'read' : ''}`}>done_all</span>
+              <img src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3087&q=80" alt="notice" />
+              <NotificationMain>
+                <NotificationContent read>
+                  <Link to="/user/id" className="notification-from">狗狗社團</Link>
+                  發佈了一則新
+                  <Link to="/post/articleId" className="article-link sentence-last">貼文</Link>
+                  。
+                </NotificationContent>
+                <NotificationTime>2022-10-20 20:09:22</NotificationTime>
+              </NotificationMain>
+              <RemoveNotificationBtn type="button">
+                <span className="material-icons-outlined">do_not_disturb_on</span>
+              </RemoveNotificationBtn>
+            </NotificationItem>
+          ))
+        }
+
       </NotificationList>
     </Wrap>
   );
