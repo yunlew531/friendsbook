@@ -39,7 +39,7 @@ const FollowItem = styled.li<IThemeProps>`
   }
 `;
 
-const UserPhotoContainer = styled.div<IThemeProps>`
+const UserPhoto = styled.img<IThemeProps>`
   flex-shrink: 0;
   width: 35px;
   height: 35px;
@@ -48,12 +48,6 @@ const UserPhotoContainer = styled.div<IThemeProps>`
   box-shadow: ${({ theme }) => theme.shadow.m};
   padding: 2px;
   margin-right: 10px;
-`;
-
-const UserPhoto = styled.img`
-  width: 100%;
-  height: 100%;
-  border-radius: 100%;
 `;
 
 const Username = styled.p<IThemeProps>`
@@ -95,9 +89,7 @@ const Follow: React.FC = () => {
           new Array(5).fill(null).map((item, idx) => (
             // eslint-disable-next-line react/no-array-index-key
             <FollowItem key={idx}>
-              <UserPhotoContainer>
-                <UserPhoto src="https://images.unsplash.com/photo-1589424987100-72303ec43d04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=692&q=80" />
-              </UserPhotoContainer>
+              <UserPhoto src="https://images.unsplash.com/photo-1589424987100-72303ec43d04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=692&q=80" />
               <Username>Tom Tom</Username>
               <AddToFriendsBtn type="button" anime>
                 <span className="material-icons-outlined person-add-icon">person_add</span>

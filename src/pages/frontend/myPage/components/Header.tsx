@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { NavLink } from 'react-router-dom';
 import Btn from 'components/Btn';
+import Notifications from './Notifications';
 
 const Wrap = styled.header<IThemeProps>`
   position: fixed;
@@ -19,11 +20,13 @@ const Nav = styled.nav<IThemeProps>`
   display: flex;
   align-items: stretch;
   height: 70px;
-  a {
+  a, .notice-btn {
     display: flex;
     align-items: center;
     text-decoration: none;
+    font-size: ${({ theme }) => theme.fontSizes.fs_3};
     color: ${({ theme }) => theme.color.gray_500};
+    border: none;
     border-top: 2px transparent solid;
     transition: .2s filter ease-in-out;
     background-color: ${({ theme }) => theme.color.white_100};
@@ -91,14 +94,63 @@ const UserPhoto = styled.img<IThemeProps>`
   border: 2px solid ${({ theme }) => theme.color.primary};
 `;
 
-// eslint-disable-next-line arrow-body-style
+interface INoticeContainerProps {
+  isNotificationShow: boolean;
+}
+
+const NoticeContainer = styled.div<IThemeProps & INoticeContainerProps>`
+  position: relative;
+  display: flex;
+  align-items: center;
+  filter: ${({ isNotificationShow }) => (isNotificationShow ? 'brightness(0.95)' : 'brightness(1)')};
+  .notice-btn {
+    height: 100%;
+  }
+`;
+
+const NotificationNum = styled.p<IThemeProps>`
+  color: ${({ theme }) => theme.color.white_100};
+  font-size: ${({ theme }) => theme.fontSizes.fs_5};
+  padding: 2px 2px 1px;
+  border-radius: 100%;
+  background-color: ${({ theme }) => theme.color.green_100};
+  margin-left: 5px;
+`;
+
 const Header: React.FC = () => {
+  const [isNotificationShow, setIsNotificationShow] = useState(false);
+
+  useEffect(() => {
+    const hideNotification = ({ target }: MouseEvent) => {
+      const isParentIncludeNoticeContainer = (target as HTMLElement).closest('.notice-container');
+      if (!isParentIncludeNoticeContainer) { setIsNotificationShow(false); }
+    };
+
+    if (isNotificationShow) document.body.addEventListener('click', hideNotification);
+    else document.body.removeEventListener('click', hideNotification);
+
+    return () => document.body.removeEventListener('click', hideNotification);
+  }, [isNotificationShow]);
+
   return (
     <Wrap>
       <div />
       <Nav>
         <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')}>首頁</NavLink>
-        <NavLink to="/notices" className={({ isActive }) => (isActive ? 'active' : '')}>通知</NavLink>
+        <NoticeContainer isNotificationShow={isNotificationShow} className="notice-container">
+          <button
+            type="button"
+            className="notice-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsNotificationShow(!isNotificationShow);
+            }}
+          >
+            通知
+            <NotificationNum>30</NotificationNum>
+          </button>
+          <Notifications isNotificationShow={isNotificationShow} />
+        </NoticeContainer>
         <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? 'active' : '')}>聊天室</NavLink>
         <NavLink to="/groups" className={({ isActive }) => (isActive ? 'active' : '')}>社團</NavLink>
         <NavLink to="/story" className={({ isActive }) => (isActive ? 'active' : '')}>限時動態</NavLink>

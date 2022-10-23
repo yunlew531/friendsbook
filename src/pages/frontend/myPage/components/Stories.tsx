@@ -38,7 +38,7 @@ const StoryContent = styled.div`
   margin-bottom: 20px;
 `;
 
-const StoryUserPhotoContainer = styled.div<IThemeProps>`
+const StoryUserPhoto = styled.img<IThemeProps>`
   width: 50px;
   height: 50px;
   border-radius: 100%;
@@ -46,12 +46,6 @@ const StoryUserPhotoContainer = styled.div<IThemeProps>`
   border: 2px solid ${({ theme }) => theme.color.primary};
   padding: 1px;
   margin-bottom: 5px;
-`;
-
-const StoryUserPhoto = styled.img`
-  border-radius: 100%;
-  width: 100%;
-  height: 100%;
 `;
 
 const StoryAuthor = styled.p<IThemeProps>`
@@ -77,9 +71,7 @@ const Stories: React.FC = () => {
           // eslint-disable-next-line react/no-array-index-key
           <Story key={idx} imgUrl="https://images.unsplash.com/photo-1666195379088-29435b89bdf5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80">
             <StoryContent>
-              <StoryUserPhotoContainer>
-                <StoryUserPhoto src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" />
-              </StoryUserPhotoContainer>
+              <StoryUserPhoto src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" />
               <StoryAuthor>Tom Tom</StoryAuthor>
             </StoryContent>
           </Story>

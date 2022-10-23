@@ -4,6 +4,10 @@ import { Outlet } from 'react-router-dom';
 import Header from './components/Header';
 import SideBar from './components/Sidebar';
 
+const Wrap = styled.div`
+  position: relative;
+`;
+
 const MainContainer = styled.div`
   background-color: transparent;
   margin-left: 75px;
@@ -13,13 +17,13 @@ const MainContainer = styled.div`
 // eslint-disable-next-line arrow-body-style
 const MyPage: React.FC = () => {
   return (
-    <>
+    <Wrap>
       <Header />
       <SideBar />
       <MainContainer>
         <Outlet />
       </MainContainer>
-    </>
+    </Wrap>
   );
 };
 

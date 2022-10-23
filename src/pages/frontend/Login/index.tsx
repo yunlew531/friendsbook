@@ -38,14 +38,15 @@ const MainSection = styled.div`
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 94.5px);
-  padding: 0 150px;
 `;
 
 const PeopleImg = styled.img`
+  flex-shrink: 1;
   max-width: 700px;
 `;
 
 const CardContainer = styled.div`
+  flex-shrink: 0;
   max-width: 450px;
   width: 100%;
   margin-left: 150px;

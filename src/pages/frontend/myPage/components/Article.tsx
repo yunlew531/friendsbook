@@ -18,18 +18,13 @@ const Header = styled.div`
   padding: 0 20px;
 `;
 
-const UserPhotoContainer = styled.div<IThemeProps>`
+const UserPhoto = styled.img<IThemeProps>`
   width: 55px;
   height: 55px;
   box-shadow: ${({ theme }) => theme.shadow.m};
   border-radius: 100%;
   padding: 2px;
   margin-right: 18px;
-`;
-
-const UserPhoto = styled.img<IThemeProps>`
-  width: 100%;
-  height: 100%;
   border-radius: 100%;
 `;
 
@@ -117,19 +112,14 @@ const CommentItem = styled.li<IThemeProps>`
   }
 `;
 
-const CommentUserPhotoContainer = styled.div<IThemeProps>`
-  flex-shrink: 0;
+const CommentUserPhoto = styled.img<IThemeProps>`
   align-self: flex-start;
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
   border-radius: 100%;
   border: 2px solid ${({ theme }) => theme.color.white_100};
   margin-right: 10px;
-`;
-
-const CommentUserPhoto = styled.img`
-  width: 100%;
-  height: 100%;
   border-radius: 100%;
 `;
 
@@ -196,9 +186,7 @@ const Article: React.FC = () => {
     <li>
       <ArticleCard>
         <Header>
-          <UserPhotoContainer>
-            <UserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
-          </UserPhotoContainer>
+          <UserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
           <div>
             <HeaderName>Miranda Shaffer</HeaderName>
             <ArticleTime>June 21, 12:45 pm</ArticleTime>
@@ -228,9 +216,7 @@ const Article: React.FC = () => {
         <CommentListContainer>
           <CommentList>
             <CommentItem>
-              <CommentUserPhotoContainer>
-                <CommentUserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
-              </CommentUserPhotoContainer>
+              <CommentUserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
               <CommentMain>
                 <CommentMainHeader>
                   <CommentUsername>Tom</CommentUsername>
