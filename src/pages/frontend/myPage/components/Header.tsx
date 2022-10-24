@@ -140,7 +140,7 @@ const Header: React.FC = () => {
     <Wrap>
       <div />
       <Nav>
-        <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')}>首頁</NavLink>
+        <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>首頁</NavLink>
         <NoticeContainer isNotificationShow={isNotificationShow} className="notice-container">
           <button
             type="button"

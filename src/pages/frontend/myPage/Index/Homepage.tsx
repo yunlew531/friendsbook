@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
-import QuillEditor from 'pages/frontend/MyPage/components/QuillEditor';
+// import QuillEditor frocomponents/PublishPaneltor';
 import ArticleList from 'pages/frontend/MyPage/components/Articles';
-import Card from 'components/Card';
 import Stories from 'pages/frontend/MyPage/components/Stories';
 import { MoreBtn } from 'components/Btn';
 import CardTitle from 'components/CardTitle';
+import PublishPanel from 'components/PublishPanel';
 import Events from '../components/Events';
 import Follow from '../components/Follow';
 
@@ -87,55 +87,54 @@ const ArticlesSection = styled.div`
   margin: 0 30px;
 `;
 
-const PublishPanel = styled(Card)``;
+// const PublishPanel = styled(Card)``;
 
-const PublishPanelHeader = styled.div<IThemeProps>`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  p {
-    color: ${({ theme }) => theme.color.gray_500};
-  }
-  .expand-less-icon, .expand-more-icon, p {
-    cursor: default;
-  }
-`;
+// const PublishPanelHeader = styled.div<IThemeProps>`
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   p {
+//     color: ${({ theme }) => theme.color.gray_500};
+//   }
+//   .expand-less-icon, .expand-more-icon, p {
+//     cursor: default;
+//   }
+// `;
 
-const PublicPanelFooter = styled.div<{ show:boolean }>`
-  display: ${({ show }) => (show ? 'flex' : 'none')};
-  justify-content: end;
-`;
+// const PublicPanelFooter = styled.div<{ show:boolean }>`
+//   display: ${({ show }) => (show ? 'flex' : 'none')};
+//   justify-content: end;
+// `;
 
-const PublishBtn = styled.button<IThemeProps>`
-  display: flex;
-  align-items: center;
-  color: ${({ theme }) => theme.color.gray_200};
-  border-radius: 5px;
-  border: none;
-  box-shadow: ${({ theme }) => theme.shadow.s};
-  background-color: ${({ theme }) => theme.color.secondary};
-  transition: filter .2s ease-in-out, transform .2s ease-in-out;
-  padding: 5px 15px;
-  .send-icon {
-    margin-left: 5px;
-    font-size: ${({ theme }) => theme.fontSizes.fs_4};
-  }
-  &:hover {
-    filter: brightness(0.97);
-  }
-  &:active {
-    transform: scale(0.95);
-  }
-`;
+// const PublishBtn = styled.button<IThemeProps>`
+//   display: flex;
+//   align-items: center;
+//   color: ${({ theme }) => theme.color.gray_200};
+//   border-radius: 5px;
+//   border: none;
+//   box-shadow: ${({ theme }) => theme.shadow.s};
+//   background-color: ${({ theme }) => theme.color.secondary};
+//   transition: filter .2s ease-in-out, transform .2s ease-in-out;
+//   padding: 5px 15px;
+//   .send-icon {
+//     margin-left: 5px;
+//     font-size: ${({ theme }) => theme.fontSizes.fs_4};
+//   }
+//   &:hover {
+//     filter: brightness(0.97);
+//   }
+//   &:active {
+//     transform: scale(0.95);
+//   }
+// `;
 
 const StoriesSection = styled.div`
   flex-shrink: 0;
   width: 360px;
 `;
 
+// eslint-disable-next-line arrow-body-style
 const Homepage: React.FC = () => {
-  const [isPublishShow, setIsPublishShow] = useState(false);
-
   return (
     <Wrap>
       <Contact>
@@ -165,20 +164,7 @@ const Homepage: React.FC = () => {
       </Contact>
       <MainContent>
         <ArticlesSection>
-          <PublishPanel>
-            <PublishPanelHeader onClick={() => setIsPublishShow(!isPublishShow)}>
-              <div />
-              <p>Tom , 你想發佈些什麼 ?</p>
-              {isPublishShow ? <span className="material-icons-outlined expand-less-icon">expand_less</span>
-                : <span className="material-icons-outlined expand-more-icon">expand_more</span>}
-            </PublishPanelHeader>
-            <QuillEditor isPublishShow={isPublishShow} />
-            <PublicPanelFooter show={isPublishShow}>
-              <PublishBtn type="button">發佈
-                <span className="material-icons-outlined send-icon">send</span>
-              </PublishBtn>
-            </PublicPanelFooter>
-          </PublishPanel>
+          <PublishPanel />
           <ArticleList />
         </ArticlesSection>
       </MainContent>
