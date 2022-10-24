@@ -36,8 +36,12 @@ const HideChatroomBtn = styled(Btn)<IThemeProps>`
   border-radius: 10px;
   box-shadow: ${({ theme }) => theme.shadow.s};
   border: 1px solid ${({ theme }) => theme.color.gray_400};
-  .material-icons {
-    color: ${({ theme }) => theme.color.secondary}
+  .material-icons, .material-icons-round {
+    display: none;
+    color: ${({ theme }) => theme.color.secondary};
+    &.show {
+      display: block;
+    }
   }
 `;
 
@@ -263,7 +267,7 @@ const Chatroom: React.FC = () => {
   const [isChatroomShow, setIsChatroomShow] = useState(false);
   const [isChatroomUnFold, setIsChatroomUnFold] = useState(false);
   const [isMoreListShow, setIsMoreListShow] = useState(false);
-  const [isChatRoomListUnFold, setIsChatRoomListUnFold] = useState(true);
+  const [isChatRoomListFold, setIsChatRoomListFold] = useState(false);
 
   return (
     <Wrap>
@@ -365,7 +369,7 @@ const Chatroom: React.FC = () => {
           </ThumbsUpBtn>
         </Footer>
       </ChatroomEl>
-      <ChatroomList unfold={isChatRoomListUnFold}>
+      <ChatroomList unfold={isChatRoomListFold}>
         {
           new Array(3).fill(null).map((item, idx) => (
             <ChatroomItem
@@ -382,8 +386,9 @@ const Chatroom: React.FC = () => {
           ))
         }
         <li>
-          <HideChatroomBtn type="button" anime onClick={() => setIsChatRoomListUnFold(!isChatRoomListUnFold)}>
-            <span className="material-icons">people_alt</span>
+          <HideChatroomBtn type="button" anime onClick={() => setIsChatRoomListFold(!isChatRoomListFold)}>
+            <span className={`material-icons ${isChatRoomListFold ? 'show' : ''}`}>people_alt</span>
+            <span className={`material-icons-round ${isChatRoomListFold ? '' : 'show'}`}>expand_more</span>
           </HideChatroomBtn>
         </li>
       </ChatroomList>
