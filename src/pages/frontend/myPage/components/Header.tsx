@@ -56,10 +56,13 @@ const SearchContainer = styled.div<IThemeProps>`
   input {
     position: absolute;
     right: 0;
-    border-radius: 10px;
-    padding: 10px;
-    border: 1px solid ${({ theme }) => theme.color.primary};
     width: 250px;
+    border-radius: 10px;
+    border: 1px solid ${({ theme }) => theme.color.gray_100};
+    padding: 10px;
+    &:focus {
+      outline: 1px solid ${({ theme }) => theme.color.secondary};
+    }
   }
 `;
 
@@ -102,8 +105,9 @@ const NoticeContainer = styled.div<IThemeProps & INoticeContainerProps>`
   position: relative;
   display: flex;
   align-items: center;
-  filter: ${({ isNotificationShow }) => (isNotificationShow ? 'brightness(0.95)' : 'brightness(1)')};
+  transition: filter .2s ease-in-out;
   .notice-btn {
+    filter: ${({ isNotificationShow }) => (isNotificationShow ? 'brightness(0.95)' : 'brightness(1)')};
     height: 100%;
   }
 `;

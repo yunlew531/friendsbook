@@ -224,27 +224,22 @@ const Notifications: React.FC<INotificationsProps> = ({ isNotificationShow }) =>
           </RemoveNotificationBtn>
         </NotificationItem>
         {/* 發佈新貼文 */}
-        {
-          new Array(20).fill(null).map(() => (
-            <NotificationItem read>
-              <span className={`material-icons-outlined read-icon ${'data.read' ? 'read' : ''}`}>done_all</span>
-              <img src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3087&q=80" alt="notice" />
-              <NotificationMain>
-                <NotificationContent read>
-                  <Link to="/user/id" className="notification-from">狗狗社團</Link>
-                  發佈了一則新
-                  <Link to="/post/articleId" className="article-link sentence-last">貼文</Link>
-                  。
-                </NotificationContent>
-                <NotificationTime>2022-10-20 20:09:22</NotificationTime>
-              </NotificationMain>
-              <RemoveNotificationBtn type="button">
-                <span className="material-icons-outlined">do_not_disturb_on</span>
-              </RemoveNotificationBtn>
-            </NotificationItem>
-          ))
-        }
-
+        <NotificationItem read>
+          <span className={`material-icons-outlined read-icon ${'data.read' ? 'read' : ''}`}>done_all</span>
+          <img src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3087&q=80" alt="notice" />
+          <NotificationMain>
+            <NotificationContent read>
+              <Link to="/user/id" className="notification-from">狗狗社團</Link>
+              發佈了一則新
+              <Link to="/post/articleId" className="article-link sentence-last">貼文</Link>
+              。
+            </NotificationContent>
+            <NotificationTime>2022-10-20 20:09:22</NotificationTime>
+          </NotificationMain>
+          <RemoveNotificationBtn type="button">
+            <span className="material-icons-outlined">do_not_disturb_on</span>
+          </RemoveNotificationBtn>
+        </NotificationItem>
       </NotificationList>
     </Wrap>
   );

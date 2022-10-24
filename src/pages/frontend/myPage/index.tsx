@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import Chatroom from './components/Chatroom';
 import Header from './components/Header';
 import SideBar from './components/Sidebar';
 
@@ -18,6 +19,7 @@ const MainContainer = styled.div`
 const MyPage: React.FC = () => {
   return (
     <Wrap>
+      <Chatroom />
       <Header />
       <SideBar />
       <MainContainer>
