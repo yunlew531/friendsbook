@@ -2,7 +2,8 @@ import React from 'react';
 import type { RouteObject } from 'react-router-dom';
 import Homepage from 'pages/frontend/MyPage/Index/Homepage';
 import Login from 'pages/frontend/Login';
-import Groups from 'pages/frontend/MyPage/Index/Groups';
+import Club from 'pages/frontend/MyPage/Index/Club';
+import Clubs from 'pages/frontend/MyPage/Index/Clubs';
 import Home from './pages/frontend/Home';
 import MyPage from './pages/frontend/MyPage';
 
@@ -16,8 +17,12 @@ const routes: RouteObject[] = [
         element: <Homepage />,
       },
       {
-        path: '/groups',
-        element: <Groups />,
+        path: '/clubs',
+        element: <Clubs />,
+      },
+      {
+        path: '/club/:id',
+        element: <Club />,
       },
     ],
   },

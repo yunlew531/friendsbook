@@ -5,8 +5,6 @@ interface BtnProps {
 }
 
 const Btn = styled.button<BtnProps>`
-  display: flex;
-  align-items: center;
   background-color: transparent;
   border: none;
   ${

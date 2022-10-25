@@ -4,6 +4,7 @@ import Btn from 'components/Btn';
 import PublishPanel from 'components/PublishPanel';
 import Card from 'components/Card';
 import { Link } from 'react-router-dom';
+import Search from 'components/Search';
 import Articles from '../components/Articles';
 
 const Wrap = styled.div`
@@ -87,42 +88,6 @@ const MemberListCardHeader = styled.div`
   margin-bottom: 16px;
 `;
 
-const MemberSearchGroup = styled.div`
-  display: flex;
-  align-items: stretch;
-  margin-bottom: 16px;
-`;
-
-const MemberSearch = styled.input<IThemeProps>`
-  max-width: 300px;
-  width: 100%;
-  border: 1px solid ${({ theme }) => theme.color.gray_400};
-  border-radius: 10px;
-  font-size: ${({ theme }) => theme.fontSizes.fs_3};
-  padding: 10px 15px;
-  margin-right: 10px;
-  &:focus {
-    outline: 1px solid ${({ theme }) => theme.color.secondary};
-  }
-`;
-
-const MemberSearchBtn = styled(Btn)<IThemeProps>`
-  display: flex;
-  align-items: center;
-  border: 1px solid ${({ theme }) => theme.color.orange_100};
-  background-color: ${({ theme }) => theme.color.white_100};
-  border-radius: 10px;
-  &:hover {
-    transform: scale(1.05);
-    .material-icons-round {
-      color: ${({ theme }) => theme.color.primary};
-    }
-  }
-  &:active {
-    transform: scale(0.95);
-  }
-`;
-
 const MemberSubTitle = styled.h3`
   
 `;
@@ -167,6 +132,8 @@ const MemberItemContent = styled.div<IThemeProps>`
 `;
 
 const MemberItemBtn = styled(Btn)<IThemeProps>`
+  display: flex;
+  align-items: center;
   border: 1px solid ${({ theme }) => theme.color.gray_100};
   padding: 5px 10px;
   border-radius: 5px;
@@ -223,12 +190,7 @@ const Groups: React.FC = () => {
             <p className="members-qty">30</p>
             <p>位</p>
           </MemberListCardHeader>
-          <MemberSearchGroup>
-            <MemberSearch placeholder="搜尋社團成員" />
-            <MemberSearchBtn type="button">
-              <span className="material-icons-round">search</span>
-            </MemberSearchBtn>
-          </MemberSearchGroup>
+          <Search placeholder="搜尋社團成員" />
           <MemberSubTitle>管理員</MemberSubTitle>
           <MemberList>
             <MemberItem>
@@ -273,7 +235,6 @@ const Groups: React.FC = () => {
           </MemberList>
         </MemberListCard>
       )}
-
     </Wrap>
   );
 };
