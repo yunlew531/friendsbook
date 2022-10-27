@@ -157,7 +157,7 @@ const Header: React.FC = () => {
         </NoticeContainer>
         <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? 'active' : '')}>聊天室</NavLink>
         <NavLink to="/clubs" className={({ isActive }) => (isActive ? 'active' : '')}>社團</NavLink>
-        <NavLink to="/story" className={({ isActive }) => (isActive ? 'active' : '')}>限時動態</NavLink>
+        <NavLink to="/fans" className={({ isActive }) => (isActive ? 'active' : '')}>粉絲專頁</NavLink>
       </Nav>
       <HeaderRightSide>
         <SearchContainer>

@@ -4,8 +4,10 @@ import Homepage from 'pages/frontend/MyPage/Index/Homepage';
 import Login from 'pages/frontend/Login';
 import Club from 'pages/frontend/MyPage/Index/Club';
 import Clubs from 'pages/frontend/MyPage/Index/Clubs';
-import Home from './pages/frontend/Home';
-import MyPage from './pages/frontend/MyPage';
+import Fans from 'pages/frontend/MyPage/Index/Fans';
+import Fan from 'pages/frontend/MyPage/Index/Fan';
+import Home from 'pages/frontend/Home';
+import MyPage from 'pages/frontend/MyPage';
 
 const routes: RouteObject[] = [
   {
@@ -23,6 +25,14 @@ const routes: RouteObject[] = [
       {
         path: '/club/:id',
         element: <Club />,
+      },
+      {
+        path: '/fans',
+        element: <Fans />,
+      },
+      {
+        path: '/fan/:id',
+        element: <Fan />,
       },
     ],
   },
