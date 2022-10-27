@@ -8,6 +8,8 @@ import Fans from 'pages/frontend/MyPage/Index/Fans';
 import Fan from 'pages/frontend/MyPage/Index/Fan';
 import Home from 'pages/frontend/Home';
 import MyPage from 'pages/frontend/MyPage';
+import FanIndex from 'pages/frontend/MyPage/Index/Fan/index';
+import FanAbout from 'pages/frontend/MyPage/Index/Fan/About';
 
 const routes: RouteObject[] = [
   {
@@ -31,8 +33,18 @@ const routes: RouteObject[] = [
         element: <Fans />,
       },
       {
-        path: '/fan/:id',
+        path: '',
         element: <Fan />,
+        children: [
+          {
+            path: '/fan/:id',
+            element: <FanIndex />,
+          },
+          {
+            path: '/fan/:id/about',
+            element: <FanAbout />,
+          },
+        ],
       },
     ],
   },
