@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
-import PublishPanel from 'components/PublishPanel';
 import Card from 'components/Card';
-import { Link } from 'react-router-dom';
-import Search from 'components/Search';
-import Articles from '../components/Articles';
+import { NavLink, Outlet } from 'react-router-dom';
 
 const Wrap = styled.div`
   max-width: 800px;
@@ -51,192 +48,48 @@ const MembersQtyBtn = styled(Btn)<IThemeProps>`
   }
 `;
 
-interface IGroupNavBtnProps {
-  active: boolean;
-}
-
-const GroupNavBtn = styled.button<IThemeProps & IGroupNavBtnProps>`
-  color: ${({ active, theme: { color: { black_300, gray_500 } } }) => (active ? black_300 : gray_500)};
-  font-weight: ${({ active }) => (active ? 700 : 400)};
-  font-size: ${({ theme }) => theme.fontSizes.fs_3};
-  background-color: ${({ active, theme: { color: { gray_400, white_100 } } }) => (active ? gray_400 : white_100)};
-  border: 1px solid ${({ theme }) => theme.color.gray_400};
-  box-shadow: inset ${({ active, theme }) => (active ? theme.shadow.s : '')};
-  border-radius: 8px;
-  transition: background-color .1s ease-in-out;
-  margin-right: 10px;
-  padding: 10px 30px;
-  &:hover {
-    filter: brightness(0.97);
-  }
-`;
-
-const MemberListCard = styled(Card)<IThemeProps>`
-  .title {
-    font-size: ${({ theme }) => theme.fontSizes.fs_3};
-    font-weight: 700;
-    margin-right: 5px;
-  }
-  .members-qty {
-    margin: 0 5px;
-  }
-`;
-
-const MemberListCardHeader = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-`;
-
-const MemberSubTitle = styled.h3`
-  
-`;
-
-const MemberList = styled.ul<IThemeProps>`
-  list-style: none;
-`;
-
-const MemberItem = styled.li<IThemeProps>`
-  display: flex;
-  align-items: center;
-  border: 1px solid ${({ theme }) => theme.color.gray_400};
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-`;
-
-const MemberItemPhoto = styled.img<IThemeProps>`
-  flex-shrink: 0;
-  width: 50px;
-  height: 50px;
-  border-radius: 100%;
-  box-shadow: ${({ theme }) => theme.shadow.s};
-  transition: filter .1s ease-in-out;
-  margin-right: 10px;
-  &:hover {
-    filter: brightness(0.9);
-  }
-`;
-
-const MemberItemContent = styled.div<IThemeProps>`
-  flex-grow: 1;
+const GroupNav = styled.nav<IThemeProps>`
   a {
     text-decoration: none;
-    color: ${({ theme }) => theme.color.primary};
-    font-size: ${({ theme }) => theme.fontSizes.fs_2};
-  }
-  .member-desc {
-    color: ${({ theme }) => theme.color.gray_300};
-    font-size: ${({ theme }) => theme.fontSizes.fs_4};
-  }
-`;
-
-const MemberItemBtn = styled(Btn)<IThemeProps>`
-  display: flex;
-  align-items: center;
-  border: 1px solid ${({ theme }) => theme.color.gray_100};
-  padding: 5px 10px;
-  border-radius: 5px;
-  background-color: ${({ theme }) => theme.color.white_100};
-  margin-right: 10px;
-  .material-icons-round {
+    color: ${({ theme }) => theme.color.gray_500};
+    font-weight: 400;
     font-size: ${({ theme }) => theme.fontSizes.fs_3};
-    margin-right: 3px;
-  }
+    background-color: ${({ theme }) => theme.color.white_100};
+    border: 1px solid ${({ theme }) => theme.color.gray_400};
+    border-radius: 8px;
+    transition: background-color .1s ease-in-out;
+    margin-right: 10px;
+    padding: 10px 30px;
+    &:hover {
+      filter: brightness(0.97);
+    }
+    &.active {
+      color: ${({ theme }) => theme.color.black_300};
+      font-weight: 700;
+      background-color: ${({ theme }) => theme.color.gray_400};
+      box-shadow: inset ${({ theme }) => theme.shadow.s};
+    }
+  } 
 `;
 
-type CurrentDisplay = 'articles' | 'members';
-
-const Groups: React.FC = () => {
-  const [currentDisplay, setCurrentDisplay] = useState<CurrentDisplay>('articles');
-
-  return (
-    <Wrap>
-      <Header>
-        <BannerImg src="https://images.unsplash.com/photo-1598589290625-9b04630ec5d1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="group banner" />
-        <GroupTitle>貓貓同好</GroupTitle>
-        <GroupDesc>
-          <span className="material-icons-round">public</span>
-          公開社團 ．
-          <MembersQtyBtn type="button">30</MembersQtyBtn>
-          位成員
-        </GroupDesc>
-        <nav>
-          <GroupNavBtn
-            active={currentDisplay === 'articles'}
-            type="button"
-            onClick={() => setCurrentDisplay('articles')}
-          >討論
-          </GroupNavBtn>
-          <GroupNavBtn
-            active={currentDisplay === 'members'}
-            type="button"
-            onClick={() => setCurrentDisplay('members')}
-          >成員
-          </GroupNavBtn>
-        </nav>
-      </Header>
-      {currentDisplay === 'articles'
-       && (
-       <>
-         <PublishPanel />
-         <Articles />
-       </>
-       )}
-      {currentDisplay === 'members' && (
-        <MemberListCard>
-          <MemberListCardHeader>
-            <h2 className="title">成員</h2> ．
-            <p className="members-qty">30</p>
-            <p>位</p>
-          </MemberListCardHeader>
-          <Search placeholder="搜尋社團成員" />
-          <MemberSubTitle>管理員</MemberSubTitle>
-          <MemberList>
-            <MemberItem>
-              <MemberItemPhoto src="https://images.unsplash.com/photo-1557002665-c552e1832483?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="username" />
-              <MemberItemContent>
-                <Link to="/user/uid">Tom Tom</Link>
-                <p className="member-desc">Lorem ipsum dolor sit amet.</p>
-              </MemberItemContent>
-              <MemberItemBtn anime>
-                <span className="material-icons-round">add</span>
-                加好友
-              </MemberItemBtn>
-              <MemberItemBtn anime>
-                <span className="material-icons-round">chat</span>
-                傳訊息
-              </MemberItemBtn>
-            </MemberItem>
-          </MemberList>
-          <MemberSubTitle>成員</MemberSubTitle>
-          <MemberList>
-            {
-              new Array(10).fill(null).map((item, idx) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <MemberItem key={idx}>
-                  <MemberItemPhoto src="https://images.unsplash.com/photo-1557002665-c552e1832483?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="username" />
-                  <MemberItemContent>
-                    <Link to="/user/uid">Tom Tom</Link>
-                    <p className="member-desc">Lorem ipsum dolor sit amet.</p>
-                  </MemberItemContent>
-                  <MemberItemBtn anime>
-                    <span className="material-icons-round">add</span>
-                    加好友
-                  </MemberItemBtn>
-                  <MemberItemBtn anime>
-                    <span className="material-icons-round">chat</span>
-                    傳訊息
-                  </MemberItemBtn>
-                </MemberItem>
-              ))
-            }
-
-          </MemberList>
-        </MemberListCard>
-      )}
-    </Wrap>
-  );
-};
+const Groups: React.FC = () => (
+  <Wrap>
+    <Header>
+      <BannerImg src="https://images.unsplash.com/photo-1598589290625-9b04630ec5d1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="group banner" />
+      <GroupTitle>貓貓同好</GroupTitle>
+      <GroupDesc>
+        <span className="material-icons-round">public</span>
+        公開社團 ．
+        <MembersQtyBtn type="button">30</MembersQtyBtn>
+        位成員
+      </GroupDesc>
+      <GroupNav>
+        <NavLink to="/club/:id" className={({ isActive }) => (isActive ? 'active' : '')} end>討論</NavLink>
+        <NavLink to="/club/:id/members" className={({ isActive }) => (isActive ? 'active' : '')}>成員</NavLink>
+      </GroupNav>
+    </Header>
+    <Outlet />
+  </Wrap>
+);
 
 export default Groups;

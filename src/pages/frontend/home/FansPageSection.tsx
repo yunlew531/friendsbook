@@ -2,6 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import Btn from 'components/Btn';
+import UserCard from 'components/UserCard';
 
 const Wrap = styled.div<IThemeProps>`
   background-color: ${({ theme }) => theme.color.black_500};
@@ -100,54 +101,6 @@ const MemberList = styled.ul`
   grid-gap: 10px;
 `;
 
-const Member = styled.li<IThemeProps>`
-  display: flex;
-  align-items: center;
-  border-radius: 5px;
-  padding: 10px;
-  box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.05), ${({ theme }) => theme.shadow.s};
-  background-color: ${({ theme }) => theme.color.white_100};
-  &:hover {
-    filter: brightness(0.98);
-  }
-`;
-
-const MemberPhoto = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 100%;
-  margin-right: 15px;
-`;
-
-const MemberInfo = styled.div<IThemeProps>`
-  .name {
-    font-size: ${({ theme }) => theme.fontSizes.fs_2};
-    font-weight: 700;
-  }
-  .join-time {
-    font-size: ${({ theme }) => theme.fontSizes.fs_4};
-    color: ${({ theme }) => theme.color.gray_300};
-  }
-`;
-
-const AddToFriendsBtn = styled(FansPageBtn)`
-  font-size: ${({ theme }) => theme.fontSizes.fs_4};
-  margin-left: auto;
-  .person-add-icon {
-    font-size: ${({ theme }) => theme.fontSizes.fs_3};
-    margin-right: 5px;
-  }
-`;
-
-const SendMessageBtn = styled(FansPageBtn)`
-  font-size: ${({ theme }) => theme.fontSizes.fs_4};
-  margin-left: auto;
-  .chat-icon {
-    font-size: ${({ theme }) => theme.fontSizes.fs_3};
-    margin-right: 5px;
-  }
-`;
-
 // eslint-disable-next-line arrow-body-style
 const FansPageSection: React.FC = () => {
   return (
@@ -179,28 +132,8 @@ const FansPageSection: React.FC = () => {
         <MemberList>
           {
             new Array(10).fill(null).map((member, idx) => (
-              <Member key={member + idx.toString()}>
-                <MemberPhoto src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" />
-                <MemberInfo>
-                  <p className="name">Tomas</p>
-                  <p className="join-time">5 個月前加入</p>
-                </MemberInfo>
-                {
-                 idx === 3 || idx === 6 || idx === 9
-                   ? (
-                     <SendMessageBtn type="button" anime>
-                       <span className="material-icons-outlined chat-icon">chat</span>
-                       發訊息
-                     </SendMessageBtn>
-                   )
-                   : (
-                     <AddToFriendsBtn type="button" anime>
-                       <span className="material-icons-outlined person-add-icon">person_add</span>
-                       加好友
-                     </AddToFriendsBtn>
-                   )
-                }
-              </Member>
+              // eslint-disable-next-line react/no-array-index-key
+              <UserCard key={idx} />
             ))
           }
         </MemberList>

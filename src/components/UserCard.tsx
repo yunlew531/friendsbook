@@ -52,14 +52,18 @@ margin-right: 10px;
 }
 `;
 
+interface IUserCardProps {
+  description?: string;
+}
+
 // eslint-disable-next-line arrow-body-style
-const UserCard: React.FC = () => {
+const UserCard: React.FC<IUserCardProps> = ({ description }) => {
   return (
     <Wrap>
       <UserCardPhoto src="https://images.unsplash.com/photo-1557002665-c552e1832483?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="username" />
       <UserCardContent>
         <Link to="/user/uid">Tom Tom</Link>
-        <p className="member-desc">Lorem ipsum dolor sit amet.</p>
+        <p className="member-desc">{description}</p>
       </UserCardContent>
       <UserCardBtn anime>
         <span className="material-icons-round">add</span>
@@ -71,6 +75,10 @@ const UserCard: React.FC = () => {
       </UserCardBtn>
     </Wrap>
   );
+};
+
+UserCard.defaultProps = {
+  description: '5個月前加入',
 };
 
 export default UserCard;
