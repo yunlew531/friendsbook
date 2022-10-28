@@ -13,6 +13,7 @@ import Fan from 'pages/frontend/MyPage/Index/Fan';
 import FanIndex from 'pages/frontend/MyPage/Index/Fan/index';
 import FanAbout from 'pages/frontend/MyPage/Index/Fan/About';
 import FanPhotos from 'pages/frontend/MyPage/Index/Fan/Photos';
+import FanFollows from 'pages/frontend/MyPage/Index/Fan/Follows';
 
 const routes: RouteObject[] = [
   {
@@ -60,6 +61,10 @@ const routes: RouteObject[] = [
           {
             path: '/fan/:id/photos',
             element: <FanPhotos />,
+          },
+          {
+            path: '/fan/:id/follows',
+            element: <FanFollows />,
           },
         ],
       },
