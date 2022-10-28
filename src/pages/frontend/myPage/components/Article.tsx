@@ -70,6 +70,7 @@ const Footer = styled.div`
   display: flex;
   justify-content: end;
   padding: 0 20px 10px;
+  margin-top: 5px;
 `;
 
 const FooterBtn = styled(Btn)<IThemeProps>`
@@ -78,6 +79,7 @@ const FooterBtn = styled(Btn)<IThemeProps>`
   margin: 0 6px;
   .material-icons-outlined {
     transition: transform .1s ease-in-out;
+    font-size: ${({ theme }) => theme.fontSizes.fs_1};
   }
   .interact-num {
     position: absolute;
@@ -180,8 +182,52 @@ const CommentMoreBtn = styled(Btn)<IThemeProps>`
   }
 `;
 
+const SalesDetail = styled.div<IThemeProps>`
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.color.gray_200};
+  border: 1px solid ${({ theme }) => theme.color.gray_100};
+  margin: 0 20px 20px;
+  padding: 10px 20px;
+`;
+
+const SalesMain = styled.div<IThemeProps>`
+  span {
+    display: inline-block;
+    font-size: ${({ theme }) => theme.fontSizes.fs_3};
+    margin-bottom: 3px;
+    &:first-of-type {
+      font-weight: 700;
+      color: ${({ theme }) => theme.color.primary};
+    }
+    &:nth-of-type(2) {
+      margin-left: 5px;
+      color: ${({ theme }) => theme.color.gray_500};
+    }
+  }
+`;
+
+const SendMsgBtn = styled(Btn)<IThemeProps>`
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.color.secondary};
+  border-radius: 8px;
+  color: ${({ theme }) => theme.color.white_100};
+  font-weight: 700;
+  padding: 6px 10px;
+  margin-left: auto;
+  .material-icons-outlined {
+    margin-right: 3px;
+    font-size: ${({ theme }) => theme.fontSizes.fs_3};
+  }
+`;
+
+interface IArticleProps {
+  sale?: boolean;
+}
+
 // eslint-disable-next-line arrow-body-style
-const Article: React.FC = () => {
+const Article: React.FC<IArticleProps> = ({ sale }) => {
   return (
     <li>
       <ArticleCard>
@@ -199,6 +245,20 @@ const Article: React.FC = () => {
           Being a father is sometimes my hardest but always my most rewarding job.
           Happy Father’s Day to all dads out there.
         </Content>
+        {
+          sale && (
+          <SalesDetail>
+            <SalesMain>
+              <span>$10</span> <span>新北市</span>
+              <h3>貓沙組</h3>
+            </SalesMain>
+            <SendMsgBtn type="button" anime>
+              <span className="material-icons-outlined">email</span>
+              傳送訊息
+            </SendMsgBtn>
+          </SalesDetail>
+          )
+        }
         <Footer>
           <FooterBtn type="button" anime>
             <span className="interact-num">0</span>
@@ -243,6 +303,10 @@ const Article: React.FC = () => {
       </ArticleCard>
     </li>
   );
+};
+
+Article.defaultProps = {
+  sale: false,
 };
 
 export default Article;

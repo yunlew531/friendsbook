@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import Btn from 'components/Btn';
+import Navbar from 'components/Navbar';
 
 const Wrap = styled.div`
   max-width: 1140px;
@@ -91,32 +92,26 @@ const HeaderBtn = styled(Btn)<IThemeProps>`
   }
 `;
 
-const Nav = styled.nav<IThemeProps>`
-  display: flex;
-  margin-bottom: 20px;
-  background-color: ${({ theme }) => theme.color.white_100};
-  border-top: 1px solid ${({ theme }) => theme.color.gray_400};
-  box-shadow: ${({ theme }) => theme.shadow.s};
-  border-radius: 0 0 8px 8px;
-  overflow: hidden;
-  a {
-    padding: 20px 30px;
-    color: ${({ theme }) => theme.color.black_300};
-    text-decoration: none;
-    background-color: ${({ theme }) => theme.color.white_100};
-    &:hover {
-      filter: brightness(0.98);
-    }
-    &.active{
-      font-weight: 700;
-      filter: brightness(0.97);
-      box-shadow: inset ${({ theme }) => theme.shadow.s};
-    }
-  }
-`;
-
-// eslint-disable-next-line arrow-body-style
 const Fan: React.FC = () => {
+  const navLinks: INavLink[] = [
+    {
+      title: '貼文',
+      to: '/fan/:id',
+    },
+    {
+      title: '關於',
+      to: '/fan/:id/about',
+    },
+    {
+      title: '相片',
+      to: '/fan/:id/photos',
+    },
+    {
+      title: '追蹤者',
+      to: '/fan/:id/follows',
+    },
+  ];
+
   return (
     <Wrap>
       <Banner />
@@ -147,12 +142,7 @@ const Fan: React.FC = () => {
           </HeaderBtn>
         </HeaderMain>
       </Header>
-      <Nav>
-        <NavLink to="/fan/:id" end className={({ isActive }) => (isActive ? 'active' : '')}>貼文</NavLink>
-        <NavLink to="/fan/:id/about" className={({ isActive }) => (isActive ? 'active' : '')}>關於</NavLink>
-        <NavLink to="/fan/:id/photos" className={({ isActive }) => (isActive ? 'active' : '')}>相片</NavLink>
-        <NavLink to="/fan/:id/follows" className={({ isActive }) => (isActive ? 'active' : '')}>追蹤者</NavLink>
-      </Nav>
+      <Navbar links={navLinks} />
       <Outlet />
     </Wrap>
   );

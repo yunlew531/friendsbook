@@ -6,8 +6,10 @@ import Homepage from 'pages/frontend/MyPage/Index/Homepage';
 import MyPage from 'pages/frontend/MyPage';
 import Clubs from 'pages/frontend/MyPage/Index/Clubs';
 import Club from 'pages/frontend/MyPage/Index/Club';
-import ClubIndex from 'pages/frontend/MyPage/Index/Club/index';
-import ClubMembers from 'pages/frontend/MyPage/Index/Club/ClubMembers';
+import ClubPosts from 'pages/frontend/MyPage/Index/Club/Posts';
+import ClubSales from 'pages/frontend/MyPage/Index/Club/Sales';
+import ClubMembers from 'pages/frontend/MyPage/Index/Club/Members';
+import ClubPhotos from 'pages/frontend/MyPage/Index/Club/Photos';
 import Fans from 'pages/frontend/MyPage/Index/Fans';
 import Fan from 'pages/frontend/MyPage/Index/Fan';
 import FanIndex from 'pages/frontend/MyPage/Index/Fan/index';
@@ -34,11 +36,19 @@ const routes: RouteObject[] = [
         children: [
           {
             path: '/club/:id',
-            element: <ClubIndex />,
+            element: <ClubSales />,
+          },
+          {
+            path: '/club/:id/posts',
+            element: <ClubPosts />,
           },
           {
             path: '/club/:id/members',
             element: <ClubMembers />,
+          },
+          {
+            path: '/club/:id/photos',
+            element: <ClubPhotos />,
           },
         ],
       },

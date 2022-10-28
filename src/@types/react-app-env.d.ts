@@ -9,3 +9,8 @@ interface IMessage {
   content: string;
   align?: 'left' | 'right';
 }
+
+interface INavLink {
+  title: string;
+  to: string;
+}
