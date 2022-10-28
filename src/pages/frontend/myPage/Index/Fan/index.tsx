@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Card from 'components/Card';
-import Articles from '../../components/Articles';
+import Articles from 'pages/frontend/MyPage/components/Articles';
 
 const Wrap = styled.div`
   display: flex;
@@ -11,6 +11,11 @@ const Aside = styled.aside`
   flex-shrink: 0;
   width: 450px;
   margin-right: 20px;
+`;
+
+const AsideContent = styled.div`
+  position: sticky;
+  top: 100px;
 `;
 
 const Introduce = styled(Card)<IThemeProps>`
@@ -44,18 +49,20 @@ const FanIndex: React.FC = () => {
   return (
     <Wrap>
       <Aside>
-        <Introduce>
-          <h4 className="title">簡介</h4>
-          <p>偶像偶像偶像偶像偶像偶像偶像偶像偶像偶像偶像偶像</p>
-        </Introduce>
-        <ImagesContainer>
-          <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
-          <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
-          <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
-          <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
-          <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
-          <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
-        </ImagesContainer>
+        <AsideContent>
+          <Introduce>
+            <h4 className="title">簡介</h4>
+            <p>偶像偶像偶像偶像偶像偶像偶像偶像偶像偶像偶像偶像</p>
+          </Introduce>
+          <ImagesContainer>
+            <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
+            <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
+            <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
+            <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
+            <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
+            <img src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=601&q=80" alt="" />
+          </ImagesContainer>
+        </AsideContent>
       </Aside>
       <Main>
         <Articles />

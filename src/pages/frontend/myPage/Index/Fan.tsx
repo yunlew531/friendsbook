@@ -150,7 +150,7 @@ const Fan: React.FC = () => {
       <Nav>
         <NavLink to="/fan/:id" end className={({ isActive }) => (isActive ? 'active' : '')}>貼文</NavLink>
         <NavLink to="/fan/:id/about" className={({ isActive }) => (isActive ? 'active' : '')}>關於</NavLink>
-        <NavLink to="/fan/:id/photo" className={({ isActive }) => (isActive ? 'active' : '')}>相片</NavLink>
+        <NavLink to="/fan/:id/photos" className={({ isActive }) => (isActive ? 'active' : '')}>相片</NavLink>
         <NavLink to="/fan/:id/follows" className={({ isActive }) => (isActive ? 'active' : '')}>追蹤者</NavLink>
       </Nav>
       <Outlet />

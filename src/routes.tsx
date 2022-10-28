@@ -12,6 +12,7 @@ import Fans from 'pages/frontend/MyPage/Index/Fans';
 import Fan from 'pages/frontend/MyPage/Index/Fan';
 import FanIndex from 'pages/frontend/MyPage/Index/Fan/index';
 import FanAbout from 'pages/frontend/MyPage/Index/Fan/About';
+import FanPhotos from 'pages/frontend/MyPage/Index/Fan/Photos';
 
 const routes: RouteObject[] = [
   {
@@ -27,7 +28,7 @@ const routes: RouteObject[] = [
         element: <Clubs />,
       },
       {
-        path: '/club/:id',
+        path: '',
         element: <Club />,
         children: [
           {
@@ -55,6 +56,10 @@ const routes: RouteObject[] = [
           {
             path: '/fan/:id/about',
             element: <FanAbout />,
+          },
+          {
+            path: '/fan/:id/photos',
+            element: <FanPhotos />,
           },
         ],
       },
