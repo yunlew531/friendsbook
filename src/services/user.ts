@@ -2,20 +2,21 @@ import {
   BaseQueryFn, createApi, FetchArgs, fetchBaseQuery,
 } from '@reduxjs/toolkit/query/react';
 
-interface ILoginResponse {
+type RegisterForm = Required<Pick<IUser, 'username' | 'email' | 'password'>>;
+
+interface IRegisterResponse {
   message: string;
-  token: string;
 }
 
-export const accountApi = createApi({
-  reducerPath: 'accountApi',
+export const userApi = createApi({
+  reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_URL,
   }) as BaseQueryFn<string | FetchArgs, unknown, IErrorResult, {}>,
   endpoints: (builder) => ({
-    login: builder.mutation<ILoginResponse, Required<Pick<IUser, 'email' | 'password'>>>({
+    register: builder.mutation<IRegisterResponse, RegisterForm>({
       query: (body) => ({
-        url: '/account',
+        url: '/user',
         method: 'POST',
         body,
       }),
@@ -24,5 +25,5 @@ export const accountApi = createApi({
 });
 
 export const {
-  useLoginMutation,
-} = accountApi;
+  useRegisterMutation,
+} = userApi;

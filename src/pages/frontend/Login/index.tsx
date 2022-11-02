@@ -8,6 +8,7 @@ import {
 import { useLoginMutation } from 'services/account';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
+import { useRegisterMutation } from 'services/user';
 
 const Wrap = styled.div<IThemeProps>`
   min-height: 100vh;
@@ -132,33 +133,55 @@ const Login: React.FC = () => {
   const [registerData, setRegisterData] = useState({ email: '', password: '', username: '' });
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [login, loginResult] = useLoginMutation();
+  const [registerTrigger, registerResult] = useRegisterMutation();
 
   useEffect(() => {
-    const { isSuccess, error, data } = loginResult;
-    enum LoginError {
-      '信箱必須填寫' = 1,
-      '密碼必須填寫' = 2,
-      '密碼至少要6字' = 3,
-      '用戶不存在，請檢查信箱是否正確' = 4,
-      '密碼錯誤' = 5,
-    }
+    const {
+      isSuccess, error, data, isUninitialized, isLoading,
+    } = loginResult;
+    const handleLogin = () => {
+      enum LoginError {
+        '信箱必須填寫' = 1,
+        '密碼必須填寫' = 2,
+        '密碼至少要6字' = 3,
+        '用戶不存在，請檢查信箱是否正確' = 4,
+        '密碼錯誤' = 5,
+      }
 
-    if (isSuccess) {
-      const { token } = data;
-      Cookies.set('Friendsbook', token);
-      navigate('/');
-    } else if (error && 'data' in error) {
-      toast.error(LoginError[error.data.code]);
-    }
+      if (isSuccess) {
+        const { token } = data;
+        Cookies.set('Friendsbook', token);
+        navigate('/');
+        toast.success('成功登入!');
+      } else if (error && 'data' in error) toast.error(LoginError[error.data.code]);
+      else if (!isLoading) toast.error('登入失敗!請稍候再嘗試');
+    };
+
+    if (!isUninitialized) handleLogin();
   }, [loginResult]);
 
-  // '此信箱已註冊過' = 1,
-  // '用戶名必須填寫' = 2,
-  // '信箱必須填寫' = 3,
-  // '密碼必須填寫' = 4,
-  // '信箱格式錯誤' = 6,
-  // '用戶名至少要2字' = 8,
-  // '密碼至少要6字' = 9,
+  useEffect(() => {
+    const {
+      isSuccess, error, isUninitialized, isLoading,
+    } = registerResult;
+    const handleRegister = () => {
+      enum RegisterError {
+        '此信箱已註冊過' = 1,
+        '用戶名必須填寫' = 2,
+        '信箱必須填寫' = 3,
+        '密碼必須填寫' = 4,
+        '信箱格式錯誤' = 6,
+        '用戶名至少要2字' = 8,
+        '密碼至少要6字' = 9,
+      }
+
+      if (isSuccess) toast.success('註冊成功!');
+      else if (error && 'data' in error) toast.error(RegisterError[error.data.code]);
+      else if (!isLoading) toast.error('註冊失敗!請稍候再嘗試');
+    };
+
+    if (!isUninitialized) handleRegister();
+  }, [registerResult]);
 
   return (
     <Wrap>
@@ -217,7 +240,10 @@ const Login: React.FC = () => {
               <LoginAndRegisterCard>
                 <h2>註冊</h2>
                 <form onSubmit={handleSubmit(() => {
-                  console.log(1);
+                  const data: { [key: string]: string } = registerData;
+                  const dataKeys = Object.keys(data);
+                  dataKeys.forEach((key) => { data[key] = data[key].trim(); });
+                  registerTrigger(data as Required<Pick<IUser, 'username' | 'email' | 'password'>>);
                 })}
                 >
                   <InputGroup errors={errors.username}>

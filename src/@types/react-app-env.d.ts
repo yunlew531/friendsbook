@@ -21,3 +21,11 @@ interface IUser {
   email?: string;
   password?: string;
 }
+
+interface IErrorResult {
+  data: {
+    message: string;
+    code: number;
+  }
+  status: number;
+}
