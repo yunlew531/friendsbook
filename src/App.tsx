@@ -3,6 +3,7 @@ import { ThemeProvider } from '@emotion/react';
 import { useRoutes } from 'react-router-dom';
 import theme from 'styleSheets/theme';
 import styled from '@emotion/styled';
+import { Toaster } from 'react-hot-toast';
 import routes from './routes';
 
 const Wrap = styled.div`
@@ -19,6 +20,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={currentTheme}>
       <Wrap>
+        <Toaster />
         {element}
       </Wrap>
     </ThemeProvider>

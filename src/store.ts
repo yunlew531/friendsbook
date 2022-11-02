@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { accountApi } from 'services/account';
 import userInfoReducer from './slices/userInfoSlice';
 
 export const store = configureStore({
   reducer: {
+    [accountApi.reducerPath]: accountApi.reducer,
     userInfo: userInfoReducer,
   },
 });

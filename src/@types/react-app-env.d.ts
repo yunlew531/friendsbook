@@ -14,3 +14,10 @@ interface INavLink {
   title: string;
   to: string;
 }
+
+interface IUser {
+  uid?: string;
+  username?: string;
+  email?: string;
+  password?: string;
+}

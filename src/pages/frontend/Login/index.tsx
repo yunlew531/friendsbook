@@ -1,7 +1,13 @@
 import styled from '@emotion/styled';
 import Card from 'components/Card';
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  FieldError, FieldErrorsImpl, Merge, useForm,
+} from 'react-hook-form';
+import { useLoginMutation } from 'services/account';
+import toast from 'react-hot-toast';
+import Cookies from 'js-cookie';
 
 const Wrap = styled.div<IThemeProps>`
   min-height: 100vh;
@@ -52,20 +58,31 @@ const CardContainer = styled.div`
   margin-left: 150px;
 `;
 
-const CardDefault = styled(Card)<IThemeProps>`
+const LoginAndRegisterCard = styled(Card)<IThemeProps>`
   border-radius: 20px;
   box-shadow: ${({ theme }) => theme.shadow.s};
   padding: 55px 50px;
   h2 {
     margin-bottom: 30px;
   }
+`;
+
+interface IInputGroupProps {
+  errors?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;
+}
+
+const InputGroup = styled.div<IThemeProps & IInputGroupProps>`
+  height: 65px;
   input {
-    display: block;
     width: 100%;
-    border: 1px solid ${({ theme }) => theme.color.gray_100};
+    border: 1px solid ${({ errors, theme }) => (errors ? 'transparent' : theme.color.gray_100)};
+    outline: 1px solid ${({ errors, theme }) => (errors ? theme.color.red_100 : 'none')};
     border-radius: 5px;
-    margin-bottom: 15px;
     padding: 10px 15px;
+  }
+  .error-msg {
+    font-size: ${({ theme }) => theme.fontSizes.fs_5};
+    color: ${({ theme }) => theme.color.red_100};
   }
 `;
 
@@ -109,9 +126,39 @@ const ImmediateBtn = styled.button<IThemeProps>`
 type CurrentCardDisplay = 'login' | 'register';
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const [currentCardDisplay, setCurrentCardDisplay] = useState<CurrentCardDisplay>('login');
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({ email: '', password: '', username: '' });
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const [login, loginResult] = useLoginMutation();
+
+  useEffect(() => {
+    const { isSuccess, error, data } = loginResult;
+    enum LoginError {
+      '信箱必須填寫' = 1,
+      '密碼必須填寫' = 2,
+      '密碼至少要6字' = 3,
+      '用戶不存在，請檢查信箱是否正確' = 4,
+      '密碼錯誤' = 5,
+    }
+
+    if (isSuccess) {
+      const { token } = data;
+      Cookies.set('Friendsbook', token);
+      navigate('/');
+    } else if (error && 'data' in error) {
+      toast.error(LoginError[error.data.code]);
+    }
+  }, [loginResult]);
+
+  // '此信箱已註冊過' = 1,
+  // '用戶名必須填寫' = 2,
+  // '信箱必須填寫' = 3,
+  // '密碼必須填寫' = 4,
+  // '信箱格式錯誤' = 6,
+  // '用戶名至少要2字' = 8,
+  // '密碼至少要6字' = 9,
 
   return (
     <Wrap>
@@ -126,26 +173,36 @@ const Login: React.FC = () => {
         <CardContainer>
           {currentCardDisplay === 'login'
             ? (
-              <CardDefault>
+              <LoginAndRegisterCard>
                 <h2>登入</h2>
-                <input
-                  type="email"
-                  placeholder="請輸入 Email"
-                  value={loginData.email}
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>,
-                  ) => setLoginData((prev) => ({ ...prev, email: e.target.value }))}
-                />
-                <input
-                  type="password"
-                  placeholder="請輸入密碼"
-                  value={loginData.password}
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>,
-                  ) => setLoginData((prev) => ({ ...prev, password: e.target.value }))}
-                />
-                <ForgetPwdLink to="/login/reset">忘記密碼了嗎?</ForgetPwdLink>
-                <Btn type="button">登入</Btn>
+                <form onSubmit={handleSubmit(() => login(loginData))}>
+                  <InputGroup errors={errors.loginEmail}>
+                    <input
+                      type="email"
+                      placeholder="請輸入 Email"
+                      value={loginData.email}
+                      {...register('loginEmail', { required: 'Email 為必填!' })}
+                      onChange={(
+                        e: React.ChangeEvent<HTMLInputElement>,
+                      ) => setLoginData((prev) => ({ ...prev, email: e.target.value }))}
+                    />
+                    {errors.loginEmail && <span className="error-msg">{errors.loginEmail.message as string}</span>}
+                  </InputGroup>
+                  <InputGroup errors={errors.loginPassword}>
+                    <input
+                      type="password"
+                      placeholder="請輸入密碼"
+                      value={loginData.password}
+                      {...register('loginPassword', { required: '密碼為必填!', minLength: { value: 6, message: '至少要6個字!' } })}
+                      onChange={(
+                        e: React.ChangeEvent<HTMLInputElement>,
+                      ) => setLoginData((prev) => ({ ...prev, password: e.target.value }))}
+                    />
+                    {errors.loginPassword && <span className="error-msg">{errors.loginPassword.message as string}</span>}
+                  </InputGroup>
+                  <ForgetPwdLink to="/login/reset">忘記密碼了嗎?</ForgetPwdLink>
+                  <Btn type="submit">登入</Btn>
+                </form>
                 <CardFooter>
                   <p>還沒有帳戶?</p>
                   <ImmediateBtn
@@ -154,36 +211,53 @@ const Login: React.FC = () => {
                   >立即註冊
                   </ImmediateBtn>
                 </CardFooter>
-              </CardDefault>
+              </LoginAndRegisterCard>
             )
             : (
-              <CardDefault>
+              <LoginAndRegisterCard>
                 <h2>註冊</h2>
-                <input
-                  type="text"
-                  placeholder="請輸入暱稱"
-                  value={registerData.username}
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>,
-                  ) => setRegisterData((prev) => ({ ...prev, username: e.target.value }))}
-                />
-                <input
-                  type="email"
-                  placeholder="請輸入 Email"
-                  value={registerData.email}
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>,
-                  ) => setRegisterData((prev) => ({ ...prev, email: e.target.value }))}
-                />
-                <input
-                  type="password"
-                  placeholder="請輸入密碼"
-                  value={registerData.password}
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>,
-                  ) => setRegisterData((prev) => ({ ...prev, password: e.target.value }))}
-                />
-                <RegisterBtn type="button">註冊</RegisterBtn>
+                <form onSubmit={handleSubmit(() => {
+                  console.log(1);
+                })}
+                >
+                  <InputGroup errors={errors.username}>
+                    <input
+                      type="text"
+                      placeholder="請輸入暱稱"
+                      value={registerData.username}
+                      {...register('username', { required: '暱稱為必填!', minLength: { value: 2, message: '至少要2個字!' } })}
+                      onChange={(
+                        e: React.ChangeEvent<HTMLInputElement>,
+                      ) => setRegisterData((prev) => ({ ...prev, username: e.target.value }))}
+                    />
+                    {errors.username && <span className="error-msg">{errors.username.message as string}</span>}
+                  </InputGroup>
+                  <InputGroup errors={errors.registerEmail}>
+                    <input
+                      type="email"
+                      placeholder="請輸入 Email"
+                      value={registerData.email}
+                      {...register('registerEmail', { required: 'Email 為必填!' })}
+                      onChange={(
+                        e: React.ChangeEvent<HTMLInputElement>,
+                      ) => setRegisterData((prev) => ({ ...prev, email: e.target.value }))}
+                    />
+                    {errors.registerEmail && <span className="error-msg">{errors.registerEmail.message as string}</span>}
+                  </InputGroup>
+                  <InputGroup errors={errors.registerPassword}>
+                    <input
+                      type="password"
+                      placeholder="請輸入密碼"
+                      value={registerData.password}
+                      {...register('registerPassword', { required: '密碼為必填!', minLength: { value: 6, message: '至少要6個字!' } })}
+                      onChange={(
+                        e: React.ChangeEvent<HTMLInputElement>,
+                      ) => setRegisterData((prev) => ({ ...prev, password: e.target.value }))}
+                    />
+                    {errors.registerPassword && <span className="error-msg">{errors.registerPassword.message as string}</span>}
+                  </InputGroup>
+                  <RegisterBtn type="submit">註冊</RegisterBtn>
+                </form>
                 <CardFooter>
                   <p>已經擁有帳戶?</p>
                   <ImmediateBtn
@@ -192,7 +266,7 @@ const Login: React.FC = () => {
                   >點此登入
                   </ImmediateBtn>
                 </CardFooter>
-              </CardDefault>
+              </LoginAndRegisterCard>
             )}
         </CardContainer>
       </MainSection>
