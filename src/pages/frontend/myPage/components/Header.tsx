@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import Btn from 'components/Btn';
+import { useAppSelector } from 'hooks';
 import Notifications from './Notifications';
 
 const Wrap = styled.header<IThemeProps>`
@@ -32,6 +33,9 @@ const Nav = styled.nav<IThemeProps>`
     background-color: ${({ theme }) => theme.color.white_100};
     cursor: default;
     padding: 0 20px 2px;
+    &.login-btn {
+      color: ${({ theme }) => theme.color.primary};
+    }
     &.active {
       color: ${({ theme }) => theme.color.primary};
       border-top: 2px solid ${({ theme }) => theme.color.primary};
@@ -122,6 +126,7 @@ const NotificationNum = styled.p<IThemeProps>`
 `;
 
 const Header: React.FC = () => {
+  const userInfo = useAppSelector((state) => state.userInfo);
   const [isNotificationShow, setIsNotificationShow] = useState(false);
 
   useEffect(() => {
@@ -140,24 +145,29 @@ const Header: React.FC = () => {
     <Wrap>
       <div />
       <Nav>
-        <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>首頁</NavLink>
-        <NoticeContainer isNotificationShow={isNotificationShow} className="notice-container">
-          <button
-            type="button"
-            className="notice-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsNotificationShow(!isNotificationShow);
-            }}
-          >
-            通知
-            <NotificationNum>30</NotificationNum>
-          </button>
-          <Notifications isNotificationShow={isNotificationShow} />
-        </NoticeContainer>
-        <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? 'active' : '')}>聊天室</NavLink>
-        <NavLink to="/clubs" className={({ isActive }) => (isActive ? 'active' : '')}>社團</NavLink>
-        <NavLink to="/fans" className={({ isActive }) => (isActive ? 'active' : '')}>粉絲專頁</NavLink>
+        {
+          userInfo.uid ? (
+            <><NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>首頁</NavLink>
+              <NoticeContainer isNotificationShow={isNotificationShow} className="notice-container">
+                <button
+                  type="button"
+                  className="notice-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsNotificationShow(!isNotificationShow);
+                  }}
+                >
+                  通知
+                  <NotificationNum>30</NotificationNum>
+                </button>
+                <Notifications isNotificationShow={isNotificationShow} />
+              </NoticeContainer>
+              <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? 'active' : '')}>聊天室</NavLink>
+              <NavLink to="/clubs" className={({ isActive }) => (isActive ? 'active' : '')}>社團</NavLink>
+              <NavLink to="/fans" className={({ isActive }) => (isActive ? 'active' : '')}>粉絲專頁</NavLink>
+            </>
+          ) : <Link to="/login" className="login-btn">尚未登入，點擊登入</Link>
+        }
       </Nav>
       <HeaderRightSide>
         <SearchContainer>
@@ -166,7 +176,9 @@ const Header: React.FC = () => {
             <span className="material-icons-outlined search-icon">search</span>
           </SearchBtn>
         </SearchContainer>
-        <UserPhoto src="https://images.unsplash.com/photo-1612000529646-f424a2aa1bff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" />
+        {
+          userInfo.uid && <UserPhoto src="https://images.unsplash.com/photo-1612000529646-f424a2aa1bff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" />
+        }
       </HeaderRightSide>
     </Wrap>
   );

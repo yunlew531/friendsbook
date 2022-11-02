@@ -15,9 +15,9 @@ const rtkQueryErrorLogger: Middleware<{}, RootState> = () => (
   next: Dispatch<AnyAction>,
 ) => (action) => {
   if (isRejectedWithValue(action)) {
-    console.warn('%c--- middleware catch error ---', consoleStyle, action);
+    console.warn('%c middleware catch error ', consoleStyle, action);
     const { endpointName } = action.meta.arg;
-    const { code } = action.payload.data || {};
+    const { code } = action.payload.data;
     let errMsg = '';
     // 登入錯誤
     if (endpointName === 'login') errMsg = LoginError[code];
@@ -26,8 +26,9 @@ const rtkQueryErrorLogger: Middleware<{}, RootState> = () => (
 
     if (errMsg) toast.error(errMsg);
     console.warn(action.payload.status, 'status code');
-    console.warn('%c 錯誤訊息 ', consoleStyle2, action.payload.data?.message, 'error code', code);
-    console.warn('%c--- middleware end ---', consoleStyle);
+    console.warn('%c 錯誤訊息 ', consoleStyle2, action.payload.data?.message);
+    console.warn('%c error code ', consoleStyle2, code);
+    console.warn('%c middleware end ', consoleStyle);
   }
   return next(action);
 };

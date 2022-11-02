@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { useRoutes } from 'react-router-dom';
 import theme from 'styleSheets/theme';
 import styled from '@emotion/styled';
 import { Toaster } from 'react-hot-toast';
+import { useCheckLoginQuery } from 'services/account';
+import { useAppDispatch } from 'hooks';
+import { updateUid } from 'slices/userInfoSlice';
 import routes from './routes';
 
 const Wrap = styled.div`
@@ -12,6 +15,14 @@ const Wrap = styled.div`
 
 const App: React.FC = () => {
   const element = useRoutes(routes);
+  const dispatch = useAppDispatch();
+  const { data, isSuccess } = useCheckLoginQuery(null);
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(updateUid(data.uid));
+    }
+  }, [data]);
 
   // TODO: 切換主題色功能
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

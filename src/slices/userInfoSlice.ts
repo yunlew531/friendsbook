@@ -6,7 +6,7 @@ export interface IUserInfoState {
 }
 
 const initialState: IUserInfoState = {
-  uid: 'uid test',
+  uid: '',
 };
 
 export const userInfoSlice = createSlice({

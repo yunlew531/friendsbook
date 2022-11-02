@@ -9,6 +9,8 @@ import { useLoginMutation } from 'services/account';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
 import { useRegisterMutation } from 'services/user';
+import { useAppDispatch } from 'hooks';
+import { updateUid } from 'slices/userInfoSlice';
 
 const Wrap = styled.div<IThemeProps>`
   min-height: 100vh;
@@ -128,11 +130,12 @@ type CurrentCardDisplay = 'login' | 'register';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [currentCardDisplay, setCurrentCardDisplay] = useState<CurrentCardDisplay>('login');
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({ email: '', password: '', username: '' });
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const [login, loginResult] = useLoginMutation();
+  const [loginTrigger, loginResult] = useLoginMutation();
   const [registerTrigger, registerResult] = useRegisterMutation();
 
   useEffect(() => {
@@ -141,6 +144,7 @@ const Login: React.FC = () => {
       if (isSuccess) {
         const { token } = data;
         Cookies.set('Friendsbook', token);
+        dispatch(updateUid(data.uid));
         navigate('/');
         toast.success('成功登入!');
       }
@@ -151,9 +155,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     const { isSuccess, isUninitialized } = registerResult;
-    const handleRegister = () => {
-      if (isSuccess) toast.success('註冊成功!');
-    };
+    const handleRegister = () => isSuccess && toast.success('註冊成功!');
 
     if (!isUninitialized) handleRegister();
   }, [registerResult]);
@@ -173,7 +175,7 @@ const Login: React.FC = () => {
             ? (
               <LoginAndRegisterCard>
                 <h2>登入</h2>
-                <form onSubmit={handleSubmit(() => login(loginData))}>
+                <form onSubmit={handleSubmit(() => loginTrigger(loginData))}>
                   <InputGroup errors={errors.loginEmail}>
                     <input
                       type="email"
