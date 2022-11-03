@@ -17,12 +17,13 @@ const SettingPanel = styled.div<IThemeProps>`
 
 const Title = styled.h3<IThemeProps>`
   font-size: ${({ theme }) => theme.fontSizes.fs_1};
-  border-bottom: 1px solid ${({ theme }) => theme.color.gray_300};
   padding-bottom: 10px;
 `;
 
-const SettingList = styled.ul`
+const SettingList = styled.ul<IThemeProps>`
   list-style: none;
+  border-top: 1px solid ${({ theme }) => theme.color.gray_300};
+  border-bottom: 1px solid ${({ theme }) => theme.color.gray_300};
   margin: 0;
 `;
 
