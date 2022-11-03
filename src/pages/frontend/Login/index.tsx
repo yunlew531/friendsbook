@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
 import { useRegisterMutation } from 'services/user';
 import { useAppDispatch } from 'hooks';
-import { updateUid } from 'slices/userInfoSlice';
+import { login } from 'slices/userInfoSlice';
 
 const Wrap = styled.div<IThemeProps>`
   min-height: 100vh;
@@ -143,8 +143,11 @@ const Login: React.FC = () => {
     const handleLogin = () => {
       if (isSuccess) {
         const { token } = data;
-        Cookies.set('Friendsbook', token);
-        dispatch(updateUid(data.uid));
+        Cookies.set('Friendsbook', token, { expires: 7 });
+        dispatch(login({
+          uid: data.uid,
+          isLogin: true,
+        }));
         navigate('/');
         toast.success('成功登入!');
       }

@@ -166,7 +166,7 @@ const Header: React.FC = () => {
               <NavLink to="/clubs" className={({ isActive }) => (isActive ? 'active' : '')}>社團</NavLink>
               <NavLink to="/fans" className={({ isActive }) => (isActive ? 'active' : '')}>粉絲專頁</NavLink>
             </>
-          ) : <Link to="/login" className="login-btn">尚未登入，點擊登入</Link>
+          ) : <Link to="/login" className="login-btn">您尚未登入，點選這裡登入</Link>
         }
       </Nav>
       <HeaderRightSide>

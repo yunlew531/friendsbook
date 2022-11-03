@@ -6,7 +6,7 @@ import styled from '@emotion/styled';
 import { Toaster } from 'react-hot-toast';
 import { useCheckLoginQuery } from 'services/account';
 import { useAppDispatch } from 'hooks';
-import { updateUid } from 'slices/userInfoSlice';
+import { login } from 'slices/userInfoSlice';
 import routes from './routes';
 
 const Wrap = styled.div`
@@ -20,7 +20,10 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      dispatch(updateUid(data.uid));
+      dispatch(login({
+        uid: data.uid,
+        isLogin: true,
+      }));
     }
   }, [data]);
 

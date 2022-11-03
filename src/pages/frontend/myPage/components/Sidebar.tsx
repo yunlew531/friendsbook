@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import { Link } from 'react-router-dom';
 
 const Wrap = styled.aside<IThemeProps>`
   position: fixed;
@@ -12,6 +13,7 @@ const Wrap = styled.aside<IThemeProps>`
   flex-direction: column;
   align-items: center;
   background-color: ${({ theme }) => theme.cardColor};
+  box-shadow: ${({ theme }) => theme.shadow.m};
 `;
 
 const FriendsIcon = styled.img`
@@ -41,9 +43,10 @@ const AsideListItem = styled.li<IThemeProps>`
   }
 `;
 
-const SettingBtn = styled.button<IThemeProps>`
+const SettingsPageLink = styled(Link)<IThemeProps>`
   display: flex;
   align-items: center;
+  text-decoration: none;
   border-radius: 100%;
   box-shadow: ${({ theme }) => theme.shadow.m};
   border: 1px solid ${({ theme }) => theme.color.white_100};
@@ -80,9 +83,9 @@ const SideBar: React.FC = () => {
           <span className="material-icons-outlined">groups</span>
         </AsideListItem>
       </AsideList>
-      <SettingBtn type="button">
+      <SettingsPageLink to="/settings/general">
         <span className="material-icons-outlined settings-icon">settings</span>
-      </SettingBtn>
+      </SettingsPageLink>
     </Wrap>
   );
 };

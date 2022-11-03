@@ -25,7 +25,7 @@ const rtkQueryErrorLogger: Middleware<{}, RootState> = () => (
     if (endpointName === 'register') errMsg = RegisterError[code];
 
     if (errMsg) toast.error(errMsg);
-    console.warn(action.payload.status, 'status code');
+    console.warn('%c status ', consoleStyle2, action.payload.status);
     console.warn('%c 錯誤訊息 ', consoleStyle2, action.payload.data?.message);
     console.warn('%c error code ', consoleStyle2, code);
     console.warn('%c middleware end ', consoleStyle);
