@@ -137,7 +137,7 @@ const Login: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [loginTrigger, loginResult] = useLoginMutation();
   const [registerTrigger, registerResult] = useRegisterMutation();
-  const [getUserByUidTrigger] = useLazyGetUserByUidQuery();
+  const [getUserByUidTrigger, userResult] = useLazyGetUserByUidQuery();
 
   useEffect(() => {
     const { isSuccess, data, isUninitialized } = loginResult;
@@ -145,16 +145,20 @@ const Login: React.FC = () => {
       if (isSuccess) {
         const { token } = data;
         Cookies.set('Friendsbook', token, { expires: 7 });
-        getUserByUidTrigger('owner').then((res) => {
-          if (res.data?.profile) dispatch(getProfile(res.data?.profile));
-        });
-        navigate('/');
-        toast.success('成功登入!');
+        getUserByUidTrigger();
       }
     };
 
     if (!isUninitialized) handleLogin();
   }, [loginResult]);
+
+  useEffect(() => {
+    if (userResult.isSuccess) {
+      dispatch(getProfile(userResult.data.profile));
+      navigate('/');
+      toast.success('成功登入!');
+    }
+  }, [userResult]);
 
   useEffect(() => {
     const { isSuccess, isUninitialized } = registerResult;

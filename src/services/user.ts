@@ -30,7 +30,7 @@ export const userApi = createApi({
         body,
       }),
     }),
-    getUserByUid: builder.query<IGetProfileByUidResponse, string | 'owner'>({
+    getUserByUid: builder.query<IGetProfileByUidResponse, string | void>({
       query: (uid) => `/user/${uid}`,
     }),
   }),

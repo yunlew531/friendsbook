@@ -23,7 +23,7 @@ const App: React.FC = () => {
     const checkLogin = () => {
       const hasToken = Cookies.get('Friendsbook');
       if (!hasToken) return;
-      getUserByUidTrigger('owner');
+      getUserByUidTrigger();
     };
 
     checkLogin();
