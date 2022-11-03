@@ -8,9 +8,9 @@ import {
 import { useLoginMutation } from 'services/account';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
-import { useRegisterMutation } from 'services/user';
+import { useLazyGetUserByUidQuery, useRegisterMutation } from 'services/user';
 import { useAppDispatch } from 'hooks';
-import { login } from 'slices/userInfoSlice';
+import { getProfile } from 'slices/userInfoSlice';
 
 const Wrap = styled.div<IThemeProps>`
   min-height: 100vh;
@@ -137,6 +137,7 @@ const Login: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [loginTrigger, loginResult] = useLoginMutation();
   const [registerTrigger, registerResult] = useRegisterMutation();
+  const [getUserByUidTrigger] = useLazyGetUserByUidQuery();
 
   useEffect(() => {
     const { isSuccess, data, isUninitialized } = loginResult;
@@ -144,10 +145,9 @@ const Login: React.FC = () => {
       if (isSuccess) {
         const { token } = data;
         Cookies.set('Friendsbook', token, { expires: 7 });
-        dispatch(login({
-          uid: data.uid,
-          isLogin: true,
-        }));
+        getUserByUidTrigger('owner').then((res) => {
+          if (res.data?.profile) dispatch(getProfile(res.data?.profile));
+        });
         navigate('/');
         toast.success('成功登入!');
       }
@@ -223,7 +223,7 @@ const Login: React.FC = () => {
                   const data: { [key: string]: string } = registerData;
                   const dataKeys = Object.keys(data);
                   dataKeys.forEach((key) => { data[key] = data[key].trim(); });
-                  registerTrigger(data as Required<Pick<IUser, 'username' | 'email' | 'password'>>);
+                  registerTrigger(data as Required<Pick<IProfile, 'username' | 'email' | 'password'>>);
                 })}
                 >
                   <InputGroup errors={errors.username}>

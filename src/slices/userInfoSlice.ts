@@ -2,12 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 export interface IUserInfoState {
-  uid: string;
   isLogin: boolean;
+  profile: IProfile;
 }
 
 const initialState: IUserInfoState = {
-  uid: '',
+  profile: {},
   isLogin: false,
 };
 
@@ -15,13 +15,15 @@ export const userInfoSlice = createSlice({
   name: 'userInfo',
   initialState,
   reducers: {
-    login(state, { payload }: PayloadAction<Pick<IUserInfoState, 'uid' | 'isLogin'>>) {
-      state.uid = payload.uid;
-      state.isLogin = payload.isLogin;
+    getProfile(state, { payload }: PayloadAction<IProfile>) {
+      state.profile = {
+        ...payload,
+      };
+      state.isLogin = true;
     },
   },
 });
 
-export const { login } = userInfoSlice.actions;
+export const { getProfile } = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;

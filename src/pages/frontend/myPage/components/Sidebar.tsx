@@ -68,7 +68,9 @@ const SettingsPageLink = styled(Link)<IThemeProps>`
 const SideBar: React.FC = () => {
   return (
     <Wrap>
-      <FriendsIcon src={`${process.env.PUBLIC_URL}/images/friends.png`} />
+      <Link to="/">
+        <FriendsIcon src={`${process.env.PUBLIC_URL}/images/friends.png`} />
+      </Link>
       <AsideList>
         <AsideListItem>
           <span className="material-icons-outlined">calendar_month</span>

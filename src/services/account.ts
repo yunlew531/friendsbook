@@ -17,19 +17,20 @@ export const accountApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_URL,
     prepareHeaders: (headers) => {
-      headers.set('authorization', `Bearer ${Cookies.get('Friendsbook') as string}`);
+      const token = Cookies.get('Friendsbook');
+      if (token) headers.set('authorization', `Bearer ${Cookies.get('Friendsbook')}`);
       return headers;
     },
   }),
   endpoints: (builder) => ({
-    login: builder.mutation<ILoginResponse, Required<Pick<IUser, 'email' | 'password'>>>({
+    login: builder.mutation<ILoginResponse, Required<Pick<IProfile, 'email' | 'password'>>>({
       query: (body) => ({
         url: '/account',
         method: 'POST',
         body,
       }),
     }),
-    checkLogin: builder.query<ICheckLoginResponse, null>({
+    checkLogin: builder.query<ICheckLoginResponse, void>({
       query: () => '/account/check',
     }),
   }),

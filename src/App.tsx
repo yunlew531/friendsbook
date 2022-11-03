@@ -4,9 +4,10 @@ import { useRoutes } from 'react-router-dom';
 import theme from 'styleSheets/theme';
 import styled from '@emotion/styled';
 import { Toaster } from 'react-hot-toast';
-import { useCheckLoginQuery } from 'services/account';
 import { useAppDispatch } from 'hooks';
-import { login } from 'slices/userInfoSlice';
+import { getProfile } from 'slices/userInfoSlice';
+import { useLazyGetUserByUidQuery } from 'services/user';
+import Cookies from 'js-cookie';
 import routes from './routes';
 
 const Wrap = styled.div`
@@ -16,16 +17,21 @@ const Wrap = styled.div`
 const App: React.FC = () => {
   const element = useRoutes(routes);
   const dispatch = useAppDispatch();
-  const { data, isSuccess } = useCheckLoginQuery(null);
+  const [getUserByUidTrigger, userResult] = useLazyGetUserByUidQuery();
 
   useEffect(() => {
-    if (isSuccess) {
-      dispatch(login({
-        uid: data.uid,
-        isLogin: true,
-      }));
-    }
-  }, [data]);
+    const checkLogin = () => {
+      const hasToken = Cookies.get('Friendsbook');
+      if (!hasToken) return;
+      getUserByUidTrigger('owner');
+    };
+
+    checkLogin();
+  }, []);
+
+  useEffect(() => {
+    if (userResult.isSuccess) { dispatch(getProfile(userResult.data.profile)); }
+  }, [userResult]);
 
   // TODO: 切換主題色功能
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

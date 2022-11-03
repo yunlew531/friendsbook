@@ -15,7 +15,7 @@ interface INavLink {
   to: string;
 }
 
-interface IUser {
+interface IProfile {
   uid?: string;
   username?: string;
   email?: string;

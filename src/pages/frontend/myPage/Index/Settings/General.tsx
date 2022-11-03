@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
+import { useAppSelector } from 'hooks';
 import React from 'react';
 
 const Wrap = styled.div`
@@ -154,6 +155,8 @@ const AddEmailBtn = styled(Btn)<IThemeProps>`
 
 // eslint-disable-next-line arrow-body-style
 const General: React.FC = () => {
+  const profile = useAppSelector((state) => state.userInfo.profile);
+
   return (
     <Wrap>
       <SettingPanel>
@@ -163,7 +166,7 @@ const General: React.FC = () => {
             <SettingItemContent>
               <SettingItemTitle>姓名</SettingItemTitle>
               <SettingItemMain>
-                <p>王小花</p>
+                <p>{profile.username}</p>
               </SettingItemMain>
               <EditButton type="button">
                 <span className="material-icons-outlined">settings</span>
@@ -181,7 +184,7 @@ const General: React.FC = () => {
             <SettingItemContent>
               <SettingItemTitle>聯絡資料</SettingItemTitle>
               <SettingItemMain>
-                <p>aaa@gmail.com</p>
+                <p>{profile.email}</p>
               </SettingItemMain>
               <EditButton type="button">
                 <span className="material-icons-outlined">settings</span>
@@ -190,7 +193,7 @@ const General: React.FC = () => {
             <SettingItemEditPanel>
               <SettingItemEditPanelTitle>聯絡資料</SettingItemEditPanelTitle>
               <SettingItemMain>
-                <p>aaa@gmail.com <span className="main-email-span">(主要)</span></p>
+                <p>{profile.email} <span className="main-email-span">(主要)</span></p>
                 <EmailList>
                   <EmailItem>
                     <SettingItemEditPanelInput value="aaa@gmail.com" onChange={() => {}} />

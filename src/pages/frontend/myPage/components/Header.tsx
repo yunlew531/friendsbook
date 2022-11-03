@@ -146,7 +146,7 @@ const Header: React.FC = () => {
       <div />
       <Nav>
         {
-          userInfo.uid ? (
+          userInfo.isLogin ? (
             <><NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>首頁</NavLink>
               <NoticeContainer isNotificationShow={isNotificationShow} className="notice-container">
                 <button
@@ -177,7 +177,7 @@ const Header: React.FC = () => {
           </SearchBtn>
         </SearchContainer>
         {
-          userInfo.uid && <UserPhoto src="https://images.unsplash.com/photo-1612000529646-f424a2aa1bff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" />
+          userInfo.isLogin && <UserPhoto src="https://images.unsplash.com/photo-1612000529646-f424a2aa1bff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" />
         }
       </HeaderRightSide>
     </Wrap>
