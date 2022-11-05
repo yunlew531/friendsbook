@@ -6,7 +6,7 @@ import styled from '@emotion/styled';
 import { Toaster } from 'react-hot-toast';
 import { useAppDispatch } from 'hooks';
 import { getProfile } from 'slices/userInfoSlice';
-import { useLazyGetUserByUidQuery } from 'services/user';
+import { useLazyGetUserByTokenQuery } from 'services/user';
 import Cookies from 'js-cookie';
 import routes from './routes';
 
@@ -17,13 +17,13 @@ const Wrap = styled.div`
 const App: React.FC = () => {
   const element = useRoutes(routes);
   const dispatch = useAppDispatch();
-  const [getUserByUidTrigger, userResult] = useLazyGetUserByUidQuery();
+  const [getUserByTokenTrigger, userResult] = useLazyGetUserByTokenQuery();
 
   useEffect(() => {
     const checkLogin = () => {
       const hasToken = Cookies.get('Friendsbook');
       if (!hasToken) return;
-      getUserByUidTrigger();
+      getUserByTokenTrigger();
     };
 
     checkLogin();

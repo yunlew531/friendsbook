@@ -4,7 +4,7 @@ import {
   Dispatch,
   AnyAction,
 } from '@reduxjs/toolkit';
-import { LoginError, RegisterError } from 'types/enums';
+import { LoginError, RegisterError, UploadImgError } from 'types/enums';
 import toast from 'react-hot-toast';
 import { RootState } from 'store';
 
@@ -23,6 +23,8 @@ const rtkQueryErrorLogger: Middleware<{}, RootState> = () => (
     if (endpointName === 'login') errMsg = LoginError[code];
     // 註冊錯誤
     if (endpointName === 'register') errMsg = RegisterError[code];
+    // 圖片上傳錯誤
+    if (endpointName === 'uploadImg') errMsg = UploadImgError[code];
 
     if (errMsg) toast.error(errMsg);
     console.warn('%c status ', consoleStyle2, action.payload.status);

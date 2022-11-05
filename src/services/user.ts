@@ -12,7 +12,7 @@ interface IGetProfileByUidResponse {
   profile: IProfile;
 }
 
-export const userApi = createApi({
+const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_URL,
@@ -30,14 +30,16 @@ export const userApi = createApi({
         body,
       }),
     }),
-    getUserByUid: builder.query<IGetProfileByUidResponse, string | void>({
-      query: (uid) => `/user/${uid}`,
+    getUserByToken: builder.query<IGetProfileByUidResponse, void>({
+      query: () => '/auth/user',
     }),
   }),
 });
 
 export const {
   useRegisterMutation,
-  useGetUserByUidQuery,
-  useLazyGetUserByUidQuery,
+  useGetUserByTokenQuery,
+  useLazyGetUserByTokenQuery,
 } = userApi;
+
+export default userApi;

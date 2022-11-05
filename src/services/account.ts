@@ -12,7 +12,7 @@ interface ICheckLoginResponse {
   uid: string;
 }
 
-export const accountApi = createApi({
+const accountApi = createApi({
   reducerPath: 'accountApi',
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_URL,
@@ -24,14 +24,14 @@ export const accountApi = createApi({
   }),
   endpoints: (builder) => ({
     login: builder.mutation<ILoginResponse, Required<Pick<IProfile, 'email' | 'password'>>>({
-      query: (body) => ({
-        url: '/account',
+      query: (user) => ({
+        url: '/account/login',
         method: 'POST',
-        body,
+        body: user,
       }),
     }),
     checkLogin: builder.query<ICheckLoginResponse, void>({
-      query: () => '/account/check',
+      query: () => '/auth/check',
     }),
   }),
 });
@@ -40,3 +40,5 @@ export const {
   useLoginMutation,
   useCheckLoginQuery,
 } = accountApi;
+
+export default accountApi;

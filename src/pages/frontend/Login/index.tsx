@@ -8,7 +8,7 @@ import {
 import { useLoginMutation } from 'services/account';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
-import { useLazyGetUserByUidQuery, useRegisterMutation } from 'services/user';
+import { useLazyGetUserByTokenQuery, useRegisterMutation } from 'services/user';
 import { useAppDispatch } from 'hooks';
 import { getProfile } from 'slices/userInfoSlice';
 
@@ -137,7 +137,7 @@ const Login: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [loginTrigger, loginResult] = useLoginMutation();
   const [registerTrigger, registerResult] = useRegisterMutation();
-  const [getUserByUidTrigger, userResult] = useLazyGetUserByUidQuery();
+  const [getUserByTokenTrigger, userResult] = useLazyGetUserByTokenQuery();
 
   useEffect(() => {
     const { isSuccess, data, isUninitialized } = loginResult;
@@ -145,7 +145,7 @@ const Login: React.FC = () => {
       if (isSuccess) {
         const { token } = data;
         Cookies.set('Friendsbook', token, { expires: 7 });
-        getUserByUidTrigger();
+        getUserByTokenTrigger();
       }
     };
 

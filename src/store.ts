@@ -1,13 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { accountApi } from 'services/account';
-import { userApi } from 'services/user';
+import accountApi from 'services/account';
+import userApi from 'services/user';
 import rtkQueryErrorLogger from 'middleware';
+import imageApi from 'services/image';
 import { combineReducers } from 'redux';
 import userInfoReducer from './slices/userInfoSlice';
 
 const reducers = combineReducers({
   [accountApi.reducerPath]: accountApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
+  [imageApi.reducerPath]: imageApi.reducer,
   userInfo: userInfoReducer,
 });
 
@@ -16,6 +18,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) => getDefaultMiddleware()
     .concat(accountApi.middleware)
     .concat(userApi.middleware)
+    .concat(imageApi.middleware)
     .concat(rtkQueryErrorLogger),
 });
 

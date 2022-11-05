@@ -1,0 +1,28 @@
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import Cookies from 'js-cookie';
+
+const imageApi = createApi({
+  reducerPath: 'imageApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${process.env.REACT_APP_URL}/auth`,
+    prepareHeaders(headers) {
+      headers.set('Authorization', `Bearer ${Cookies.get('Friendsbook')}`);
+      return headers;
+    },
+  }),
+  endpoints: (builder) => ({
+    uploadImg: builder.mutation({
+      query: (formData: FormData) => ({
+        url: '/image/upload',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
+  }),
+});
+
+export const {
+  useUploadImgMutation,
+} = imageApi;
+
+export default imageApi;

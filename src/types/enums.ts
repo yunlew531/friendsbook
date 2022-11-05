@@ -15,3 +15,7 @@ export enum RegisterError {
   '用戶名至少要2字' = 8,
   '密碼至少要6字' = 9,
 }
+
+export enum UploadImgError {
+  '只能上傳 jpeg、jpg 格式' = 1,
+}
