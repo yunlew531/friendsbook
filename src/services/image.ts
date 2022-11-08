@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import Cookies from 'js-cookie';
 
+interface IUploadImgResponse {
+  message: string;
+  url: string;
+}
+
 const imageApi = createApi({
   reducerPath: 'imageApi',
   baseQuery: fetchBaseQuery({
@@ -11,8 +16,8 @@ const imageApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    uploadImg: builder.mutation({
-      query: (formData: FormData) => ({
+    uploadImg: builder.mutation<IUploadImgResponse, FormData>({
+      query: (formData) => ({
         url: '/image/upload',
         method: 'POST',
         body: formData,

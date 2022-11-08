@@ -3,8 +3,13 @@ import styled from '@emotion/styled';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.bubble.css';
 import { Quill } from 'quill';
+// import { Quill, DeltaStatic } from 'quill';
+// import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
+
 import Card from 'components/Card';
 import { useUploadImgMutation } from 'services/image';
+import { usePublishArticleMutation } from 'services/article';
+import toast from 'react-hot-toast';
 
 const PublishPanelHeader = styled.div<IThemeProps>`
   display: flex;
@@ -98,6 +103,13 @@ const PublishPanel: React.FC = () => {
   const quill = useRef<Quill>();
   const [isPublishShow, setIsPublishShow] = useState(false);
   const [uploadImgTrigger, upLoadResult] = useUploadImgMutation();
+  const [publishArticleTrigger, publishResult] = usePublishArticleMutation();
+
+  // const convertArticle = (quillOps: DeltaStatic['ops']) => {
+  //   if (!quillOps) return;
+  //   const converter = new QuillDeltaToHtmlConverter(quillOps);
+  //   const html = converter.convert();
+  // };
 
   const uploadImg = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();
@@ -107,6 +119,20 @@ const PublishPanel: React.FC = () => {
     uploadImgTrigger(formData);
   };
 
+  const handlePublish = () => {
+    if (!quill.current) return;
+    const { ops = [] } = quill.current.getContents();
+    const isEmpty = !quill.current.getText().trim();
+    if (isEmpty) {
+      toast.error('需要填寫內容!');
+      return;
+    }
+    const article = {
+      content: ops,
+    };
+    publishArticleTrigger(article);
+  };
+
   useEffect(() => {
     quill.current = (reactQuillRef.current as unknown as ReactQuill).getEditor();
   }, []);
@@ -114,6 +140,14 @@ const PublishPanel: React.FC = () => {
   useEffect(() => {
     quill.current?.focus();
   }, [isPublishShow]);
+
+  useEffect(() => {
+    const { isSuccess } = publishResult;
+    if (isSuccess) {
+      quill.current?.setText('');
+      toast.success('發布成功!');
+    }
+  }, [publishResult]);
 
   useEffect(() => {
     const handleUploadImg = () => {
@@ -145,7 +179,7 @@ const PublishPanel: React.FC = () => {
           <span className="material-icons-outlined send-icon">file_upload</span>
           <input type="file" onChange={uploadImg} />
         </UploadImgBtnContainer>
-        <PublishBtn type="button">發佈
+        <PublishBtn type="button" onClick={handlePublish}>發佈
           <span className="material-icons-outlined send-icon">send</span>
         </PublishBtn>
       </PublicPanelFooter>

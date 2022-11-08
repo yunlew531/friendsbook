@@ -37,10 +37,17 @@ const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentTheme, setCurrentTheme] = useState(theme);
 
+  const toastOptions = {
+    style: {
+      border: '1px solid #D0D0D6',
+      fontWeight: 700,
+    },
+  };
+
   return (
     <ThemeProvider theme={currentTheme}>
       <Wrap>
-        <Toaster />
+        <Toaster toastOptions={toastOptions} containerStyle={{ marginTop: '60px' }} />
         {element}
       </Wrap>
     </ThemeProvider>

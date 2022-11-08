@@ -19,3 +19,7 @@ export enum RegisterError {
 export enum UploadImgError {
   '只能上傳 jpeg、jpg 格式' = 1,
 }
+
+export enum PublishArticleError {
+  '需要填寫內容!' = 2,
+}

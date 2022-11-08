@@ -4,12 +4,14 @@ import userApi from 'services/user';
 import rtkQueryErrorLogger from 'middleware';
 import imageApi from 'services/image';
 import { combineReducers } from 'redux';
+import articleApi from 'services/article';
 import userInfoReducer from './slices/userInfoSlice';
 
 const reducers = combineReducers({
   [accountApi.reducerPath]: accountApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [imageApi.reducerPath]: imageApi.reducer,
+  [articleApi.reducerPath]: articleApi.reducer,
   userInfo: userInfoReducer,
 });
 
@@ -19,6 +21,7 @@ const store = configureStore({
     .concat(accountApi.middleware)
     .concat(userApi.middleware)
     .concat(imageApi.middleware)
+    .concat(articleApi.middleware)
     .concat(rtkQueryErrorLogger),
 });
 

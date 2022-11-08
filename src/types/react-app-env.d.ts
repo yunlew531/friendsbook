@@ -22,6 +22,18 @@ interface IProfile {
   password?: string;
 }
 
+interface IArticle {
+  id?: string;
+  uid?: string;
+  content?: import('Quill').DeltaStatic['ops'];
+}
+
+interface IImage {
+  id: string;
+  url: string;
+  publish_at: string;
+}
+
 interface IErrorResult {
   data: {
     message: string;
