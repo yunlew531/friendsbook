@@ -5,14 +5,16 @@ import rtkQueryErrorLogger from 'middleware';
 import imageApi from 'services/image';
 import { combineReducers } from 'redux';
 import articleApi from 'services/article';
-import userInfoReducer from './slices/userInfoSlice';
+import articleReducer, { articlesSlice } from 'slices/articlesSlice';
+import userInfoReducer, { userInfoSlice } from './slices/userInfoSlice';
 
 const reducers = combineReducers({
   [accountApi.reducerPath]: accountApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [imageApi.reducerPath]: imageApi.reducer,
   [articleApi.reducerPath]: articleApi.reducer,
-  userInfo: userInfoReducer,
+  [userInfoSlice.name]: userInfoReducer,
+  [articlesSlice.name]: articleReducer,
 });
 
 const store = configureStore({

@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Card from 'components/Card';
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
+import dayjs from 'dayjs';
+import quillDeltaToHtml from 'utils/quillDeltaToHtml';
 
 const ArticleCard = styled(Card)<IThemeProps>`
   box-shadow: ${({ theme }) => theme.shadow.s};
@@ -60,10 +62,16 @@ const MoreBtn = styled.button<IThemeProps>`
   }
 `;
 
-const Content = styled.p`
+const Content = styled.div<IThemeProps>`
   line-height: 1.5;
   margin-bottom: 20px;
-  padding: 0 20px;
+  padding: 0 25px;
+  .ql-editor {
+    p {
+      font-size: ${({ theme }) => theme.fontSizes.fs_3};
+    }
+    padding: 0;
+  }
 `;
 
 const Footer = styled.div`
@@ -224,27 +232,39 @@ const SendMsgBtn = styled(Btn)<IThemeProps>`
 
 interface IArticleProps {
   sale?: boolean;
+  data?: IArticle;
 }
 
-// eslint-disable-next-line arrow-body-style
-const Article: React.FC<IArticleProps> = ({ sale }) => {
+const Article: React.FC<IArticleProps> = ({ sale, data }) => {
+  const { author, published_at: publishedAt, content } = data || {};
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const convertContent = () => {
+      if (!content) return;
+      const html = quillDeltaToHtml(content);
+      if (!html) return;
+      contentRef.current!.appendChild(html);
+    };
+
+    convertContent();
+  }, []);
+
   return (
     <li>
       <ArticleCard>
         <Header>
           <UserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
           <div>
-            <HeaderName>Miranda Shaffer</HeaderName>
-            <ArticleTime>June 21, 12:45 pm</ArticleTime>
+            <HeaderName>{author?.username}</HeaderName>
+            <ArticleTime>{dayjs((publishedAt || 0) * 1000).format('YYYY/MM/DD HH:mm:ss')}</ArticleTime>
           </div>
           <MoreBtn type="button">
             <span className="material-icons-outlined more-horiz-icon">more_horiz</span>
           </MoreBtn>
         </Header>
-        <Content>
-          Being a father is sometimes my hardest but always my most rewarding job.
-          Happy Father’s Day to all dads out there.
-        </Content>
+        <Content ref={contentRef} />
+        {/* <Content dangerouslySetInnerHTML={{ __html: convertQuillOpsToHtml(content) }} /> */}
         {
           sale && (
           <SalesDetail>
@@ -307,6 +327,7 @@ const Article: React.FC<IArticleProps> = ({ sale }) => {
 
 Article.defaultProps = {
   sale: false,
+  data: {},
 };
 
 export default Article;

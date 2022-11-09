@@ -20,7 +20,7 @@ const rtkQueryErrorLogger: Middleware<{}, RootState> = () => (
     console.warn('%c middleware catch error ', consoleStyle, action);
     const { endpointName } = action.meta.arg;
     const { code } = action.payload.data;
-    let errMsg = '發生錯誤!';
+    let errMsg;
     // 登入錯誤
     if (endpointName === 'login') errMsg = LoginError[code];
     // 註冊錯誤
@@ -30,7 +30,7 @@ const rtkQueryErrorLogger: Middleware<{}, RootState> = () => (
     // 文章發布錯誤
     if (endpointName === 'publishArticle') errMsg = PublishArticleError[code];
 
-    toast.error(errMsg);
+    toast.error(errMsg || '發生錯誤!');
     console.warn('%c status ', consoleStyle2, action.payload.status);
     console.warn('%c 錯誤訊息 ', consoleStyle2, action.payload.data?.message);
     console.warn('%c error code ', consoleStyle2, code);

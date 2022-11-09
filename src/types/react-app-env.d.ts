@@ -24,8 +24,12 @@ interface IProfile {
 
 interface IArticle {
   id?: string;
-  uid?: string;
-  content?: import('Quill').DeltaStatic['ops'];
+  content?: import('Quill').DeltaOperation[];
+  published_at?: number;
+  author?: {
+    id: string;
+    username: string;
+  }
 }
 
 interface IImage {

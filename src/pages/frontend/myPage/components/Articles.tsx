@@ -1,6 +1,7 @@
 import React from 'react';
 import Article from 'pages/frontend/MyPage/components/Article';
 import styled from '@emotion/styled';
+import { useAppSelector } from 'hooks';
 
 const ArticleList = styled.ul`
   list-style: none;
@@ -10,14 +11,12 @@ interface IArticlesProps {
   sale?: boolean;
 }
 
-// eslint-disable-next-line arrow-body-style
 const Articles: React.FC<IArticlesProps> = ({ sale }) => {
+  const articles = useAppSelector((state) => state.articles.articles);
+
   return (
     <ArticleList>
-      {
-        // eslint-disable-next-line react/no-array-index-key
-      new Array(10).fill(null).map((item, idx) => <Article sale={sale} key={idx} />)
-}
+      {articles?.map((article) => <Article key={article.id} sale={sale} data={article} />)}
     </ArticleList>
   );
 };

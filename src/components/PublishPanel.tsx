@@ -3,9 +3,6 @@ import styled from '@emotion/styled';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.bubble.css';
 import { Quill } from 'quill';
-// import { Quill, DeltaStatic } from 'quill';
-// import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
-
 import Card from 'components/Card';
 import { useUploadImgMutation } from 'services/image';
 import { usePublishArticleMutation } from 'services/article';
@@ -97,19 +94,17 @@ const PublishPanelEditor = styled.div<IThemeProps & { show: boolean }>`
   }
 `;
 
-const PublishPanel: React.FC = () => {
-  const [value, setValue] = useState('');
+interface IPublishPanelProps {
+  onPublished: () => void;
+}
+
+const PublishPanel: React.FC<IPublishPanelProps> = ({ onPublished }) => {
   const reactQuillRef = useRef(null);
   const quill = useRef<Quill>();
+  const [value, setValue] = useState('');
   const [isPublishShow, setIsPublishShow] = useState(false);
   const [uploadImgTrigger, upLoadResult] = useUploadImgMutation();
   const [publishArticleTrigger, publishResult] = usePublishArticleMutation();
-
-  // const convertArticle = (quillOps: DeltaStatic['ops']) => {
-  //   if (!quillOps) return;
-  //   const converter = new QuillDeltaToHtmlConverter(quillOps);
-  //   const html = converter.convert();
-  // };
 
   const uploadImg = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();
@@ -146,6 +141,8 @@ const PublishPanel: React.FC = () => {
     if (isSuccess) {
       quill.current?.setText('');
       toast.success('發布成功!');
+      onPublished();
+      setIsPublishShow(false);
     }
   }, [publishResult]);
 

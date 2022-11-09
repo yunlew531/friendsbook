@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import Cookies from 'js-cookie';
 
+interface IGetPersonalPageArticleResponse {
+  message: string;
+  articles: IArticle[];
+}
+
 const articleApi = createApi({
   reducerPath: 'article',
   baseQuery: fetchBaseQuery({
@@ -18,11 +23,16 @@ const articleApi = createApi({
         body: article,
       }),
     }),
+    getPersonalPageArticle: builder.query<IGetPersonalPageArticleResponse, void>(({
+      query: () => '/auth/personal-page/articles',
+    })),
   }),
 });
 
 export const {
   usePublishArticleMutation,
+  useGetPersonalPageArticleQuery,
+  useLazyGetPersonalPageArticleQuery,
 } = articleApi;
 
 export default articleApi;

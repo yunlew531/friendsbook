@@ -6,7 +6,7 @@ import Articles from 'pages/frontend/MyPage/components/Articles';
 const ClubIndex: React.FC = () => {
   return (
     <>
-      <PublishPanel />
+      <PublishPanel onPublished={() => {}} />
       <Articles />
     </>
   );
