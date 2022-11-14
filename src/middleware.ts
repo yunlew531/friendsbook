@@ -19,7 +19,7 @@ const rtkQueryErrorLogger: Middleware<{}, RootState> = () => (
   if (isRejectedWithValue(action)) {
     console.warn('%c middleware catch error ', consoleStyle, action);
     const { endpointName } = action.meta.arg;
-    const { code } = action.payload.data;
+    const { code } = action.payload.data || {};
     let errMsg;
     // 登入錯誤
     if (endpointName === 'login') errMsg = LoginError[code];

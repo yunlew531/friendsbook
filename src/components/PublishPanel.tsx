@@ -122,8 +122,13 @@ const PublishPanel: React.FC<IPublishPanelProps> = ({ onPublished }) => {
       toast.error('需要填寫內容!');
       return;
     }
+    // trim article content
+    if (ops.length !== 0 && typeof ops[ops.length - 1].insert === 'string') {
+      ops[ops.length - 1].insert = ops[ops.length - 1].insert.trim();
+    }
+
     const article = {
-      content: ops,
+      content: JSON.stringify(ops),
     };
     publishArticleTrigger(article);
   };

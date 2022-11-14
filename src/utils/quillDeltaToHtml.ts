@@ -19,13 +19,14 @@ export const trimDeltaOps = (deltaOps: DeltaOperation[]) => {
 };
 
 export default (deltaOps: DeltaOperation[]) => {
-  if (!deltaOps) return null;
-  const trimDeltaOpsTemp = trimDeltaOps(deltaOps);
   const container = document.createElement('div');
-  const quill = new Quill(container, { readOnly: true });
-  const delta = quill.getContents();
+  if (deltaOps) {
+    const trimDeltaOpsTemp = trimDeltaOps(deltaOps);
+    const quill = new Quill(container, { readOnly: true });
+    const delta = quill.getContents();
 
-  delta.ops = trimDeltaOpsTemp;
-  quill.setContents(delta);
+    delta.ops = trimDeltaOpsTemp;
+    quill.setContents(delta);
+  }
   return container;
 };

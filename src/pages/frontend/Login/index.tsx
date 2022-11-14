@@ -133,7 +133,7 @@ const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const [currentCardDisplay, setCurrentCardDisplay] = useState<CurrentCardDisplay>('login');
   const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const [registerData, setRegisterData] = useState({ email: '', password: '', username: '' });
+  const [registerData, setRegisterData] = useState({ email: '', password: '', name: '' });
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [loginTrigger, loginResult] = useLoginMutation();
   const [registerTrigger, registerResult] = useRegisterMutation();
@@ -227,20 +227,20 @@ const Login: React.FC = () => {
                   const data: { [key: string]: string } = registerData;
                   const dataKeys = Object.keys(data);
                   dataKeys.forEach((key) => { data[key] = data[key].trim(); });
-                  registerTrigger(data as Required<Pick<IProfile, 'username' | 'email' | 'password'>>);
+                  registerTrigger(data as Required<Pick<IProfile, 'name' | 'email' | 'password'>>);
                 })}
                 >
-                  <InputGroup errors={errors.username}>
+                  <InputGroup errors={errors.name}>
                     <input
                       type="text"
-                      placeholder="請輸入暱稱"
-                      value={registerData.username}
-                      {...register('username', { required: '暱稱為必填!', minLength: { value: 2, message: '至少要2個字!' } })}
+                      placeholder="請輸入姓名"
+                      value={registerData.name}
+                      {...register('name', { required: '姓名為必填!', minLength: { value: 2, message: '至少要2個字!' } })}
                       onChange={(
                         e: React.ChangeEvent<HTMLInputElement>,
-                      ) => setRegisterData((prev) => ({ ...prev, username: e.target.value }))}
+                      ) => setRegisterData((prev) => ({ ...prev, name: e.target.value }))}
                     />
-                    {errors.username && <span className="error-msg">{errors.username.message as string}</span>}
+                    {errors.name && <span className="error-msg">{errors.name.message as string}</span>}
                   </InputGroup>
                   <InputGroup errors={errors.registerEmail}>
                     <input

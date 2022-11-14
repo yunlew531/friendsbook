@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import Cookies from 'js-cookie';
 
-type RegisterForm = Required<Pick<IProfile, 'username' | 'email' | 'password'>>;
+type RegisterForm = Required<Pick<IProfile, 'name' | 'email' | 'password'>>;
 
 interface IRegisterResponse {
   message: string;
@@ -25,13 +25,13 @@ const userApi = createApi({
   endpoints: (builder) => ({
     register: builder.mutation<IRegisterResponse, RegisterForm>({
       query: (body) => ({
-        url: '/user',
+        url: '/account',
         method: 'POST',
         body,
       }),
     }),
     getUserByToken: builder.query<IGetProfileByUidResponse, void>({
-      query: () => '/auth/user',
+      query: () => '/user',
     }),
   }),
 });

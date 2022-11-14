@@ -17,18 +17,29 @@ interface INavLink {
 
 interface IProfile {
   uid?: string;
-  username?: string;
+  name?: string;
   email?: string;
   password?: string;
 }
 
 interface IArticle {
   id?: string;
-  content?: import('Quill').DeltaOperation[];
-  published_at?: number;
+  content?: import('Quill').DeltaOperation[] | string;
+  created_at?: number;
   author?: {
-    id: string;
-    username: string;
+    uid: string;
+    name: string;
+  }
+  comments?: IComment[]
+}
+
+interface IComment {
+  id?: string;
+  content?: string;
+  created_at?: number;
+  author?: {
+    uid: string;
+    name: string;
   }
 }
 

@@ -99,11 +99,17 @@ const Homepage: React.FC = () => {
   const { isSuccess, data: articlesResult } = useGetPersonalPageArticleQuery();
   const [getPersonalPageArticleTrigger, articlesLazyResult] = useLazyGetPersonalPageArticleQuery();
 
+  const convertArticleStrToObject = (articles: IArticle[]) => articles?.map((article) => ({
+    ...article,
+    content: typeof (article.content) === 'string' ? JSON.parse(article.content) : '',
+  }));
+
   useEffect(() => {
     const handleFetchArticle = () => {
       if (!isSuccess) return;
       let { articles } = articlesResult;
-      articles = [...articles]?.sort((a, b) => b.published_at! - a.published_at!);
+      articles = convertArticleStrToObject(articles);
+      articles = [...articles]?.sort((a, b) => b.created_at! - a.created_at!);
       dispatch(getArticles(articles));
     };
 
@@ -114,7 +120,8 @@ const Homepage: React.FC = () => {
     const handleLazyFetchArticle = () => {
       if (articlesLazyResult.isSuccess) {
         let { articles } = articlesLazyResult.data;
-        articles = [...articles]?.sort((a, b) => b.published_at! - a.published_at!);
+        articles = [...articles]?.sort((a, b) => b.created_at! - a.created_at!);
+        articles = convertArticleStrToObject(articles);
         dispatch(getArticles(articles));
       }
     };

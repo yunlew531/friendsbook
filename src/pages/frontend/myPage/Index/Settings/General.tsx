@@ -166,7 +166,7 @@ const General: React.FC = () => {
             <SettingItemContent>
               <SettingItemTitle>姓名</SettingItemTitle>
               <SettingItemMain>
-                <p>{profile.username}</p>
+                <p>{profile.name}</p>
               </SettingItemMain>
               <EditButton type="button">
                 <span className="material-icons-outlined">settings</span>

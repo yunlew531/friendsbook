@@ -16,16 +16,26 @@ const articleApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    publishArticle: builder.mutation<{ message: string }, IArticle>({
+    getPersonalPageArticle: builder.query<IGetPersonalPageArticleResponse, void>(({
+      query: () => '/articles',
+    })),
+    publishArticle: builder.mutation<{ message: string }, { content: string }>({
       query: (article) => ({
-        url: '/auth/article',
+        url: '/article',
         method: 'POST',
         body: article,
       }),
     }),
-    getPersonalPageArticle: builder.query<IGetPersonalPageArticleResponse, void>(({
-      query: () => '/auth/personal-page/articles',
-    })),
+    postComment: builder.mutation<{ message: string }, { articleId: string, content: string }>({
+      query: ({ articleId, content }) => ({
+        url: `/article/${articleId}/comment`,
+        method: 'POST',
+        body: { content },
+      }),
+    }),
+    getCommentsByArticleId: builder.query({
+      query: (articleId: string) => `/article/${articleId}/comments`,
+    }),
   }),
 });
 
@@ -33,6 +43,8 @@ export const {
   usePublishArticleMutation,
   useGetPersonalPageArticleQuery,
   useLazyGetPersonalPageArticleQuery,
+  usePostCommentMutation,
+  useLazyGetCommentsByArticleIdQuery,
 } = articleApi;
 
 export default articleApi;

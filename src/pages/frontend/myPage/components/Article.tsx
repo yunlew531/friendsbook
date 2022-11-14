@@ -1,9 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Card from 'components/Card';
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
 import dayjs from 'dayjs';
 import quillDeltaToHtml from 'utils/quillDeltaToHtml';
+import { useLazyGetCommentsByArticleIdQuery, usePostCommentMutation } from 'services/article';
+import { useAppDispatch } from 'hooks';
+import { refreshComments } from 'slices/articlesSlice';
 
 const ArticleCard = styled(Card)<IThemeProps>`
   box-shadow: ${({ theme }) => theme.shadow.s};
@@ -11,6 +14,7 @@ const ArticleCard = styled(Card)<IThemeProps>`
   border-bottom: none;
   padding: 20px 0 0;
   margin-bottom: 20px;
+  overflow: hidden;
 `;
 
 const Header = styled.div`
@@ -230,25 +234,92 @@ const SendMsgBtn = styled(Btn)<IThemeProps>`
   }
 `;
 
+const InputSection = styled.div<IThemeProps>`
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.color.gray_200};
+  padding: 10px 20px;
+  img {
+    width: 30px;
+    height: 30px;
+    box-shadow: ${({ theme }) => theme.shadow.m};
+    border-radius: 100%;
+    margin-right: 16px;
+  }
+  input {
+    flex-grow: 1;
+    border: 1px solid ${({ theme }) => theme.color.gray_300};
+    margin-right: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    &:focus {
+      border: 1px solid transparent;
+      outline: 1px solid ${({ theme }) => theme.color.primary};
+    }
+  }
+`;
+
+const PostCommentBtn = styled(Btn)<IThemeProps>`
+  background-color: ${({ theme }) => theme.color.primary};
+  color: ${({ theme }) => theme.color.white_100};
+  border-radius: 5px;
+  padding: 5px 10px;
+`;
+
 interface IArticleProps {
   sale?: boolean;
   data?: IArticle;
 }
 
 const Article: React.FC<IArticleProps> = ({ sale, data }) => {
-  const { author, published_at: publishedAt, content } = data || {};
+  const {
+    author, created_at: publishedAt, content, comments, id: articleId,
+  } = data || {};
+  const [postCommentTrigger, postCommentResult] = usePostCommentMutation();
+  const [
+    getCommentsByArticleIdTrigger, getCommentsByArticleResult,
+  ] = useLazyGetCommentsByArticleIdQuery();
+  const dispatch = useAppDispatch();
   const contentRef = useRef<HTMLDivElement>(null);
+  const [commentInput, setCommentInput] = useState('');
+
+  const postComment = () => {
+    if (!articleId) return;
+    const reqData = { articleId, content: commentInput };
+    postCommentTrigger(reqData);
+  };
 
   useEffect(() => {
     const convertContent = () => {
-      if (!content) return;
-      const html = quillDeltaToHtml(content);
-      if (!html) return;
-      contentRef.current!.appendChild(html);
+      if (!content || !contentRef.current) return;
+      if (typeof content !== 'string') {
+        const html = quillDeltaToHtml(content);
+        contentRef.current.appendChild(html);
+      }
     };
 
     convertContent();
   }, []);
+
+  useEffect(() => {
+    const handlePostComment = () => {
+      if (!articleId) return;
+      setCommentInput('');
+      getCommentsByArticleIdTrigger(articleId);
+    };
+
+    if (postCommentResult.isSuccess) handlePostComment();
+  }, [postCommentResult]);
+
+  useEffect(() => {
+    const handleComments = () => {
+      if (!articleId) return;
+      const { data: { comments: commentsRes } } = getCommentsByArticleResult;
+      dispatch(refreshComments({ articleId, comments: commentsRes }));
+    };
+
+    if (getCommentsByArticleResult.isSuccess) handleComments();
+  }, [getCommentsByArticleResult]);
 
   return (
     <li>
@@ -256,7 +327,7 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
         <Header>
           <UserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
           <div>
-            <HeaderName>{author?.username}</HeaderName>
+            <HeaderName>{author?.name}</HeaderName>
             <ArticleTime>{dayjs((publishedAt || 0) * 1000).format('YYYY/MM/DD HH:mm:ss')}</ArticleTime>
           </div>
           <MoreBtn type="button">
@@ -264,7 +335,6 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
           </MoreBtn>
         </Header>
         <Content ref={contentRef} />
-        {/* <Content dangerouslySetInnerHTML={{ __html: convertQuillOpsToHtml(content) }} /> */}
         {
           sale && (
           <SalesDetail>
@@ -285,7 +355,7 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
             <span className="material-icons-outlined">thumb_up</span>
           </FooterBtn>
           <FooterBtn type="button" anime>
-            <span className="interact-num">0</span>
+            <span className="interact-num">{comments?.length}</span>
             <span className="material-icons-outlined">chat</span>
           </FooterBtn>
           <FooterBtn type="button" anime>
@@ -293,33 +363,48 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
             <span className="material-icons-outlined">share</span>
           </FooterBtn>
         </Footer>
-        <CommentListContainer>
-          <CommentList>
-            <CommentItem>
-              <CommentUserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
-              <CommentMain>
-                <CommentMainHeader>
-                  <CommentUsername>Tom</CommentUsername>
-                  <CommentContent>dest but always my most rewardin dedest but always my most re
-                    wardinst but always my most rewardin dest but always my most rewardin
-                  </CommentContent>
-                </CommentMainHeader>
-                <CommentMainFooter>
-                  <CommentTime>2022-10-15 15:20</CommentTime>
-                  <CommentFooterBtn type="button" anime>
-                    <span className="material-icons-outlined">thumb_up</span>
-                  </CommentFooterBtn>
-                  <CommentFooterBtn type="button" anime>
-                    <span className="material-icons-outlined">reply</span>
-                  </CommentFooterBtn>
-                </CommentMainFooter>
-              </CommentMain>
-              <CommentMoreBtn type="button">
-                <span className="material-icons-outlined more-icon">more_vert</span>
-              </CommentMoreBtn>
-            </CommentItem>
-          </CommentList>
-        </CommentListContainer>
+        <InputSection>
+          <img src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" alt="user portrait" />
+          <input
+            type="text"
+            value={commentInput}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCommentInput(e.target.value)}
+          />
+          <PostCommentBtn type="button" anime onClick={() => postComment()}>送出</PostCommentBtn>
+        </InputSection>
+        {
+          comments?.length ? (
+            <CommentListContainer>
+              <CommentList>
+                {
+              comments.map((comment) => (
+                <CommentItem key={comment.id}>
+                  <CommentUserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
+                  <CommentMain>
+                    <CommentMainHeader>
+                      <CommentUsername>{comment.author?.name}</CommentUsername>
+                      <CommentContent>{comment.content}</CommentContent>
+                    </CommentMainHeader>
+                    <CommentMainFooter>
+                      <CommentTime>{dayjs((comment.created_at || 0) * 1000).format('YYYY/MM/DD HH:mm:ss')}</CommentTime>
+                      <CommentFooterBtn type="button" anime>
+                        <span className="material-icons-outlined">thumb_up</span>
+                      </CommentFooterBtn>
+                      <CommentFooterBtn type="button" anime>
+                        <span className="material-icons-outlined">reply</span>
+                      </CommentFooterBtn>
+                    </CommentMainFooter>
+                  </CommentMain>
+                  <CommentMoreBtn type="button">
+                    <span className="material-icons-outlined more-icon">more_vert</span>
+                  </CommentMoreBtn>
+                </CommentItem>
+              ))
+            }
+              </CommentList>
+            </CommentListContainer>
+          ) : ''
+        }
       </ArticleCard>
     </li>
   );
