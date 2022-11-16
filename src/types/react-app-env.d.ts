@@ -22,25 +22,31 @@ interface IProfile {
   password?: string;
 }
 
+interface IAuthor {
+  uid: string;
+  name: string;
+}
+
 interface IArticle {
   id?: string;
   content?: import('Quill').DeltaOperation[] | string;
   created_at?: number;
-  author?: {
-    uid: string;
-    name: string;
-  }
-  comments?: IComment[]
+  author?: IAuthor;
+  comments?: IComment[];
+  thumbs_up?: IThumbsUp[];
+}
+
+interface IThumbsUp {
+  id?: string;
+  author?: IAuthor;
+  created_at?: number;
 }
 
 interface IComment {
   id?: string;
   content?: string;
   created_at?: number;
-  author?: {
-    uid: string;
-    name: string;
-  }
+  author?: IAuthor;
 }
 
 interface IImage {

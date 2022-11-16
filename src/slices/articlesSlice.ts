@@ -24,9 +24,17 @@ export const articlesSlice = createSlice({
       const articleIndex = state.articles.findIndex((article) => article.id === articleId);
       state.articles[articleIndex].comments = comments;
     },
+    refreshThumbsUp(
+      state,
+      { payload }: PayloadAction<{ articleId:string, thumbs_up: IThumbsUp[] }>,
+    ) {
+      const { articleId, thumbs_up: thumbsUp } = payload;
+      const idx = state.articles.findIndex((article) => article.id === articleId);
+      if (idx !== -1) { state.articles[idx].thumbs_up = thumbsUp; }
+    },
   },
 });
 
-export const { getArticles, refreshComments } = articlesSlice.actions;
+export const { getArticles, refreshComments, refreshThumbsUp } = articlesSlice.actions;
 
 export default articlesSlice.reducer;

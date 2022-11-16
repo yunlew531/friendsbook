@@ -6,6 +6,11 @@ interface IGetPersonalPageArticleResponse {
   articles: IArticle[];
 }
 
+interface IGetThumbsUpByArticleIdResponse {
+  message: string;
+  thumbs_up: IThumbsUp[];
+}
+
 const articleApi = createApi({
   reducerPath: 'article',
   baseQuery: fetchBaseQuery({
@@ -36,6 +41,16 @@ const articleApi = createApi({
     getCommentsByArticleId: builder.query({
       query: (articleId: string) => `/article/${articleId}/comments`,
     }),
+    thumbsUpArticle: builder.mutation({
+      query: ({ articleId }) => ({
+        url: `/article/${articleId}/thumbsup`,
+        method: 'POST',
+        body: {},
+      }),
+    }),
+    getThumbsUpByArticleId: builder.query<IGetThumbsUpByArticleIdResponse, string>({
+      query: (articleId) => `/article/${articleId}/thumbsup`,
+    }),
   }),
 });
 
@@ -45,6 +60,8 @@ export const {
   useLazyGetPersonalPageArticleQuery,
   usePostCommentMutation,
   useLazyGetCommentsByArticleIdQuery,
+  useThumbsUpArticleMutation,
+  useLazyGetThumbsUpByArticleIdQuery,
 } = articleApi;
 
 export default articleApi;

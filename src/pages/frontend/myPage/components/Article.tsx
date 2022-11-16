@@ -4,17 +4,22 @@ import styled from '@emotion/styled';
 import Btn from 'components/Btn';
 import dayjs from 'dayjs';
 import quillDeltaToHtml from 'utils/quillDeltaToHtml';
-import { useLazyGetCommentsByArticleIdQuery, usePostCommentMutation } from 'services/article';
+import {
+  useLazyGetCommentsByArticleIdQuery, useThumbsUpArticleMutation, usePostCommentMutation,
+  useLazyGetThumbsUpByArticleIdQuery,
+} from 'services/article';
 import { useAppDispatch } from 'hooks';
-import { refreshComments } from 'slices/articlesSlice';
+import { refreshComments, refreshThumbsUp } from 'slices/articlesSlice';
+import Comment from 'pages/frontend/MyPage/components/Comment';
+import toast from 'react-hot-toast';
 
 const ArticleCard = styled(Card)<IThemeProps>`
-  box-shadow: ${({ theme }) => theme.shadow.s};
-  border-left: none;
-  border-bottom: none;
-  padding: 20px 0 0;
-  margin-bottom: 20px;
   overflow: hidden;
+  box-shadow: ${({ theme }) => theme.shadow.s};
+  border: 1px solid ${({ theme }) => theme.color.gray_200};
+  border-bottom: none;
+  margin-bottom: 20px;
+  padding: 20px 0 0;
 `;
 
 const Header = styled.div`
@@ -114,86 +119,6 @@ const CommentList = styled.ul <IThemeProps>`
   list-style: none;
 `;
 
-const CommentItem = styled.li<IThemeProps>`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  border-bottom: 1px solid ${({ theme }) => theme.color.gray_400};
-  padding-bottom: 5px;
-  &:last-of-type {
-    margin-bottom: 0;
-    border-bottom: none;
-  }
-`;
-
-const CommentUserPhoto = styled.img<IThemeProps>`
-  align-self: flex-start;
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  border: 2px solid ${({ theme }) => theme.color.white_100};
-  margin-right: 10px;
-  border-radius: 100%;
-`;
-
-const CommentMain = styled.div`
-  flex-grow: 1;
-  
-`;
-
-const CommentMainHeader = styled.div`
-  display: flex;
-`;
-
-const CommentMainFooter = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const CommentFooterBtn = styled(Btn)<IThemeProps>`
-  .material-icons-outlined {
-    font-size: ${({ theme }) => theme.fontSizes.fs_3};
-    color: ${({ theme }) => theme.color.gray_300};
-  }
-  &:hover {
-    .material-icons-outlined {
-      color: ${({ theme }) => theme.color.black_100};
-    }
-  }
-`;
-
-const CommentTime = styled.p<IThemeProps>`
-  font-size: ${({ theme }) => theme.fontSizes.fs_5};
-  color: ${({ theme }) => theme.color.gray_300};
-  margin-right: auto;
-`;
-
-const CommentUsername = styled.p<IThemeProps>`
-  color: ${({ theme }) => theme.color.primary};
-  margin-right: 8px;
-`;
-
-const CommentContent = styled.p`
-  
-`;
-
-const CommentMoreBtn = styled(Btn)<IThemeProps>`
-  padding: 5px 2px;
-  border-radius: 3px;
-  transition: background-color .1s ease-in-out;
-  .more-icon {
-    font-size: ${({ theme }) => theme.fontSizes.fs_1};
-    color: ${({ theme }) => theme.color.gray_500};
-  }
-  &:hover {
-    background-color: ${({ theme }) => theme.color.gray_400};
-  }
-  &:active {
-    transform: scale(0.9);
-  }
-`;
-
 const SalesDetail = styled.div<IThemeProps>`
   display: flex;
   align-items: center;
@@ -237,6 +162,7 @@ const SendMsgBtn = styled(Btn)<IThemeProps>`
 const InputSection = styled.div<IThemeProps>`
   display: flex;
   align-items: center;
+  border-top: 1px solid ${({ theme }) => theme.color.gray_400};
   background-color: ${({ theme }) => theme.color.gray_200};
   padding: 10px 20px;
   img {
@@ -273,18 +199,25 @@ interface IArticleProps {
 
 const Article: React.FC<IArticleProps> = ({ sale, data }) => {
   const {
-    author, created_at: publishedAt, content, comments, id: articleId,
+    author, created_at: publishedAt, content, comments, id: articleId, thumbs_up: thumbsUp,
   } = data || {};
   const [postCommentTrigger, postCommentResult] = usePostCommentMutation();
   const [
     getCommentsByArticleIdTrigger, getCommentsByArticleResult,
   ] = useLazyGetCommentsByArticleIdQuery();
+  const [thumbsUpArticleTrigger, thumbsUpArticleResult] = useThumbsUpArticleMutation();
+  const [getThumbsUpByArticleId, getThumbsUpByArticleIdResult,
+  ] = useLazyGetThumbsUpByArticleIdQuery();
   const dispatch = useAppDispatch();
   const contentRef = useRef<HTMLDivElement>(null);
   const [commentInput, setCommentInput] = useState('');
 
   const postComment = () => {
     if (!articleId) return;
+    if (!commentInput.trim()) {
+      toast.error('請輸入內容!');
+      return;
+    }
     const reqData = { articleId, content: commentInput };
     postCommentTrigger(reqData);
   };
@@ -312,14 +245,34 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
   }, [postCommentResult]);
 
   useEffect(() => {
-    const handleComments = () => {
+    const handleGetComments = () => {
       if (!articleId) return;
       const { data: { comments: commentsRes } } = getCommentsByArticleResult;
       dispatch(refreshComments({ articleId, comments: commentsRes }));
     };
 
-    if (getCommentsByArticleResult.isSuccess) handleComments();
+    if (getCommentsByArticleResult.isSuccess) handleGetComments();
   }, [getCommentsByArticleResult]);
+
+  useEffect(() => {
+    const handleThumbsUp = () => {
+      if (!articleId) return;
+      getThumbsUpByArticleId(articleId);
+    };
+
+    if (thumbsUpArticleResult.isSuccess)handleThumbsUp();
+  }, [thumbsUpArticleResult]);
+
+  useEffect(() => {
+    const { isFetching, isSuccess, data: thumbsUpResult } = getThumbsUpByArticleIdResult;
+    const handleReceiveThumbsUp = () => {
+      if (!thumbsUpResult || !articleId) return;
+      const { thumbs_up: thumbsUpData } = thumbsUpResult;
+      dispatch(refreshThumbsUp({ articleId, thumbs_up: thumbsUpData }));
+    };
+
+    if (isSuccess && !isFetching) handleReceiveThumbsUp();
+  }, [getThumbsUpByArticleIdResult]);
 
   return (
     <li>
@@ -350,8 +303,8 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
           )
         }
         <Footer>
-          <FooterBtn type="button" anime>
-            <span className="interact-num">0</span>
+          <FooterBtn type="button" anime onClick={() => thumbsUpArticleTrigger({ articleId })}>
+            <span className="interact-num">{thumbsUp?.length || 0}</span>
             <span className="material-icons-outlined">thumb_up</span>
           </FooterBtn>
           <FooterBtn type="button" anime>
@@ -363,6 +316,15 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
             <span className="material-icons-outlined">share</span>
           </FooterBtn>
         </Footer>
+        {
+          comments?.length ? (
+            <CommentListContainer>
+              <CommentList>
+                { comments.map((comment) => (<Comment key={comment.id} comment={comment} />))}
+              </CommentList>
+            </CommentListContainer>
+          ) : ''
+        }
         <InputSection>
           <img src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" alt="user portrait" />
           <input
@@ -372,39 +334,6 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
           />
           <PostCommentBtn type="button" anime onClick={() => postComment()}>送出</PostCommentBtn>
         </InputSection>
-        {
-          comments?.length ? (
-            <CommentListContainer>
-              <CommentList>
-                {
-              comments.map((comment) => (
-                <CommentItem key={comment.id}>
-                  <CommentUserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
-                  <CommentMain>
-                    <CommentMainHeader>
-                      <CommentUsername>{comment.author?.name}</CommentUsername>
-                      <CommentContent>{comment.content}</CommentContent>
-                    </CommentMainHeader>
-                    <CommentMainFooter>
-                      <CommentTime>{dayjs((comment.created_at || 0) * 1000).format('YYYY/MM/DD HH:mm:ss')}</CommentTime>
-                      <CommentFooterBtn type="button" anime>
-                        <span className="material-icons-outlined">thumb_up</span>
-                      </CommentFooterBtn>
-                      <CommentFooterBtn type="button" anime>
-                        <span className="material-icons-outlined">reply</span>
-                      </CommentFooterBtn>
-                    </CommentMainFooter>
-                  </CommentMain>
-                  <CommentMoreBtn type="button">
-                    <span className="material-icons-outlined more-icon">more_vert</span>
-                  </CommentMoreBtn>
-                </CommentItem>
-              ))
-            }
-              </CommentList>
-            </CommentListContainer>
-          ) : ''
-        }
       </ArticleCard>
     </li>
   );
