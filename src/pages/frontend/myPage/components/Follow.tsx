@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import CardTitle from 'components/CardTitle';
 import Btn, { MoreBtn } from 'components/Btn';
+import { useGetRecommendFriendsQuery, useLazyAddFriendQuery, useLazyGetFriendsQuery } from 'services/friend';
+import handleIsOnline from 'utils/handleIsOnline';
+import { useAppDispatch } from 'hooks';
+import { getFriends } from 'slices/friendsSlice';
+import toast from 'react-hot-toast';
 
 const FollowHeader = styled.div<IThemeProps>`
   display: flex;
@@ -39,15 +44,19 @@ const FollowItem = styled.li<IThemeProps>`
   }
 `;
 
-const UserPhoto = styled.img<IThemeProps>`
-  flex-shrink: 0;
-  width: 35px;
-  height: 35px;
+const FriendItemPhoto = styled.div<IThemeProps & { online: boolean }>`
+  width: 40px;
+  height: 40px;
   border-radius: 100%;
-  background-color: ${({ theme }) => theme.color.white_100};
-  box-shadow: ${({ theme }) => theme.shadow.m};
-  padding: 2px;
-  margin-right: 10px;
+  border: 2px solid ${({ online, theme: { color: { green_100 } } }) => (online ? green_100 : 'transparent')};
+  overflow: hidden;
+  margin-right: 15px;
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    border: 1px solid ${({ theme }) => theme.color.white_100};
+  }
 `;
 
 const Username = styled.p<IThemeProps>`
@@ -74,8 +83,50 @@ const AddToFriendsBtn = styled(FansPageBtn)`
   }
 `;
 
-// eslint-disable-next-line arrow-body-style
 const Follow: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { data: recommendFriendsResult } = useGetRecommendFriendsQuery();
+  const [addFriendTrigger, addFriendResult] = useLazyAddFriendQuery();
+  const [getFriendsTrigger, getFriendsResult] = useLazyGetFriendsQuery();
+  const [recommendFriends, setRecommendFriends] = useState<IProfile[]>([]);
+  const currentAddFriendUidRef = useRef('');
+
+  useEffect(() => {
+    const handleRecommendFriendsApi = () => {
+      if (!recommendFriendsResult) return;
+      setRecommendFriends(recommendFriendsResult.users);
+    };
+
+    handleRecommendFriendsApi();
+  }, [recommendFriendsResult]);
+
+  useEffect(() => {
+    const handleAddFriendResult = () => {
+      toast.success('成功加入好友!');
+      getFriendsTrigger();
+      const addFriendIndex = recommendFriends
+        .findIndex((friend) => friend.uid === currentAddFriendUidRef.current);
+      setRecommendFriends((prev) => {
+        const temp = [...prev];
+        temp.splice(addFriendIndex, 1);
+        return temp;
+      });
+    };
+
+    if (addFriendResult.isSuccess) handleAddFriendResult();
+  }, [addFriendResult]);
+
+  useEffect(() => {
+    const handleGetFriendsByToken = () => {
+      const { data } = getFriendsResult;
+      if (data?.friends) {
+        dispatch(getFriends(data.friends));
+      }
+    };
+
+    if (getFriendsResult.isSuccess && !getFriendsResult.isFetching) handleGetFriendsByToken();
+  }, [getFriendsResult]);
+
   return (
     <>
       <FollowHeader>
@@ -86,19 +137,29 @@ const Follow: React.FC = () => {
       </FollowHeader>
       <FollowList>
         {
-          new Array(5).fill(null).map((item, idx) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <FollowItem key={idx}>
-              <UserPhoto src="https://images.unsplash.com/photo-1589424987100-72303ec43d04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=692&q=80" />
-              <Username>Tom Tom</Username>
-              <AddToFriendsBtn type="button" anime>
+          recommendFriends.map((recommendFriend) => (
+            <FollowItem key={recommendFriend.uid}>
+              <FriendItemPhoto online={handleIsOnline(recommendFriend.last_seen)}>
+                <img
+                  src="https://images.unsplash.com/photo-1589424987100-72303ec43d04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=692&q=80"
+                  alt={recommendFriend.name}
+                />
+              </FriendItemPhoto>
+              <Username>{recommendFriend.nickname || recommendFriend.name}</Username>
+              <AddToFriendsBtn
+                type="button"
+                anime
+                onClick={() => {
+                  currentAddFriendUidRef.current = recommendFriend.uid!;
+                  addFriendTrigger(recommendFriend.uid!);
+                }}
+              >
                 <span className="material-icons-outlined person-add-icon">person_add</span>
                 加好友
               </AddToFriendsBtn>
             </FollowItem>
           ))
         }
-
       </FollowList>
     </>
   );

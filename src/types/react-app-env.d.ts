@@ -17,6 +17,7 @@ interface INavLink {
 
 interface IProfile {
   uid?: string;
+  nickname?: string;
   name?: string;
   photo_url?: string;
   email?: string;
@@ -63,4 +64,12 @@ interface IErrorResult {
     code: number;
   }
   status: number;
+}
+
+interface IFriend {
+  uid?: string;
+  name?: string;
+  nickname?: string;
+  became_friend_time?: number;
+  last_seen?: number;
 }

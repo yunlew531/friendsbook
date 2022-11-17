@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import ArticleList from 'pages/frontend/MyPage/components/Articles';
 import Stories from 'pages/frontend/MyPage/components/Stories';
@@ -8,7 +8,9 @@ import PublishPanel from 'components/PublishPanel';
 import { useGetPersonalPageArticleQuery, useLazyGetPersonalPageArticleQuery } from 'services/article';
 import { useAppDispatch } from 'hooks';
 import { getArticles } from 'slices/articlesSlice';
-import { useGetRecommendFriendsQuery } from 'services/friends';
+import { getFriends } from 'slices/friendsSlice';
+import { useGetFriendsQuery } from 'services/friend';
+import handleIsOnline from 'utils/handleIsOnline';
 import Events from '../components/Events';
 import Follow from '../components/Follow';
 
@@ -31,6 +33,7 @@ const ContactHeader = styled.div`
 const FriendList = styled.ul<IThemeProps>`
   list-style: none;
   border-radius: 8px;
+  overflow: hidden;
   border: 1px solid ${({ theme }) => theme.color.gray_400};
   margin: 10px 0 20px;
 `;
@@ -99,20 +102,12 @@ const Homepage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isSuccess, data: articlesResult } = useGetPersonalPageArticleQuery();
   const [getPersonalPageArticleTrigger, articlesLazyResult] = useLazyGetPersonalPageArticleQuery();
-  const { data: recommendFriendsResult } = useGetRecommendFriendsQuery();
-  const [recommendFriends, setRecommendFriends] = useState<IProfile[]>([]);
+  const { data: FriendsResult, isSuccess: isGetFriendsSuccess } = useGetFriendsQuery();
 
   const convertArticleStrToObject = (articles: IArticle[]) => articles?.map((article) => ({
     ...article,
     content: typeof (article.content) === 'string' ? JSON.parse(article.content) : '',
   }));
-
-  const handleIsOnline = (lastSeen?: number) => {
-    if (!lastSeen) return false;
-    const tenMinutes = 10 * 60 * 60 * 1000;
-    const isLessThanTenMinutes = tenMinutes > Date.now() - (lastSeen * 1000);
-    return isLessThanTenMinutes;
-  };
 
   useEffect(() => {
     const handleFetchArticle = () => {
@@ -140,41 +135,17 @@ const Homepage: React.FC = () => {
   }, [articlesLazyResult]);
 
   useEffect(() => {
-    const handleRecommendFriendsApi = () => {
-      if (!recommendFriendsResult) return;
-      setRecommendFriends(recommendFriendsResult.users);
+    const handleGetFriendsApi = () => {
+      if (!FriendsResult) return;
+      dispatch(getFriends(FriendsResult.friends));
     };
 
-    handleRecommendFriendsApi();
-  }, [recommendFriendsResult]);
+    handleGetFriendsApi();
+  }, [isGetFriendsSuccess]);
 
   return (
     <Wrap>
       <Contact>
-        <ContactHeader>
-          <CardTitle>你可能認識?</CardTitle>
-          <MoreBtn type="button" anime>
-            <span className="material-icons-outlined more-horiz-icon">more_horiz</span>
-          </MoreBtn>
-        </ContactHeader>
-        <FriendList>
-          {
-            // TODO: online use last_seen property
-            recommendFriends.map((recommendFriend) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <FriendItem key={recommendFriend.uid}>
-                <FriendItemPhoto online={handleIsOnline(recommendFriend.last_seen)}>
-                  {/* TODO: change alt */}
-                  <img
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-                    alt="friend"
-                  />
-                </FriendItemPhoto>
-                <FriendItemContent>{recommendFriend.name}</FriendItemContent>
-              </FriendItem>
-            ))
-          }
-        </FriendList>
         <ContactHeader>
           <CardTitle>朋友</CardTitle>
           <MoreBtn type="button" anime>
@@ -183,17 +154,15 @@ const Homepage: React.FC = () => {
         </ContactHeader>
         <FriendList>
           {
-            new Array(30).fill(null).map((item, idx) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <FriendItem key={idx}>
-                <FriendItemPhoto online={idx !== 3}>
-                  {/* TODO: change alt */}
+            FriendsResult?.friends?.map((friend) => (
+              <FriendItem key={friend.uid}>
+                <FriendItemPhoto online={handleIsOnline(friend.last_seen)}>
                   <img
                     src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-                    alt="friend"
+                    alt={`user ${friend.name}`}
                   />
                 </FriendItemPhoto>
-                <FriendItemContent>Bradyn Kramer</FriendItemContent>
+                <FriendItemContent>{friend.nickname || friend.name}</FriendItemContent>
               </FriendItem>
             ))
           }

@@ -4,19 +4,21 @@ import accountApi from 'services/account';
 import userApi from 'services/user';
 import imageApi from 'services/image';
 import articleApi from 'services/article';
-import friendsApi from 'services/friends';
+import friendApi from 'services/friend';
 import { combineReducers } from 'redux';
-import articleReducer, { articlesSlice } from 'slices/articlesSlice';
-import userInfoReducer, { userInfoSlice } from './slices/userInfoSlice';
+import articlesReducer, { articlesSlice } from 'slices/articlesSlice';
+import friendsReducer, { friendsSlice } from 'slices/friendsSlice';
+import userInfoReducer, { userInfoSlice } from 'slices/userInfoSlice';
 
 const reducers = combineReducers({
   [accountApi.reducerPath]: accountApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [imageApi.reducerPath]: imageApi.reducer,
   [articleApi.reducerPath]: articleApi.reducer,
-  [friendsApi.reducerPath]: friendsApi.reducer,
+  [friendApi.reducerPath]: friendApi.reducer,
   [userInfoSlice.name]: userInfoReducer,
-  [articlesSlice.name]: articleReducer,
+  [articlesSlice.name]: articlesReducer,
+  [friendsSlice.name]: friendsReducer,
 });
 
 const store = configureStore({
@@ -26,7 +28,7 @@ const store = configureStore({
     .concat(userApi.middleware)
     .concat(imageApi.middleware)
     .concat(articleApi.middleware)
-    .concat(friendsApi.middleware)
+    .concat(friendApi.middleware)
     .concat(rtkQueryErrorLogger),
 });
 
