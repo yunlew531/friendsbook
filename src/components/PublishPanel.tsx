@@ -7,6 +7,7 @@ import Card from 'components/Card';
 import { useUploadImgMutation } from 'services/image';
 import { usePublishArticleMutation } from 'services/article';
 import toast from 'react-hot-toast';
+import { useAppSelector } from 'hooks';
 
 const PublishPanelHeader = styled.div<IThemeProps>`
   display: flex;
@@ -99,6 +100,7 @@ interface IPublishPanelProps {
 }
 
 const PublishPanel: React.FC<IPublishPanelProps> = ({ onPublished }) => {
+  const profile = useAppSelector((state) => state.userInfo.profile);
   const reactQuillRef = useRef(null);
   const quill = useRef<Quill>();
   const [value, setValue] = useState('');
@@ -168,7 +170,7 @@ const PublishPanel: React.FC<IPublishPanelProps> = ({ onPublished }) => {
     <Card>
       <PublishPanelHeader onClick={() => setIsPublishShow(!isPublishShow)}>
         <div />
-        <p>Tom , 你想發佈些什麼 ?</p>
+        <p>{profile.name} , 你想發佈些什麼 ?</p>
         {isPublishShow ? <span className="material-icons-outlined expand-less-icon">expand_less</span>
           : <span className="material-icons-outlined expand-more-icon">expand_more</span>}
       </PublishPanelHeader>

@@ -7,7 +7,7 @@ interface IUploadImgResponse {
 }
 
 const imageApi = createApi({
-  reducerPath: 'imageApi',
+  reducerPath: 'image',
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.REACT_APP_URL}/auth`,
     prepareHeaders(headers) {

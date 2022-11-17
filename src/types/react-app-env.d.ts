@@ -18,8 +18,10 @@ interface INavLink {
 interface IProfile {
   uid?: string;
   name?: string;
+  photo_url?: string;
   email?: string;
   password?: string;
+  last_seen?: number;
 }
 
 interface IAuthor {

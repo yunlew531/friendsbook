@@ -8,7 +8,7 @@ import {
   useLazyGetCommentsByArticleIdQuery, useThumbsUpArticleMutation, usePostCommentMutation,
   useLazyGetThumbsUpByArticleIdQuery,
 } from 'services/article';
-import { useAppDispatch } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { refreshComments, refreshThumbsUp } from 'slices/articlesSlice';
 import Comment from 'pages/frontend/MyPage/components/Comment';
 import toast from 'react-hot-toast';
@@ -90,13 +90,24 @@ const Footer = styled.div`
   margin-top: 5px;
 `;
 
-const FooterBtn = styled(Btn)<IThemeProps>`
+interface IFooterBtnProps {
+  active?: boolean;
+}
+
+const FooterBtn = styled(Btn)<IThemeProps & IFooterBtnProps>`
   position: relative;
   color: ${({ theme }) => theme.color.gray_300};
   margin: 0 6px;
-  .material-icons-outlined {
+  .thumbs-up-icon {
     transition: transform .1s ease-in-out;
     font-size: ${({ theme }) => theme.fontSizes.fs_1};
+    color: ${({ theme: { color: { primary } }, active }) => (active ? primary : 'default')}
+  }
+  .material-icons-outlined {
+    display: ${({ active }) => (active ? 'none' : 'block')};
+  }
+  .material-icons {
+    display: ${({ active }) => (active ? 'block' : 'none')};
   }
   .interact-num {
     position: absolute;
@@ -104,7 +115,7 @@ const FooterBtn = styled(Btn)<IThemeProps>`
     right: -3px;
   }
   &:hover {
-    .material-icons-outlined {
+    .thumbs-up-icon {
       transform: scale(1.05);
     }
   }
@@ -201,6 +212,7 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
   const {
     author, created_at: publishedAt, content, comments, id: articleId, thumbs_up: thumbsUp,
   } = data || {};
+  const profile = useAppSelector((state) => state.userInfo.profile);
   const [postCommentTrigger, postCommentResult] = usePostCommentMutation();
   const [
     getCommentsByArticleIdTrigger, getCommentsByArticleResult,
@@ -303,9 +315,15 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
           )
         }
         <Footer>
-          <FooterBtn type="button" anime onClick={() => thumbsUpArticleTrigger({ articleId })}>
+          <FooterBtn
+            type="button"
+            anime
+            active={thumbsUp?.some((thumbsUpItem) => thumbsUpItem.author?.uid === profile.uid)}
+            onClick={() => thumbsUpArticleTrigger({ articleId })}
+          >
             <span className="interact-num">{thumbsUp?.length || 0}</span>
-            <span className="material-icons-outlined">thumb_up</span>
+            <span className="material-icons-outlined thumbs-up-icon">thumb_up</span>
+            <span className="material-icons thumbs-up-icon">thumb_up</span>
           </FooterBtn>
           <FooterBtn type="button" anime>
             <span className="interact-num">{comments?.length}</span>

@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
+import rtkQueryErrorLogger from 'middleware';
 import accountApi from 'services/account';
 import userApi from 'services/user';
-import rtkQueryErrorLogger from 'middleware';
 import imageApi from 'services/image';
-import { combineReducers } from 'redux';
 import articleApi from 'services/article';
+import friendsApi from 'services/friends';
+import { combineReducers } from 'redux';
 import articleReducer, { articlesSlice } from 'slices/articlesSlice';
 import userInfoReducer, { userInfoSlice } from './slices/userInfoSlice';
 
@@ -13,6 +14,7 @@ const reducers = combineReducers({
   [userApi.reducerPath]: userApi.reducer,
   [imageApi.reducerPath]: imageApi.reducer,
   [articleApi.reducerPath]: articleApi.reducer,
+  [friendsApi.reducerPath]: friendsApi.reducer,
   [userInfoSlice.name]: userInfoReducer,
   [articlesSlice.name]: articleReducer,
 });
@@ -24,6 +26,7 @@ const store = configureStore({
     .concat(userApi.middleware)
     .concat(imageApi.middleware)
     .concat(articleApi.middleware)
+    .concat(friendsApi.middleware)
     .concat(rtkQueryErrorLogger),
 });
 
