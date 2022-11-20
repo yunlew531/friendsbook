@@ -20,6 +20,7 @@ const FollowHeader = styled.div<IThemeProps>`
 const FollowList = styled.ul<IThemeProps>`
   list-style: none;
   border-radius: 8px;
+  overflow: hidden;
   border: 1px solid ${({ theme }) => theme.color.gray_400};
 `;
 

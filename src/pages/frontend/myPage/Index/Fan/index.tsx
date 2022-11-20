@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Card from 'components/Card';
-import Articles from 'pages/frontend/MyPage/components/Articles';
 
 const Wrap = styled.div`
   display: flex;
@@ -65,7 +64,7 @@ const FanIndex: React.FC = () => {
         </AsideContent>
       </Aside>
       <Main>
-        <Articles />
+        {/* {articles} */}
       </Main>
     </Wrap>
   );

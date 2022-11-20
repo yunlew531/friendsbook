@@ -1,5 +1,4 @@
 import React from 'react';
-import Articles from 'pages/frontend/MyPage/components/Articles';
 import styled from '@emotion/styled';
 import Card from 'components/Card';
 import Btn from 'components/Btn';
@@ -44,7 +43,7 @@ const ClubSales: React.FC = () => {
         <UserPhoto src="https://images.unsplash.com/photo-1624530460643-b0aa24cc02b6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="people" />
         <PublishProductBtn type="button">發佈商品</PublishProductBtn>
       </PublishProductPanel>
-      <Articles sale />
+      {/* {articles} */}
     </>
   );
 };

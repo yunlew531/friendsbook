@@ -8,8 +8,7 @@ import Btn from 'components/Btn';
 const CommentItem = styled.li<IThemeProps>`
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 5px;
+  margin-bottom: 15px;
   &:last-of-type {
     margin-bottom: 0;
   }

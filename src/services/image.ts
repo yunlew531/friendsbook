@@ -9,7 +9,7 @@ interface IUploadImgResponse {
 const imageApi = createApi({
   reducerPath: 'image',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.REACT_APP_URL}/auth`,
+    baseUrl: `${process.env.REACT_APP_URL}`,
     prepareHeaders(headers) {
       headers.set('Authorization', `Bearer ${Cookies.get('Friendsbook')}`);
       return headers;
@@ -18,7 +18,7 @@ const imageApi = createApi({
   endpoints: (builder) => ({
     uploadImg: builder.mutation<IUploadImgResponse, FormData>({
       query: (formData) => ({
-        url: '/image/upload',
+        url: '/image',
         method: 'POST',
         body: formData,
       }),

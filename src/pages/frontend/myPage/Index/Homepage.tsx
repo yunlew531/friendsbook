@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
-import ArticleList from 'pages/frontend/MyPage/components/Articles';
 import Stories from 'pages/frontend/MyPage/components/Stories';
 import { MoreBtn } from 'components/Btn';
 import CardTitle from 'components/CardTitle';
 import PublishPanel from 'components/PublishPanel';
 import { useGetPersonalPageArticleQuery, useLazyGetPersonalPageArticleQuery } from 'services/article';
-import { useAppDispatch } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { getArticles } from 'slices/articlesSlice';
 import { getFriends } from 'slices/friendsSlice';
 import { useGetFriendsQuery } from 'services/friend';
 import handleIsOnline from 'utils/handleIsOnline';
+import Article from 'pages/frontend/MyPage/components/Article';
+import dayjs from 'utils/dayjs';
 import Events from '../components/Events';
 import Follow from '../components/Follow';
 
@@ -74,10 +75,20 @@ const FriendItemPhoto = styled.div<IThemeProps & { online: boolean }>`
   }
 `;
 
-const FriendItemContent = styled.p<IThemeProps>`
+const FriendItemMain = styled.div<IThemeProps>`
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: ${({ theme }) => theme.fontSizes.fs_4};
   color: ${({ theme }) => theme.color.gray_500};
   cursor: default;
+  .last-seen {
+    text-align: center;
+    line-height: 1.3;
+    color: ${({ theme }) => theme.color.gray_300};
+    font-size: ${({ theme }) => theme.fontSizes.fs_5};
+  }
 `;
 
 const MainContent = styled.main`
@@ -93,6 +104,10 @@ const ArticlesSection = styled.div`
   margin: 0 30px;
 `;
 
+const ArticleList = styled.ul`
+  list-style: none;
+`;
+
 const StoriesSection = styled.div`
   flex-shrink: 0;
   width: 360px;
@@ -100,34 +115,38 @@ const StoriesSection = styled.div`
 
 const Homepage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { isSuccess, data: articlesResult } = useGetPersonalPageArticleQuery();
+  const articles = useAppSelector((state) => state.articles.articles);
+  const {
+    isSuccess: isGetArticlesSuccess,
+    data: articlesResult,
+  } = useGetPersonalPageArticleQuery();
   const [getPersonalPageArticleTrigger, articlesLazyResult] = useLazyGetPersonalPageArticleQuery();
   const { data: FriendsResult, isSuccess: isGetFriendsSuccess } = useGetFriendsQuery();
 
-  const convertArticleStrToObject = (articles: IArticle[]) => articles?.map((article) => ({
+  const convertArticleStrToObject = (articlesData: IArticle[]) => articlesData?.map((article) => ({
     ...article,
     content: typeof (article.content) === 'string' ? JSON.parse(article.content) : '',
   }));
 
   useEffect(() => {
     const handleFetchArticle = () => {
-      if (!isSuccess) return;
-      let { articles } = articlesResult;
-      articles = convertArticleStrToObject(articles);
-      articles = [...articles]?.sort((a, b) => b.created_at! - a.created_at!);
-      dispatch(getArticles(articles));
+      if (!articlesResult) return;
+      let { articles: articlesData } = articlesResult;
+      articlesData = convertArticleStrToObject(articlesData);
+      articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
+      dispatch(getArticles(articlesData));
     };
 
     handleFetchArticle();
-  }, [isSuccess]);
+  }, [isGetArticlesSuccess]);
 
   useEffect(() => {
     const handleLazyFetchArticle = () => {
       if (articlesLazyResult.isSuccess) {
-        let { articles } = articlesLazyResult.data;
-        articles = [...articles]?.sort((a, b) => b.created_at! - a.created_at!);
-        articles = convertArticleStrToObject(articles);
-        dispatch(getArticles(articles));
+        let { articles: articlesData } = articlesLazyResult.data;
+        articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
+        articlesData = convertArticleStrToObject(articlesData);
+        dispatch(getArticles(articlesData));
       }
     };
 
@@ -162,7 +181,14 @@ const Homepage: React.FC = () => {
                     alt={`user ${friend.name}`}
                   />
                 </FriendItemPhoto>
-                <FriendItemContent>{friend.nickname || friend.name}</FriendItemContent>
+                <FriendItemMain>
+                  <p>{friend.nickname || friend.name}</p>
+                  {friend.last_seen && (
+                  <p className="last-seen">最後上線<br />
+                    {dayjs(friend.last_seen * 1000).fromNow()}
+                  </p>
+                  )}
+                </FriendItemMain>
               </FriendItem>
             ))
           }
@@ -171,7 +197,9 @@ const Homepage: React.FC = () => {
       <MainContent>
         <ArticlesSection>
           <PublishPanel onPublished={getPersonalPageArticleTrigger} />
-          <ArticleList />
+          <ArticleList>
+            {articles?.map((article) => <Article key={article.id} data={article} />)}
+          </ArticleList>
         </ArticlesSection>
       </MainContent>
       <StoriesSection>

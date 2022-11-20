@@ -90,6 +90,52 @@ const Footer = styled.div`
   margin-top: 5px;
 `;
 
+const ThumbsUpBtnContainer = styled.div`
+  position: relative;
+`;
+
+const ThumbsUpUsersContainer = styled.div<IThemeProps & { show: boolean }>`
+  visibility: ${({ show }) => (show ? 'visible' : 'hidden')};
+  opacity: ${({ show }) => (show ? 1 : 0)};
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: calc(-100% - 30px);
+  left: 50%;
+  box-shadow: ${({ theme }) => theme.shadow.s};
+  background-color: ${({ theme }) => theme.color.white_100};
+  border: 1px dashed red;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.color.gray_400};
+  transform: translateX(-50%);
+  padding: 8px;
+  transition: visibility .2s, opacity .2s ease-in-out;
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    height: 10px;
+    width: 100%;
+  }
+`;
+
+const ThumbsUpUser = styled.div`
+  display: flex;
+  align-items: center;
+  &.thumbs-up-user{
+    transition: transform 0.1s ease-in-out;
+    &:hover {
+      transform: scale(0.95);
+    }
+  }
+  img {
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+  }
+`;
+
 interface IFooterBtnProps {
   active?: boolean;
 }
@@ -223,6 +269,7 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
   const dispatch = useAppDispatch();
   const contentRef = useRef<HTMLDivElement>(null);
   const [commentInput, setCommentInput] = useState('');
+  const [isThumbsUpUserShow, setIsThumbsUpUserShow] = useState(false);
 
   const postComment = () => {
     if (!articleId) return;
@@ -315,16 +362,35 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
           )
         }
         <Footer>
-          <FooterBtn
-            type="button"
-            anime
-            active={thumbsUp?.some((thumbsUpItem) => thumbsUpItem.author?.uid === profile.uid)}
-            onClick={() => thumbsUpArticleTrigger({ articleId })}
-          >
-            <span className="interact-num">{thumbsUp?.length || 0}</span>
-            <span className="material-icons-outlined thumbs-up-icon">thumb_up</span>
-            <span className="material-icons thumbs-up-icon">thumb_up</span>
-          </FooterBtn>
+          <ThumbsUpBtnContainer onMouseLeave={() => setIsThumbsUpUserShow(false)}>
+            {
+              thumbsUp?.length ? (
+                <ThumbsUpUsersContainer show={isThumbsUpUserShow}>
+                  {
+                thumbsUp?.map((thumbsUpItem) => (
+                  <ThumbsUpUser key={thumbsUpItem.id} className="thumbs-up-user">
+                    <img
+                      src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80"
+                      alt={thumbsUpItem.author?.name}
+                    />
+                  </ThumbsUpUser>
+                ))
+              }
+                </ThumbsUpUsersContainer>
+              ) : ''
+            }
+            <FooterBtn
+              type="button"
+              anime
+              active={thumbsUp?.some((thumbsUpItem) => thumbsUpItem.author?.uid === profile.uid)}
+              onClick={() => thumbsUpArticleTrigger({ articleId })}
+              onMouseEnter={() => setIsThumbsUpUserShow(true)}
+            >
+              <span className="interact-num">{thumbsUp?.length || 0}</span>
+              <span className="material-icons-outlined thumbs-up-icon">thumb_up</span>
+              <span className="material-icons thumbs-up-icon">thumb_up</span>
+            </FooterBtn>
+          </ThumbsUpBtnContainer>
           <FooterBtn type="button" anime>
             <span className="interact-num">{comments?.length}</span>
             <span className="material-icons-outlined">chat</span>
