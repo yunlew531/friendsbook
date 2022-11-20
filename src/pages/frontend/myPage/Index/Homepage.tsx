@@ -6,12 +6,14 @@ import CardTitle from 'components/CardTitle';
 import PublishPanel from 'components/PublishPanel';
 import { useGetPersonalPageArticleQuery, useLazyGetPersonalPageArticleQuery } from 'services/article';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { getArticles } from 'slices/articlesSlice';
+import { getArticles, refreshComments, refreshThumbsUp } from 'slices/articlesSlice';
 import { getFriends } from 'slices/friendsSlice';
 import { useGetFriendsQuery } from 'services/friend';
 import handleIsOnline from 'utils/handleIsOnline';
 import Article from 'pages/frontend/MyPage/components/Article';
 import dayjs from 'utils/dayjs';
+import convertArticleStrToObject from 'utils/convertArticleStrToObject';
+import { useNavigate } from 'react-router-dom';
 import Events from '../components/Events';
 import Follow from '../components/Follow';
 
@@ -115,6 +117,7 @@ const StoriesSection = styled.div`
 
 const Homepage: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const articles = useAppSelector((state) => state.articles.articles);
   const {
     isSuccess: isGetArticlesSuccess,
@@ -123,10 +126,13 @@ const Homepage: React.FC = () => {
   const [getPersonalPageArticleTrigger, articlesLazyResult] = useLazyGetPersonalPageArticleQuery();
   const { data: FriendsResult, isSuccess: isGetFriendsSuccess } = useGetFriendsQuery();
 
-  const convertArticleStrToObject = (articlesData: IArticle[]) => articlesData?.map((article) => ({
-    ...article,
-    content: typeof (article.content) === 'string' ? JSON.parse(article.content) : '',
-  }));
+  const refreshThumbsUpData = (articleId: string, thumbsUp: IThumbsUp[]) => {
+    dispatch(refreshThumbsUp({ articleId, thumbs_up: thumbsUp }));
+  };
+
+  const refreshCommentsData = (articleId: string, comments: IComment[]) => {
+    dispatch(refreshComments({ articleId, comments }));
+  };
 
   useEffect(() => {
     const handleFetchArticle = () => {
@@ -142,15 +148,15 @@ const Homepage: React.FC = () => {
 
   useEffect(() => {
     const handleLazyFetchArticle = () => {
-      if (articlesLazyResult.isSuccess) {
-        let { articles: articlesData } = articlesLazyResult.data;
-        articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
-        articlesData = convertArticleStrToObject(articlesData);
-        dispatch(getArticles(articlesData));
-      }
+      const { isSuccess, isFetching } = articlesLazyResult;
+      if (!isSuccess || isFetching) return;
+      let { articles: articlesData } = articlesLazyResult.data;
+      articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
+      articlesData = convertArticleStrToObject(articlesData);
+      dispatch(getArticles(articlesData));
     };
 
-    if (!articlesLazyResult.isUninitialized) handleLazyFetchArticle();
+    handleLazyFetchArticle();
   }, [articlesLazyResult]);
 
   useEffect(() => {
@@ -174,7 +180,7 @@ const Homepage: React.FC = () => {
         <FriendList>
           {
             FriendsResult?.friends?.map((friend) => (
-              <FriendItem key={friend.uid}>
+              <FriendItem key={friend.uid} onClick={() => navigate(`/${friend.uid}`)}>
                 <FriendItemPhoto online={handleIsOnline(friend.last_seen)}>
                   <img
                     src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
@@ -198,7 +204,16 @@ const Homepage: React.FC = () => {
         <ArticlesSection>
           <PublishPanel onPublished={getPersonalPageArticleTrigger} />
           <ArticleList>
-            {articles?.map((article) => <Article key={article.id} data={article} />)}
+            {articles?.map((
+              article,
+            ) => (
+              <Article
+                key={article.id}
+                data={article}
+                refreshThumbsUp={refreshThumbsUpData}
+                refreshComments={refreshCommentsData}
+              />
+            ))}
           </ArticleList>
         </ArticlesSection>
       </MainContent>

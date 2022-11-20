@@ -140,16 +140,17 @@ const Login: React.FC = () => {
   const [getUserByTokenTrigger, userResult] = useLazyGetUserByTokenQuery();
 
   useEffect(() => {
-    const { isSuccess, data, isUninitialized } = loginResult;
     const handleLogin = () => {
-      if (isSuccess) {
-        const { token } = data;
-        Cookies.set('Friendsbook', token, { expires: 7 });
-        getUserByTokenTrigger();
-      }
+      const { isSuccess, isLoading, data } = loginResult;
+      if (!isSuccess || isLoading) return;
+      console.log(1);
+
+      const { token } = data;
+      Cookies.set('Friendsbook', token, { expires: 7 });
+      getUserByTokenTrigger();
     };
 
-    if (!isUninitialized) handleLogin();
+    handleLogin();
   }, [loginResult]);
 
   useEffect(() => {
@@ -161,10 +162,13 @@ const Login: React.FC = () => {
   }, [userResult]);
 
   useEffect(() => {
-    const { isSuccess, isUninitialized } = registerResult;
-    const handleRegister = () => isSuccess && toast.success('註冊成功!');
+    const handleRegister = () => {
+      const { isSuccess, isLoading } = registerResult;
+      if (!isSuccess || isLoading) return;
+      toast.success('註冊成功!');
+    };
 
-    if (!isUninitialized) handleRegister();
+    handleRegister();
   }, [registerResult]);
 
   return (

@@ -11,6 +11,11 @@ interface IGetThumbsUpByArticleIdResponse {
   thumbs_up: IThumbsUp[];
 }
 
+interface IGetArticlesByUidResponse {
+  message: string;
+  articles: IThumbsUp[];
+}
+
 const articleApi = createApi({
   reducerPath: 'article',
   baseQuery: fetchBaseQuery({
@@ -51,6 +56,9 @@ const articleApi = createApi({
     getThumbsUpByArticleId: builder.query<IGetThumbsUpByArticleIdResponse, string>({
       query: (articleId) => `/article/${articleId}/thumbsup`,
     }),
+    getArticlesByUid: builder.query<IGetArticlesByUidResponse, string>({
+      query: (userUid) => `/articles/${userUid}`,
+    }),
   }),
 });
 
@@ -62,6 +70,7 @@ export const {
   useLazyGetCommentsByArticleIdQuery,
   useThumbsUpArticleMutation,
   useLazyGetThumbsUpByArticleIdQuery,
+  useLazyGetArticlesByUidQuery,
 } = articleApi;
 
 export default articleApi;

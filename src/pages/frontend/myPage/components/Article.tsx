@@ -8,10 +8,10 @@ import {
   useLazyGetCommentsByArticleIdQuery, useThumbsUpArticleMutation, usePostCommentMutation,
   useLazyGetThumbsUpByArticleIdQuery,
 } from 'services/article';
-import { useAppDispatch, useAppSelector } from 'hooks';
-import { refreshComments, refreshThumbsUp } from 'slices/articlesSlice';
+import { useAppSelector } from 'hooks';
 import Comment from 'pages/frontend/MyPage/components/Comment';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const ArticleCard = styled(Card)<IThemeProps>`
   overflow: hidden;
@@ -252,9 +252,13 @@ const PostCommentBtn = styled(Btn)<IThemeProps>`
 interface IArticleProps {
   sale?: boolean;
   data?: IArticle;
+  refreshThumbsUp: (articleId: string, thumbsUp: IThumbsUp[]) => void;
+  refreshComments: (articleId: string, comments: IComment[]) => void;
 }
 
-const Article: React.FC<IArticleProps> = ({ sale, data }) => {
+const Article: React.FC<IArticleProps> = ({
+  sale, data, refreshThumbsUp, refreshComments,
+}) => {
   const {
     author, created_at: publishedAt, content, comments, id: articleId, thumbs_up: thumbsUp,
   } = data || {};
@@ -266,7 +270,6 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
   const [thumbsUpArticleTrigger, thumbsUpArticleResult] = useThumbsUpArticleMutation();
   const [getThumbsUpByArticleId, getThumbsUpByArticleIdResult,
   ] = useLazyGetThumbsUpByArticleIdQuery();
-  const dispatch = useAppDispatch();
   const contentRef = useRef<HTMLDivElement>(null);
   const [commentInput, setCommentInput] = useState('');
   const [isThumbsUpUserShow, setIsThumbsUpUserShow] = useState(false);
@@ -284,6 +287,7 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
   useEffect(() => {
     const convertContent = () => {
       if (!content || !contentRef.current) return;
+
       if (typeof content !== 'string') {
         const html = quillDeltaToHtml(content);
         contentRef.current.appendChild(html);
@@ -305,32 +309,36 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
 
   useEffect(() => {
     const handleGetComments = () => {
-      if (!articleId) return;
+      const { isSuccess } = getCommentsByArticleResult;
+      if (!isSuccess || !articleId) return;
       const { data: { comments: commentsRes } } = getCommentsByArticleResult;
-      dispatch(refreshComments({ articleId, comments: commentsRes }));
+      refreshComments(articleId, commentsRes);
     };
 
-    if (getCommentsByArticleResult.isSuccess) handleGetComments();
+    handleGetComments();
   }, [getCommentsByArticleResult]);
 
   useEffect(() => {
     const handleThumbsUp = () => {
+      const { isSuccess, isLoading } = thumbsUpArticleResult;
+      if (!isSuccess || isLoading) return;
       if (!articleId) return;
       getThumbsUpByArticleId(articleId);
     };
 
-    if (thumbsUpArticleResult.isSuccess)handleThumbsUp();
+    handleThumbsUp();
   }, [thumbsUpArticleResult]);
 
   useEffect(() => {
-    const { isFetching, isSuccess, data: thumbsUpResult } = getThumbsUpByArticleIdResult;
     const handleReceiveThumbsUp = () => {
+      const { isSuccess, isFetching, data: thumbsUpResult } = getThumbsUpByArticleIdResult;
+      if (!isSuccess || isFetching) return;
       if (!thumbsUpResult || !articleId) return;
       const { thumbs_up: thumbsUpData } = thumbsUpResult;
-      dispatch(refreshThumbsUp({ articleId, thumbs_up: thumbsUpData }));
+      refreshThumbsUp(articleId, thumbsUpData);
     };
 
-    if (isSuccess && !isFetching) handleReceiveThumbsUp();
+    handleReceiveThumbsUp();
   }, [getThumbsUpByArticleIdResult]);
 
   return (
@@ -369,10 +377,12 @@ const Article: React.FC<IArticleProps> = ({ sale, data }) => {
                   {
                 thumbsUp?.map((thumbsUpItem) => (
                   <ThumbsUpUser key={thumbsUpItem.id} className="thumbs-up-user">
-                    <img
-                      src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80"
-                      alt={thumbsUpItem.author?.name}
-                    />
+                    <Link to={`/${thumbsUpItem.author!.uid}`}>
+                      <img
+                        src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80"
+                        alt={thumbsUpItem.author?.name}
+                      />
+                    </Link>
                   </ThumbsUpUser>
                 ))
               }

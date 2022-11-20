@@ -144,26 +144,29 @@ const PublishPanel: React.FC<IPublishPanelProps> = ({ onPublished }) => {
   }, [isPublishShow]);
 
   useEffect(() => {
-    const { isSuccess } = publishResult;
-    if (isSuccess) {
+    const handlePublishArticleApi = () => {
+      const { isSuccess, isLoading } = publishResult;
+      if (!isSuccess || isLoading) return;
       quill.current?.setText('');
       toast.success('發布成功!');
       onPublished();
       setIsPublishShow(false);
-    }
+    };
+
+    handlePublishArticleApi();
   }, [publishResult]);
 
   useEffect(() => {
     const handleUploadImg = () => {
+      const { isSuccess, isLoading } = upLoadResult;
+      if (!isSuccess || isLoading) return;
       if (!quill.current) return;
-      if (upLoadResult.isSuccess) {
-        const cursorInQuillIndex = quill.current.getSelection()?.index || quill.current.getLength();
-        quill.current!.insertEmbed(cursorInQuillIndex, 'image', upLoadResult.data.url);
-        quill.current!.setSelection(cursorInQuillIndex + 1, 0);
-      }
+      const cursorInQuillIndex = quill.current.getSelection()?.index || quill.current.getLength();
+      quill.current!.insertEmbed(cursorInQuillIndex, 'image', upLoadResult.data.url);
+      quill.current!.setSelection(cursorInQuillIndex + 1, 0);
     };
 
-    if (!upLoadResult.isUninitialized) handleUploadImg();
+    handleUploadImg();
   }, [upLoadResult]);
 
   return (

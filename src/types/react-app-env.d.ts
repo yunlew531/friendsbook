@@ -55,7 +55,8 @@ interface IComment {
 interface IImage {
   id: string;
   url: string;
-  publish_at: string;
+  user_uid: string;
+  created_at: string;
 }
 
 interface IErrorResult {

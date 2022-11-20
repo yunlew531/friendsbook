@@ -16,11 +16,11 @@ const Nav = styled.nav<IThemeProps>`
     text-decoration: none;
     background-color: ${({ theme }) => theme.color.white_100};
     &:hover {
-      filter: brightness(0.98);
+      filter: brightness(0.97);
     }
     &.active{
       font-weight: 700;
-      filter: brightness(0.97);
+      filter: brightness(0.95);
       box-shadow: inset ${({ theme }) => theme.shadow.s};
     }
   }
@@ -33,16 +33,16 @@ interface INavbarProps {
 const Navbar: React.FC<INavbarProps> = ({ links }) => (
   <Nav>
     {
-        links.map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            end
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >{link.title}
-          </NavLink>
-        ))
-      }
+      links.map((link) => (
+        <NavLink
+          key={link.to}
+          to={link.to}
+          end
+          className={({ isActive }) => (isActive ? 'active' : '')}
+        >{link.title}
+        </NavLink>
+      ))
+    }
   </Nav>
 );
 

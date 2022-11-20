@@ -19,6 +19,8 @@ import FanFollows from 'pages/frontend/MyPage/Index/Fan/Follows';
 import Settings from 'pages/frontend/MyPage/Index/Settings';
 import General from 'pages/frontend/MyPage/Index/Settings/General';
 import Account from 'pages/frontend/MyPage/Index/Settings/Account';
+import User from 'pages/frontend/MyPage/Index/User';
+import UserIndex from 'pages/frontend/MyPage/Index/User/index';
 
 const routes: RouteObject[] = [
   {
@@ -93,6 +95,32 @@ const routes: RouteObject[] = [
             path: '/settings/account',
             element: <Account />,
           },
+        ],
+      },
+      {
+        path: '/',
+        element: <User />,
+        children: [
+          {
+            path: '/:uid',
+            element: <UserIndex />,
+          },
+          // {
+          //   path: '/:uid/about',
+          //   element: <FanAbout />,
+          // },
+          // {
+          //   path: '/:uid/photos',
+          //   element: <FanPhotos />,
+          // },
+          // {
+          //   path: '/:uid/clubs',
+          //   element: <FanAbout />,
+          // },
+          // {
+          //   path: '/:uid/fans',
+          //   element: <FanPhotos />,
+          // },
         ],
       },
     ],
