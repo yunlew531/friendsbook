@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
 import Navbar from 'components/Navbar';
 import { Outlet, useParams } from 'react-router-dom';
+import { useLazyGetUserByUidQuery } from 'services/user';
 
 const Wrap = styled.div`
   max-width: 1140px;
@@ -78,6 +79,9 @@ const HeaderBtn = styled(Btn)<IThemeProps>`
 const User: React.FC = () => {
   const params = useParams();
   const paramUid = params.uid;
+  const [getUserProfileByUidTrigger, getUserProfileByUidResult] = useLazyGetUserByUidQuery();
+  const [user, setUser] = useState<IProfile>();
+
   const navLinks = useRef([
     {
       title: '貼文',
@@ -101,6 +105,22 @@ const User: React.FC = () => {
     },
   ]);
 
+  useEffect(() => {
+    if (paramUid) {
+      getUserProfileByUidTrigger(paramUid);
+    }
+  }, [paramUid]);
+
+  useEffect(() => {
+    const handleGetUserByUid = () => {
+      const { isSuccess, isFetching, data } = getUserProfileByUidResult;
+      if (!isSuccess || isFetching) return;
+      setUser(data.profile);
+    };
+
+    handleGetUserByUid();
+  }, [getUserProfileByUidResult]);
+
   return (
     <Wrap>
       <Banner />
@@ -110,7 +130,7 @@ const User: React.FC = () => {
         </PhotoContainer>
         <HeaderMain>
           <HeaderTextSection>
-            <Title>{}</Title>
+            <Title>{user?.nickname || user?.name}</Title>
           </HeaderTextSection>
           <HeaderBtn type="button" anime>
             <span className="material-icons-round">question_answer</span>

@@ -33,6 +33,9 @@ const userApi = createApi({
     getUserByToken: builder.query<IGetProfileByUidResponse, void>({
       query: () => '/user',
     }),
+    getUserByUid: builder.query<IGetProfileByUidResponse, string>({
+      query: (userUid) => `/user/${userUid}`,
+    }),
   }),
 });
 
@@ -40,6 +43,7 @@ export const {
   useRegisterMutation,
   useGetUserByTokenQuery,
   useLazyGetUserByTokenQuery,
+  useLazyGetUserByUidQuery,
 } = userApi;
 
 export default userApi;

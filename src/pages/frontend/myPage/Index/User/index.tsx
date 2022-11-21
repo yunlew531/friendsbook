@@ -37,8 +37,11 @@ const UserPageCard = styled(Card)<IThemeProps>`
 const ImagesList = styled.ul`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 3px;
+  gap: 5px;
   list-style: none;
+  li {
+    line-height: 0;
+  }
   img {
     height: 130px;
     border-radius: 3px;
@@ -88,11 +91,9 @@ const ArticleList = styled.ul`
     width: 50px;
     height: 50px;
     border-radius: 3px;
-
   }
 `;
 
-// eslint-disable-next-line arrow-body-style
 const FanIndex: React.FC = () => {
   const { uid: paramUid } = useParams();
   const profile = useAppSelector((state) => state.userInfo.profile);
@@ -152,9 +153,8 @@ const FanIndex: React.FC = () => {
 
   useEffect(() => {
     const handleGetArticlesApi = () => {
-      const { isSuccess, isFetching } = getArticlesByUidResult;
+      const { isSuccess, isFetching, data } = getArticlesByUidResult;
       if (!isSuccess || isFetching) return;
-      const { data } = getArticlesByUidResult;
       const articlesSortTime = [...data.articles].sort((a, b) => b.created_at! - a.created_at!);
       setArticles(convertArticleStrToObject(articlesSortTime));
     };

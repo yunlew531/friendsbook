@@ -7,7 +7,7 @@ import handleIsOnline from 'utils/handleIsOnline';
 import { useAppDispatch } from 'hooks';
 import { getFriends } from 'slices/friendsSlice';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const FollowHeader = styled.div<IThemeProps>`
   display: flex;
@@ -26,9 +26,9 @@ const FollowList = styled.ul<IThemeProps>`
 `;
 
 const FollowItem = styled.li<IThemeProps>`
-  a {
     display: flex;
     align-items: center;
+    cursor: default;
     color: ${({ theme }) => theme.color.gray_500};
     font-weight: 700;
     text-decoration: none;
@@ -48,7 +48,6 @@ const FollowItem = styled.li<IThemeProps>`
     &:active {
       filter: brightness(0.9);
     }
-  }
 `;
 
 const FriendItemPhoto = styled.div<IThemeProps & { online: boolean }>`
@@ -92,6 +91,7 @@ const AddToFriendsBtn = styled(FansPageBtn)`
 
 const Follow: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { data: recommendFriendsResult } = useGetRecommendFriendsQuery();
   const [addFriendTrigger, addFriendResult] = useLazyAddFriendQuery();
   const [getFriendsTrigger, getFriendsResult] = useLazyGetFriendsQuery();
@@ -109,6 +109,8 @@ const Follow: React.FC = () => {
 
   useEffect(() => {
     const handleAddFriendResult = () => {
+      const { isSuccess, isFetching } = addFriendResult;
+      if (!isSuccess || isFetching) return;
       toast.success('成功加入好友!');
       getFriendsTrigger();
       const addFriendIndex = recommendFriends
@@ -120,18 +122,17 @@ const Follow: React.FC = () => {
       });
     };
 
-    if (addFriendResult.isSuccess) handleAddFriendResult();
+    handleAddFriendResult();
   }, [addFriendResult]);
 
   useEffect(() => {
     const handleGetFriendsByToken = () => {
-      const { data } = getFriendsResult;
-      if (data?.friends) {
-        dispatch(getFriends(data.friends));
-      }
+      const { data, isSuccess, isFetching } = getFriendsResult;
+      if (!isSuccess || isFetching) return;
+      dispatch(getFriends(data.friends));
     };
 
-    if (getFriendsResult.isSuccess && !getFriendsResult.isFetching) handleGetFriendsByToken();
+    handleGetFriendsByToken();
   }, [getFriendsResult]);
 
   return (
@@ -145,27 +146,26 @@ const Follow: React.FC = () => {
       <FollowList>
         {
           recommendFriends.map((recommendFriend) => (
-            <FollowItem key={recommendFriend.uid}>
-              <Link to={`/${recommendFriend.uid}`}>
-                <FriendItemPhoto online={handleIsOnline(recommendFriend.last_seen)}>
-                  <img
-                    src="https://images.unsplash.com/photo-1589424987100-72303ec43d04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=692&q=80"
-                    alt={recommendFriend.name}
-                  />
-                </FriendItemPhoto>
-                <Username>{recommendFriend.nickname || recommendFriend.name}</Username>
-                <AddToFriendsBtn
-                  type="button"
-                  anime
-                  onClick={() => {
-                    currentAddFriendUidRef.current = recommendFriend.uid!;
-                    addFriendTrigger(recommendFriend.uid!);
-                  }}
-                >
-                  <span className="material-icons-outlined person-add-icon">person_add</span>
-                  加好友
-                </AddToFriendsBtn>
-              </Link>
+            <FollowItem key={recommendFriend.uid} onClick={() => navigate(`/${recommendFriend.uid}`)}>
+              <FriendItemPhoto online={handleIsOnline(recommendFriend.last_seen)}>
+                <img
+                  src="https://images.unsplash.com/photo-1589424987100-72303ec43d04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=692&q=80"
+                  alt={recommendFriend.name}
+                />
+              </FriendItemPhoto>
+              <Username>{recommendFriend.nickname || recommendFriend.name}</Username>
+              <AddToFriendsBtn
+                type="button"
+                anime
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.stopPropagation();
+                  currentAddFriendUidRef.current = recommendFriend.uid!;
+                  addFriendTrigger(recommendFriend.uid!);
+                }}
+              >
+                <span className="material-icons-outlined person-add-icon">person_add</span>
+                加好友
+              </AddToFriendsBtn>
             </FollowItem>
           ))
         }
