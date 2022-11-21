@@ -56,7 +56,7 @@ interface IImage {
   id: string;
   url: string;
   user_uid: string;
-  created_at: string;
+  created_at: number;
 }
 
 interface IErrorResult {

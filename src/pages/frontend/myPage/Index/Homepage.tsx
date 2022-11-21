@@ -47,6 +47,10 @@ const FriendItem = styled.li<IThemeProps>`
   background-color: ${({ theme }) => theme.cardColor};  
   border-bottom: 1px solid ${({ theme }) => theme.color.gray_400};
   padding: 11px 23px;
+  .link-name {
+    font-weight: 700;
+    color: ${({ theme }) => theme.color.gray_500};
+  }
   &:first-of-type {
     border-radius: 8px 8px 0 0;
   }
@@ -188,7 +192,7 @@ const Homepage: React.FC = () => {
                   />
                 </FriendItemPhoto>
                 <FriendItemMain>
-                  <p>{friend.nickname || friend.name}</p>
+                  <p className="link-name">{friend.nickname || friend.name}</p>
                   {friend.last_seen && (
                   <p className="last-seen">最後上線<br />
                     {dayjs(friend.last_seen * 1000).fromNow()}

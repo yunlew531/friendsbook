@@ -105,8 +105,7 @@ const Comment: React.FC<CommentProps> = ({ comment }) => {
       <CommentUserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
       <CommentMain>
         <CommentMainHeader>
-          {/* TODO:  */}
-          <Link to="/">
+          <Link to={`/${comment.author?.uid}`}>
             <CommentUsername>{comment.author?.name}</CommentUsername>
           </Link>
           <CommentMoreBtn type="button">

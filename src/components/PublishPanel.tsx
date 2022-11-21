@@ -4,10 +4,10 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.bubble.css';
 import { Quill } from 'quill';
 import Card from 'components/Card';
-import { useUploadImgMutation } from 'services/image';
 import { usePublishArticleMutation } from 'services/article';
 import toast from 'react-hot-toast';
 import { useAppSelector } from 'hooks';
+import useImgUpload from 'hooks/useFileUpload';
 
 const PublishPanelHeader = styled.div<IThemeProps>`
   display: flex;
@@ -103,18 +103,16 @@ const PublishPanel: React.FC<IPublishPanelProps> = ({ onPublished }) => {
   const profile = useAppSelector((state) => state.userInfo.profile);
   const reactQuillRef = useRef(null);
   const quill = useRef<Quill>();
+  const inputRef = useRef(null);
+  const { uploadImg, uploadImgResult } = useImgUpload(inputRef);
   const [value, setValue] = useState('');
   const [isPublishShow, setIsPublishShow] = useState(false);
-  const [uploadImgTrigger, upLoadResult] = useUploadImgMutation();
+
   const [publishArticleTrigger, publishResult] = usePublishArticleMutation();
 
-  const uploadImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formData = new FormData();
-    const file = e.target.files![0];
-    if (!file) return;
-    formData.append('image-file', file);
-    uploadImgTrigger(formData);
-  };
+  useEffect(() => {
+    quill.current = (reactQuillRef.current as unknown as ReactQuill).getEditor();
+  }, []);
 
   const handlePublish = () => {
     if (!quill.current) return;
@@ -136,10 +134,6 @@ const PublishPanel: React.FC<IPublishPanelProps> = ({ onPublished }) => {
   };
 
   useEffect(() => {
-    quill.current = (reactQuillRef.current as unknown as ReactQuill).getEditor();
-  }, []);
-
-  useEffect(() => {
     quill.current?.focus();
   }, [isPublishShow]);
 
@@ -158,16 +152,16 @@ const PublishPanel: React.FC<IPublishPanelProps> = ({ onPublished }) => {
 
   useEffect(() => {
     const handleUploadImg = () => {
-      const { isSuccess, isLoading } = upLoadResult;
+      const { isSuccess, isLoading, data } = uploadImgResult;
       if (!isSuccess || isLoading) return;
       if (!quill.current) return;
       const cursorInQuillIndex = quill.current.getSelection()?.index || quill.current.getLength();
-      quill.current!.insertEmbed(cursorInQuillIndex, 'image', upLoadResult.data.url);
+      quill.current!.insertEmbed(cursorInQuillIndex, 'image', data.url);
       quill.current!.setSelection(cursorInQuillIndex + 1, 0);
     };
 
     handleUploadImg();
-  }, [upLoadResult]);
+  }, [uploadImgResult]);
 
   return (
     <Card>
@@ -184,7 +178,7 @@ const PublishPanel: React.FC<IPublishPanelProps> = ({ onPublished }) => {
         <UploadImgBtnContainer>
           上傳
           <span className="material-icons-outlined send-icon">file_upload</span>
-          <input type="file" onChange={uploadImg} />
+          <input ref={inputRef} type="file" onChange={uploadImg} />
         </UploadImgBtnContainer>
         <PublishBtn type="button" onClick={handlePublish}>發佈
           <span className="material-icons-outlined send-icon">send</span>

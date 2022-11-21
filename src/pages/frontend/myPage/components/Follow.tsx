@@ -7,6 +7,7 @@ import handleIsOnline from 'utils/handleIsOnline';
 import { useAppDispatch } from 'hooks';
 import { getFriends } from 'slices/friendsSlice';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const FollowHeader = styled.div<IThemeProps>`
   display: flex;
@@ -25,23 +26,28 @@ const FollowList = styled.ul<IThemeProps>`
 `;
 
 const FollowItem = styled.li<IThemeProps>`
-  display: flex;
-  align-items: center;
-  background-color: ${({ theme }) => theme.color.white_100};
-  border-bottom: 1px solid ${({ theme }) => theme.color.gray_400};
-  padding: 15px 25px;
-  &:first-of-type {
-    border-radius: 8px 8px 0 0;
-  }
-  &:last-of-type {
-    border-radius: 0 0 8px 8px;
-    border-bottom: none;
-  }
-  &:hover {
-    filter: brightness(0.95);
-  }
-  &:active {
-    filter: brightness(0.9);
+  a {
+    display: flex;
+    align-items: center;
+    color: ${({ theme }) => theme.color.gray_500};
+    font-weight: 700;
+    text-decoration: none;
+    background-color: ${({ theme }) => theme.color.white_100};
+    border-bottom: 1px solid ${({ theme }) => theme.color.gray_400};
+    padding: 15px 25px;
+    &:first-of-type {
+      border-radius: 8px 8px 0 0;
+    }
+    &:last-of-type {
+      border-radius: 0 0 8px 8px;
+      border-bottom: none;
+    }
+    &:hover {
+      filter: brightness(0.95);
+    }
+    &:active {
+      filter: brightness(0.9);
+    }
   }
 `;
 
@@ -140,24 +146,26 @@ const Follow: React.FC = () => {
         {
           recommendFriends.map((recommendFriend) => (
             <FollowItem key={recommendFriend.uid}>
-              <FriendItemPhoto online={handleIsOnline(recommendFriend.last_seen)}>
-                <img
-                  src="https://images.unsplash.com/photo-1589424987100-72303ec43d04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=692&q=80"
-                  alt={recommendFriend.name}
-                />
-              </FriendItemPhoto>
-              <Username>{recommendFriend.nickname || recommendFriend.name}</Username>
-              <AddToFriendsBtn
-                type="button"
-                anime
-                onClick={() => {
-                  currentAddFriendUidRef.current = recommendFriend.uid!;
-                  addFriendTrigger(recommendFriend.uid!);
-                }}
-              >
-                <span className="material-icons-outlined person-add-icon">person_add</span>
-                加好友
-              </AddToFriendsBtn>
+              <Link to={`/${recommendFriend.uid}`}>
+                <FriendItemPhoto online={handleIsOnline(recommendFriend.last_seen)}>
+                  <img
+                    src="https://images.unsplash.com/photo-1589424987100-72303ec43d04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=692&q=80"
+                    alt={recommendFriend.name}
+                  />
+                </FriendItemPhoto>
+                <Username>{recommendFriend.nickname || recommendFriend.name}</Username>
+                <AddToFriendsBtn
+                  type="button"
+                  anime
+                  onClick={() => {
+                    currentAddFriendUidRef.current = recommendFriend.uid!;
+                    addFriendTrigger(recommendFriend.uid!);
+                  }}
+                >
+                  <span className="material-icons-outlined person-add-icon">person_add</span>
+                  加好友
+                </AddToFriendsBtn>
+              </Link>
             </FollowItem>
           ))
         }

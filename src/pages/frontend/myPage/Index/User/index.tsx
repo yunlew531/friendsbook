@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import Card from 'components/Card';
 import { useParams } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useLazyGetImgByUidQuery } from 'services/image';
 import { useLazyGetArticlesByUidQuery } from 'services/article';
 import convertArticleStrToObject from 'utils/convertArticleStrToObject';
 import { useAppSelector } from 'hooks';
+import useFileUpload from 'hooks/useFileUpload';
 import Article from '../../components/Article';
 
 const Wrap = styled.div`
@@ -93,9 +94,10 @@ const ArticleList = styled.ul`
 
 // eslint-disable-next-line arrow-body-style
 const FanIndex: React.FC = () => {
-  const params = useParams();
-  const paramUid = params.uid;
+  const { uid: paramUid } = useParams();
   const profile = useAppSelector((state) => state.userInfo.profile);
+  const inputRef = useRef(null);
+  const { uploadImg, uploadImgResult } = useFileUpload(inputRef);
   const [getImgsTrigger, getImgsResult] = useLazyGetImgByUidQuery();
   const [getArticlesByUidTrigger, getArticlesByUidResult] = useLazyGetArticlesByUidQuery();
   const [imgs, setImgs] = useState<IImage[]>([]);
@@ -130,12 +132,23 @@ const FanIndex: React.FC = () => {
     const handleGetImgsApi = () => {
       const { isSuccess, isFetching } = getImgsResult;
       if (!isSuccess || isFetching) return;
-      const { data } = getImgsResult;
-      if (data) setImgs(data.images);
+      const { data: { images } } = getImgsResult;
+      const sortImagesByTime = [...images].sort((a, b) => b.created_at! - a.created_at!);
+      setImgs(sortImagesByTime);
     };
 
     handleGetImgsApi();
   }, [getImgsResult]);
+
+  useEffect(() => {
+    const handleUploadImg = () => {
+      const { isSuccess, isLoading } = uploadImgResult;
+      if (!isSuccess || isLoading || !paramUid) return;
+      getImgsTrigger(paramUid);
+    };
+
+    handleUploadImg();
+  }, [uploadImgResult]);
 
   useEffect(() => {
     const handleGetArticlesApi = () => {
@@ -164,16 +177,17 @@ const FanIndex: React.FC = () => {
                 <li>
                   <UploadImgBtn type="button">
                     <span className="material-icons-outlined">add</span>
-                    <input type="file" />
+                    <input ref={inputRef} type="file" onChange={uploadImg} />
                   </UploadImgBtn>
                 </li>
               )}
               {imgs?.map((img) => <li key={img.id}><img src={img.url} alt={img.url} /></li>)}
-              {imgs.length ? '' : (
+              {profile.uid !== paramUid && imgs?.length === 0
+                && (
                 <li className="empty-box">
                   <img src={`${process.env.PUBLIC_URL}/images/empty-box.png`} alt="empty box" />
                 </li>
-              )}
+                )}
             </ImagesList>
           </UserPageCard>
         </AsideContent>
