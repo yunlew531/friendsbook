@@ -7,7 +7,7 @@ import { useLazyGetArticlesByUidQuery } from 'services/article';
 import convertArticleStrToObject from 'utils/convertArticleStrToObject';
 import { useAppSelector } from 'hooks';
 import useFileUpload from 'hooks/useFileUpload';
-import Article from '../../components/Article';
+import Article from 'pages/frontend/MyPage/components/Article';
 
 const Wrap = styled.div`
   display: flex;
@@ -122,6 +122,15 @@ const FanIndex: React.FC = () => {
     });
   };
 
+  const updateArticle = (articleId: string) => {
+    setArticles((prev) => {
+      const temp = [...prev];
+      const index = prev.findIndex((article) => article.id === articleId);
+      temp.splice(index, 1);
+      return temp;
+    });
+  };
+
   useEffect(() => {
     if (paramUid) {
       getImgsTrigger(paramUid);
@@ -199,6 +208,7 @@ const FanIndex: React.FC = () => {
             data={article}
             refreshThumbsUp={refreshThumbsUpData}
             refreshComments={refreshCommentsData}
+            onDeleteArticle={updateArticle}
           />
         ))}
       </ArticleList>

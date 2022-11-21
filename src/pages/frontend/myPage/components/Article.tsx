@@ -7,11 +7,12 @@ import quillDeltaToHtml from 'utils/quillDeltaToHtml';
 import {
   useLazyGetCommentsByArticleIdQuery, useThumbsUpArticleMutation, usePostCommentMutation,
   useLazyGetThumbsUpByArticleIdQuery,
+  useDeleteArticleMutation,
 } from 'services/article';
 import { useAppSelector } from 'hooks';
 import Comment from 'pages/frontend/MyPage/components/Comment';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const ArticleCard = styled(Card)<IThemeProps>`
   overflow: hidden;
@@ -50,24 +51,80 @@ const ArticleTime = styled.p<IThemeProps>`
   color: ${({ theme }) => theme.color.gray_500};
 `;
 
-const MoreBtn = styled.button<IThemeProps>`
+const MoreBtnContainer = styled.div`
+  position: relative;
   align-self: flex-start;
+  margin-left: auto;
+  &:hover {
+    .more-btn {
+      filter: brightness(0.9);
+    }
+  }
+`;
+
+const ArticleMoreList = styled.ul<IThemeProps>`
+  width: 80px;
+  position: absolute;
+  bottom: -2px;
+  right: 0;
+  z-index: 10;
+  overflow: hidden;
+  transform: translateY(100%);
+  border: 1px solid ${({ theme }) => theme.color.gray_400};
+  box-shadow: ${({ theme }) => theme.shadow.m};
+  background-color: ${({ theme }) => theme.color.white_100};
+  border-radius: 8px;
+  list-style: none;
+  li {
+    border-bottom: 1px solid ${({ theme }) => theme.color.gray_400};
+    text-align: center;
+    &:last-of-type {
+      border-bottom: none;
+    }
+    button {
+      border: none;
+      width: 100%;
+      background-color: ${({ theme }) => theme.color.white_100};
+      font-size: ${({ theme }) => theme.fontSizes.fs_4};
+      color: ${({ theme }) => theme.color.black_300};
+      font-weight: 700;
+      padding: 10px;
+      &:hover {
+        filter: brightness(0.97);
+      }
+      &:active {
+        filter: brightness(0.95);
+      }
+    }
+    .delete-article-btn{
+      color: ${({ theme }) => theme.color.red_100};
+    }
+  }
+`;
+
+const MoreBtn = styled.button<IThemeProps>`
+  position: relative;
   display: flex;
   align-items: center;
   border: none;
   background-color: ${({ theme }) => theme.color.white_100};
   border-radius: 8px;
   transition: filter .1s ease-in-out, transform .1s ease-in-out;
-  margin-left: auto;
   padding: 1px 6px;
+  cursor: default;
   .more-horiz-icon {
     color: ${({ theme }) => theme.color.gray_300};
   }
-  &:hover {
-    filter: brightness(0.9);
-  }
   &:active {
     transform: scale(0.95);
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 0;
   }
 `;
 
@@ -254,14 +311,16 @@ interface IArticleProps {
   data?: IArticle;
   refreshThumbsUp: (articleId: string, thumbsUp: IThumbsUp[]) => void;
   refreshComments: (articleId: string, comments: IComment[]) => void;
+  onDeleteArticle: (articleId: string) => void;
 }
 
 const Article: React.FC<IArticleProps> = ({
-  sale, data, refreshThumbsUp, refreshComments,
+  sale, data, refreshThumbsUp, refreshComments, onDeleteArticle,
 }) => {
   const {
     author, created_at: publishedAt, content, comments, id: articleId, thumbs_up: thumbsUp,
   } = data || {};
+  const { uid: paramsUid } = useParams();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const [postCommentTrigger, postCommentResult] = usePostCommentMutation();
   const [
@@ -270,9 +329,11 @@ const Article: React.FC<IArticleProps> = ({
   const [thumbsUpArticleTrigger, thumbsUpArticleResult] = useThumbsUpArticleMutation();
   const [getThumbsUpByArticleId, getThumbsUpByArticleIdResult,
   ] = useLazyGetThumbsUpByArticleIdQuery();
+  const [deleteArticleTrigger, deleteArticleResult] = useDeleteArticleMutation();
   const contentRef = useRef<HTMLDivElement>(null);
   const [commentInput, setCommentInput] = useState('');
   const [isThumbsUpUserShow, setIsThumbsUpUserShow] = useState(false);
+  const [isMoreListShow, setIsMoreListShow] = useState(false);
 
   const postComment = () => {
     if (!articleId) return;
@@ -341,6 +402,17 @@ const Article: React.FC<IArticleProps> = ({
     handleReceiveThumbsUp();
   }, [getThumbsUpByArticleIdResult]);
 
+  useEffect(() => {
+    const handleDeleteArticle = () => {
+      const { isSuccess, isLoading } = deleteArticleResult;
+      if (!isSuccess || isLoading) return;
+      toast.success('刪除文章');
+      onDeleteArticle(articleId!);
+    };
+
+    handleDeleteArticle();
+  }, [deleteArticleResult]);
+
   return (
     <li>
       <ArticleCard>
@@ -350,9 +422,28 @@ const Article: React.FC<IArticleProps> = ({
             <HeaderName>{author?.name}</HeaderName>
             <ArticleTime>{dayjs((publishedAt || 0) * 1000).format('YYYY/MM/DD HH:mm:ss')}</ArticleTime>
           </div>
-          <MoreBtn type="button">
-            <span className="material-icons-outlined more-horiz-icon">more_horiz</span>
-          </MoreBtn>
+          <MoreBtnContainer
+            onMouseEnter={() => setIsMoreListShow(true)}
+            onMouseLeave={() => setIsMoreListShow(false)}
+          >
+            {isMoreListShow && (
+            <ArticleMoreList>
+              {
+                paramsUid === profile.uid && (
+                <li>
+                  <button className="delete-article-btn" onClick={() => deleteArticleTrigger(articleId!)} type="button">刪除</button>
+                </li>
+                )
+              }
+              <li>
+                <button type="button">檢舉</button>
+              </li>
+            </ArticleMoreList>
+            )}
+            <MoreBtn className="more-btn" type="button">
+              <span className="material-icons-outlined more-horiz-icon">more_horiz</span>
+            </MoreBtn>
+          </MoreBtnContainer>
         </Header>
         <Content ref={contentRef} />
         {

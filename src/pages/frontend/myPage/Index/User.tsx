@@ -46,7 +46,7 @@ const HeaderMain = styled.div`
   flex-grow: 1;
   display: flex;
   align-items: center;
-  padding: 25px 0;
+  height: 85px;
 `;
 
 const HeaderTextSection = styled.div`

@@ -59,6 +59,12 @@ const articleApi = createApi({
     getArticlesByUid: builder.query<IGetArticlesByUidResponse, string>({
       query: (userUid) => `/articles/${userUid}`,
     }),
+    deleteArticle: builder.mutation<{ message: string }, string>({
+      query: (articleId) => ({
+        url: `/article/${articleId}`,
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
@@ -71,6 +77,7 @@ export const {
   useThumbsUpArticleMutation,
   useLazyGetThumbsUpByArticleIdQuery,
   useLazyGetArticlesByUidQuery,
+  useDeleteArticleMutation,
 } = articleApi;
 
 export default articleApi;

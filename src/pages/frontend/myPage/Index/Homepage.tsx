@@ -138,6 +138,13 @@ const Homepage: React.FC = () => {
     dispatch(refreshComments({ articleId, comments }));
   };
 
+  const updateArticle = (articleId: string) => {
+    const tempArticles = [...articles];
+    const index = articles.findIndex((article) => article.id === articleId);
+    tempArticles.splice(index, 1);
+    dispatch(getArticles(tempArticles));
+  };
+
   useEffect(() => {
     const handleFetchArticle = () => {
       if (!articlesResult) return;
@@ -216,6 +223,7 @@ const Homepage: React.FC = () => {
                 data={article}
                 refreshThumbsUp={refreshThumbsUpData}
                 refreshComments={refreshCommentsData}
+                onDeleteArticle={updateArticle}
               />
             ))}
           </ArticleList>
