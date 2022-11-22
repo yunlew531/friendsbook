@@ -30,6 +30,8 @@ export const userInfoSlice = createSlice({
   },
 });
 
-export const { getProfile, postBannerImg, postAvatarImg } = userInfoSlice.actions;
+export const {
+  getProfile, postBannerImg, postAvatarImg,
+} = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;

@@ -28,7 +28,7 @@ const imageApi = createApi({
         body: formData,
       }),
     }),
-    getImgByUid: builder.query<IGetImgsByUidResponse, string>({
+    getImgsByUid: builder.query<IGetImgsByUidResponse, string>({
       query: (userUid) => `/images/${userUid}`,
     }),
     postBannerImg: builder.mutation<IUploadImgResponse, FormData>({
@@ -45,14 +45,21 @@ const imageApi = createApi({
         body: formData,
       }),
     }),
+    deleteImg: builder.mutation<{ message:string }, string>({
+      query: (imageId) => ({
+        url: `/image/${imageId}`,
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
 export const {
   useUploadImgMutation,
-  useLazyGetImgByUidQuery,
+  useLazyGetImgsByUidQuery,
   usePostBannerImgMutation,
   usePostAvatarImgMutation,
+  useDeleteImgMutation,
 } = imageApi;
 
 export default imageApi;

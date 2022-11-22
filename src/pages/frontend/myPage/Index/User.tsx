@@ -7,6 +7,7 @@ import { useLazyGetUserByUidQuery } from 'services/user';
 import useFileUpload from 'hooks/useFileUpload';
 import { postAvatarImg, postBannerImg } from 'slices/userInfoSlice';
 import { useAppDispatch, useAppSelector } from 'hooks';
+import { useLazyGetImgsByUidQuery } from 'services/image';
 
 const Wrap = styled.div`
   max-width: 1140px;
@@ -22,7 +23,10 @@ const Banner = styled.div<{ url?: string }>`
   background-size: cover;
   border-radius: 0 0 3px 3px;
   padding: 10px;
-  `;
+  .use-onerror-img {
+    display: none;
+  }
+`;
 
 const UploadBannerImgBtnContainer = styled.div<IThemeProps>`
   position: relative;
@@ -53,10 +57,9 @@ const PhotoSection = styled.div`
   position: relative;
   width: 150px;
   margin-right: 30px;
-  `;
+`;
 
 const PhotoContainer = styled.div<IThemeProps>`
-  border: 1px dashed red;
   position: absolute;
   top: -75px;
   width: 100%;
@@ -135,8 +138,10 @@ const User: React.FC = () => {
   const avatarInputRef = useRef(null);
   const { uploadAvatarImg, uploadAvatarImgResult } = useFileUpload(avatarInputRef);
   const [getUserProfileByUidTrigger, getUserProfileByUidResult] = useLazyGetUserByUidQuery();
+  const [getImgsTrigger, getImgsResult] = useLazyGetImgsByUidQuery();
   const bannerInputRef = useRef(null);
   const { uploadBannerImg, uploadBannerImgResult } = useFileUpload(bannerInputRef);
+  const [imgs, setImgs] = useState<IImage[]>([]);
   const [user, setUser] = useState<IProfile>();
 
   const navLinks = useRef([
@@ -183,6 +188,9 @@ const User: React.FC = () => {
       const { isSuccess, isLoading, data: { url = '' } = {} } = uploadBannerImgResult;
       if (!isSuccess || isLoading) return;
       dispatch(postBannerImg(url));
+      if (!paramUid) return;
+      getImgsTrigger(paramUid);
+      getUserProfileByUidTrigger(paramUid);
     };
 
     handleUploadBannerImg();
@@ -190,13 +198,28 @@ const User: React.FC = () => {
 
   useEffect(() => {
     const handleUploadAvatarImg = () => {
-      const { isSuccess, isLoading, data: { url = '' } = {} } = uploadBannerImgResult;
+      const { isSuccess, isLoading, data: { url = '' } = {} } = uploadAvatarImgResult;
       if (!isSuccess || isLoading) return;
       dispatch(postAvatarImg(url));
+      if (!paramUid) return;
+      getImgsTrigger(paramUid);
+      getUserProfileByUidTrigger(paramUid);
     };
 
     handleUploadAvatarImg();
   }, [uploadAvatarImgResult]);
+
+  useEffect(() => {
+    const handleGetImgsApi = () => {
+      const { isSuccess, isFetching } = getImgsResult;
+      if (!isSuccess || isFetching) return;
+      const { data: { images } } = getImgsResult;
+      const sortImagesByTime = [...images].sort((a, b) => b.created_at! - a.created_at!);
+      setImgs(sortImagesByTime);
+    };
+
+    handleGetImgsApi();
+  }, [getImgsResult]);
 
   return (
     <Wrap>
@@ -209,12 +232,33 @@ const User: React.FC = () => {
           </UploadBannerImgBtnContainer>
           )
         }
+        { /* this <img> is a helper, because "background-image" did not fire a "onerror" event */ }
+        <img
+          className="use-onerror-img"
+          src={profile.banner_url}
+          alt="banner"
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null;
+            setUser((prev) => ({
+              ...prev,
+              banner_url: '',
+            }));
+          }}
+        />
       </Banner>
       <Header>
         <PhotoSection>
           <PhotoContainer>
-            <input ref={avatarInputRef} type="file" onChange={uploadAvatarImg} />
-            <img src={user?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.jpeg`} alt={user?.name} />
+            {profile?.uid === user?.uid
+             && <input ref={avatarInputRef} type="file" onChange={uploadAvatarImg} />}
+            <img
+              src={user?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.jpeg`}
+              alt={user?.name}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.jpeg`;
+              }}
+            />
           </PhotoContainer>
         </PhotoSection>
         <HeaderMain>
@@ -228,7 +272,7 @@ const User: React.FC = () => {
         </HeaderMain>
       </Header>
       <Navbar links={navLinks.current} />
-      <Outlet />
+      <Outlet context={{ imgs, setImgs }} />
     </Wrap>
   );
 };

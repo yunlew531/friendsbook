@@ -37,7 +37,8 @@
       {
         "props": true,
         "ignorePropertyModificationsFor": [
-          "state" // redux state
+          "state", // redux state
+          "currentTarget"
         ]
       }
     ],

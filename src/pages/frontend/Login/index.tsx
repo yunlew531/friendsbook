@@ -143,8 +143,6 @@ const Login: React.FC = () => {
     const handleLogin = () => {
       const { isSuccess, isLoading, data } = loginResult;
       if (!isSuccess || isLoading) return;
-      console.log(1);
-
       const { token } = data;
       Cookies.set('Friendsbook', token, { expires: 7 });
       getUserByTokenTrigger();

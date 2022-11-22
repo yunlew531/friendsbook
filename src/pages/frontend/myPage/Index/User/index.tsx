@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import Card from 'components/Card';
-import { useParams } from 'react-router-dom';
-import { useLazyGetImgByUidQuery } from 'services/image';
+import { useParams, useOutletContext } from 'react-router-dom';
+import { useDeleteImgMutation, useLazyGetImgsByUidQuery } from 'services/image';
 import { useLazyGetArticlesByUidQuery } from 'services/article';
 import convertArticleStrToObject from 'utils/convertArticleStrToObject';
 import { useAppSelector } from 'hooks';
 import useFileUpload from 'hooks/useFileUpload';
 import Article from 'pages/frontend/MyPage/components/Article';
+import toast from 'react-hot-toast';
 
 const Wrap = styled.div`
   display: flex;
@@ -94,14 +95,21 @@ const ArticleList = styled.ul`
   }
 `;
 
+interface IOutletContext {
+  imgs: IImage[];
+  setImgs: React.Dispatch<React.SetStateAction<IImage[]>>;
+}
+
 const FanIndex: React.FC = () => {
   const { uid: paramUid } = useParams();
   const profile = useAppSelector((state) => state.userInfo.profile);
+  const { imgs, setImgs }: IOutletContext = useOutletContext();
   const inputRef = useRef(null);
   const { uploadImg, uploadImgResult } = useFileUpload(inputRef);
-  const [getImgsTrigger, getImgsResult] = useLazyGetImgByUidQuery();
+  const [getImgsTrigger, getImgsResult] = useLazyGetImgsByUidQuery();
   const [getArticlesByUidTrigger, getArticlesByUidResult] = useLazyGetArticlesByUidQuery();
-  const [imgs, setImgs] = useState<IImage[]>([]);
+  const [deleteImgTrigger, deleteImgResult] = useDeleteImgMutation();
+
   const [articles, setArticles] = useState<IArticle[]>([]);
 
   const refreshThumbsUpData = (articleId: string, thumbsUpData: IThumbsUp[]) => {
@@ -171,6 +179,18 @@ const FanIndex: React.FC = () => {
     handleGetArticlesApi();
   }, [getArticlesByUidResult]);
 
+  useEffect(() => {
+    const handleDeleteImg = () => {
+      const { isSuccess, isLoading } = deleteImgResult;
+      if (!isSuccess || isLoading) return;
+      toast.success('已刪除');
+      if (!profile.uid) return;
+      getImgsTrigger(profile.uid);
+    };
+
+    handleDeleteImg();
+  }, [deleteImgResult]);
+
   return (
     <Wrap>
       <Aside>
@@ -190,7 +210,11 @@ const FanIndex: React.FC = () => {
                   </UploadImgBtn>
                 </li>
               )}
-              {imgs?.map((img) => <li key={img.id}><img src={img.url} alt={img.url} /></li>)}
+              {imgs?.map((img) => (
+                <li key={img.id}><img src={img.url} alt={img.url} />
+                  <button type="button" onClick={() => deleteImgTrigger(img.id)}>123</button>
+                </li>
+              ))}
               {profile.uid !== paramUid && imgs?.length === 0
                 && (
                 <li className="empty-box">
