@@ -23,7 +23,8 @@ interface IProfile {
   email?: string;
   password?: string;
   last_seen?: number;
-  banner_img?: string;
+  banner_url?: string;
+  avatar_url?: string;
 }
 
 interface IAuthor {

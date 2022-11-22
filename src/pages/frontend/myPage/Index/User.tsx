@@ -5,7 +5,7 @@ import Navbar from 'components/Navbar';
 import { Outlet, useParams } from 'react-router-dom';
 import { useLazyGetUserByUidQuery } from 'services/user';
 import useFileUpload from 'hooks/useFileUpload';
-import { postBannerImg } from 'slices/userInfoSlice';
+import { postAvatarImg, postBannerImg } from 'slices/userInfoSlice';
 import { useAppDispatch, useAppSelector } from 'hooks';
 
 const Wrap = styled.div`
@@ -49,19 +49,48 @@ const Header = styled.div<IThemeProps>`
   padding: 0 50px;
 `;
 
-const PhotoContainer = styled.div`
+const PhotoSection = styled.div`
   position: relative;
   width: 150px;
   margin-right: 30px;
-`;
+  `;
 
-const Photo = styled.img<IThemeProps>`
+const PhotoContainer = styled.div<IThemeProps>`
+  border: 1px dashed red;
   position: absolute;
   top: -75px;
+  width: 100%;
   height: 150px;
+  overflow: hidden;
   background-color: ${({ theme }) => theme.color.white_100};
   border-radius: 100%;
   border: 3px solid ${({ theme }) => theme.color.white_100};
+  input[type=file] {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+    border-radius: 100%;
+    z-index: 10;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    transition: filter .2s ease-in-out;
+  }
+  &:hover {
+    img {
+      filter: brightness(0.9);
+    }
+  }
+  &:active {
+    img {
+      filter: brightness(0.8);
+    }
+  }
 `;
 
 const HeaderMain = styled.div`
@@ -103,6 +132,8 @@ const User: React.FC = () => {
   const paramUid = params.uid;
   const profile = useAppSelector((state) => state.userInfo.profile);
   const dispatch = useAppDispatch();
+  const avatarInputRef = useRef(null);
+  const { uploadAvatarImg, uploadAvatarImgResult } = useFileUpload(avatarInputRef);
   const [getUserProfileByUidTrigger, getUserProfileByUidResult] = useLazyGetUserByUidQuery();
   const bannerInputRef = useRef(null);
   const { uploadBannerImg, uploadBannerImgResult } = useFileUpload(bannerInputRef);
@@ -157,9 +188,19 @@ const User: React.FC = () => {
     handleUploadBannerImg();
   }, [uploadBannerImgResult]);
 
+  useEffect(() => {
+    const handleUploadAvatarImg = () => {
+      const { isSuccess, isLoading, data: { url = '' } = {} } = uploadBannerImgResult;
+      if (!isSuccess || isLoading) return;
+      dispatch(postAvatarImg(url));
+    };
+
+    handleUploadAvatarImg();
+  }, [uploadAvatarImgResult]);
+
   return (
     <Wrap>
-      <Banner url={user?.banner_img}>
+      <Banner url={user?.banner_url}>
         {
           user?.uid === profile?.uid && (
           <UploadBannerImgBtnContainer>
@@ -170,9 +211,12 @@ const User: React.FC = () => {
         }
       </Banner>
       <Header>
-        <PhotoContainer>
-          <Photo src="https://images.unsplash.com/photo-1612532275214-e4ca76d0e4d1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="person" />
-        </PhotoContainer>
+        <PhotoSection>
+          <PhotoContainer>
+            <input ref={avatarInputRef} type="file" onChange={uploadAvatarImg} />
+            <img src={user?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.jpeg`} alt={user?.name} />
+          </PhotoContainer>
+        </PhotoSection>
         <HeaderMain>
           <HeaderTextSection>
             <Title>{user?.nickname || user?.name}</Title>
