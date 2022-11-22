@@ -4,19 +4,41 @@ import Btn from 'components/Btn';
 import Navbar from 'components/Navbar';
 import { Outlet, useParams } from 'react-router-dom';
 import { useLazyGetUserByUidQuery } from 'services/user';
+import useFileUpload from 'hooks/useFileUpload';
+import { postBannerImg } from 'slices/userInfoSlice';
+import { useAppDispatch, useAppSelector } from 'hooks';
 
 const Wrap = styled.div`
   max-width: 1140px;
   margin: -21px auto 0;
 `;
 
-const Banner = styled.div`
+const Banner = styled.div<{ url?: string }>`
   height: 400px;
   display: flex;
+  justify-content: end;
   align-items: end;
-  background: url(https://images.unsplash.com/photo-1567606839022-1ee01c30cf77?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80) no-repeat center;
+  background: url(${({ url }) => url || `${process.env.PUBLIC_URL}/images/banner.jpeg`}) no-repeat center;
   background-size: cover;
   border-radius: 0 0 3px 3px;
+  padding: 10px;
+  `;
+
+const UploadBannerImgBtnContainer = styled.div<IThemeProps>`
+  position: relative;
+  border-radius: 5px;
+  color: ${({ theme }) => theme.color.white_100};
+  background-color: ${({ theme }) => theme.color.primary};
+  border: none;
+  padding: 5px 10px;
+  input[type=file] {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0;
+  }
 `;
 
 const Header = styled.div<IThemeProps>`
@@ -79,7 +101,11 @@ const HeaderBtn = styled(Btn)<IThemeProps>`
 const User: React.FC = () => {
   const params = useParams();
   const paramUid = params.uid;
+  const profile = useAppSelector((state) => state.userInfo.profile);
+  const dispatch = useAppDispatch();
   const [getUserProfileByUidTrigger, getUserProfileByUidResult] = useLazyGetUserByUidQuery();
+  const bannerInputRef = useRef(null);
+  const { uploadBannerImg, uploadBannerImgResult } = useFileUpload(bannerInputRef);
   const [user, setUser] = useState<IProfile>();
 
   const navLinks = useRef([
@@ -121,9 +147,28 @@ const User: React.FC = () => {
     handleGetUserByUid();
   }, [getUserProfileByUidResult]);
 
+  useEffect(() => {
+    const handleUploadBannerImg = () => {
+      const { isSuccess, isLoading, data: { url = '' } = {} } = uploadBannerImgResult;
+      if (!isSuccess || isLoading) return;
+      dispatch(postBannerImg(url));
+    };
+
+    handleUploadBannerImg();
+  }, [uploadBannerImgResult]);
+
   return (
     <Wrap>
-      <Banner />
+      <Banner url={user?.banner_img}>
+        {
+          user?.uid === profile?.uid && (
+          <UploadBannerImgBtnContainer>
+            <p>加上封面相片</p>
+            <input ref={bannerInputRef} type="file" onChange={uploadBannerImg} />
+          </UploadBannerImgBtnContainer>
+          )
+        }
+      </Banner>
       <Header>
         <PhotoContainer>
           <Photo src="https://images.unsplash.com/photo-1612532275214-e4ca76d0e4d1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="person" />

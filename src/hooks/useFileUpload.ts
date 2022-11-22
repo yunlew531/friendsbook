@@ -1,20 +1,28 @@
 import { MutableRefObject } from 'react';
-import { useUploadImgMutation } from 'services/image';
+import { useUploadImgMutation, usePostBannerImgMutation } from 'services/image';
 
-const useFileUpload = (inputRef: MutableRefObject<null | HTMLInputElement>) => {
+type InputRef = MutableRefObject<null | HTMLInputElement>;
+
+const useFileUpload = (inputRef: InputRef) => {
   const [uploadImgTrigger, uploadImgResult] = useUploadImgMutation();
+  const [uploadBannerImgTrigger, uploadBannerImgResult] = usePostBannerImgMutation();
 
-  const uploadImg = () => {
+  const createFormData = (inputElRef: InputRef) => {
     const formData = new FormData();
-    if (!inputRef?.current) throw new Error('useFileUpload hook, input ref not found');
-    const file = (<FileList>inputRef.current.files)[0];
+    if (!inputElRef?.current) throw new Error('useFileUpload hook, parameter "inputRef" not found');
+    const file = (<FileList>inputElRef.current.files)[0];
     formData.append('image-file', file);
-    uploadImgTrigger(formData);
+    return formData;
   };
+
+  const uploadImg = () => uploadImgTrigger(createFormData(inputRef));
+  const uploadBannerImg = () => uploadBannerImgTrigger(createFormData(inputRef));
 
   return {
     uploadImg,
+    uploadBannerImg,
     uploadImgResult,
+    uploadBannerImgResult,
   };
 };
 

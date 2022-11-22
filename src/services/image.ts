@@ -11,6 +11,11 @@ interface IGetImgsByUidResponse {
   images: IImage[];
 }
 
+interface IUploadBannerImgResponse {
+  message: string;
+  url: string;
+}
+
 const imageApi = createApi({
   reducerPath: 'image',
   baseQuery: fetchBaseQuery({
@@ -31,12 +36,20 @@ const imageApi = createApi({
     getImgByUid: builder.query<IGetImgsByUidResponse, string>({
       query: (userUid) => `/images/${userUid}`,
     }),
+    postBannerImg: builder.mutation<IUploadBannerImgResponse, FormData>({
+      query: (formData) => ({
+        url: '/image/banner',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
   }),
 });
 
 export const {
   useUploadImgMutation,
   useLazyGetImgByUidQuery,
+  usePostBannerImgMutation,
 } = imageApi;
 
 export default imageApi;

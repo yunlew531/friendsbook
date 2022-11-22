@@ -21,9 +21,12 @@ export const userInfoSlice = createSlice({
       };
       state.isLogin = true;
     },
+    postBannerImg(state, { payload }: PayloadAction<string>) {
+      state.profile.banner_img = payload;
+    },
   },
 });
 
-export const { getProfile } = userInfoSlice.actions;
+export const { getProfile, postBannerImg } = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;
