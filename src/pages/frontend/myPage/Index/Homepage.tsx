@@ -131,7 +131,7 @@ const Homepage: React.FC = () => {
   const { data: FriendsResult, isSuccess: isGetFriendsSuccess } = useGetFriendsQuery();
 
   const refreshThumbsUpData = (articleId: string, thumbsUp: IThumbsUp[]) => {
-    dispatch(refreshThumbsUp({ articleId, thumbs_up: thumbsUp }));
+    dispatch(refreshThumbsUp({ articleId, article_likes: thumbsUp }));
   };
 
   const refreshCommentsData = (articleId: string, comments: IComment[]) => {
@@ -194,7 +194,8 @@ const Homepage: React.FC = () => {
               <FriendItem key={friend.uid} onClick={() => navigate(`/${friend.uid}`)}>
                 <FriendItemPhoto online={handleIsOnline(friend.last_seen)}>
                   <img
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+                    src={friend.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+                    onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
                     alt={`user ${friend.name}`}
                   />
                 </FriendItemPhoto>

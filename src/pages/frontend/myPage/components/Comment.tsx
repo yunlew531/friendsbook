@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import dayjs from 'dayjs';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Card from 'components/Card';
 import Btn from 'components/Btn';
 
@@ -100,21 +100,29 @@ interface CommentProps {
 
 // eslint-disable-next-line arrow-body-style
 const Comment: React.FC<CommentProps> = ({ comment }) => {
+  const navigate = useNavigate();
+  const { author, content, created_at: createAt } = comment;
+
   return (
     <CommentItem key={comment.id}>
-      <CommentUserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
+      <CommentUserPhoto
+        src={author?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+        onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
+        alt={author?.name}
+        onClick={() => navigate(`/${author?.uid}`)}
+      />
       <CommentMain>
         <CommentMainHeader>
-          <Link to={`/${comment.author?.uid}`}>
-            <CommentUsername>{comment.author?.name}</CommentUsername>
+          <Link to={`/${author?.uid}`}>
+            <CommentUsername>{author?.name}</CommentUsername>
           </Link>
           <CommentMoreBtn type="button">
             <span className="material-icons-outlined more-icon">more_horiz</span>
           </CommentMoreBtn>
         </CommentMainHeader>
-        <CommentContent>{comment.content}</CommentContent>
+        <CommentContent>{content}</CommentContent>
         <CommentMainFooter>
-          <CommentTime>{dayjs((comment.created_at || 0) * 1000).format('YYYY/MM/DD HH:mm:ss')}</CommentTime>
+          <CommentTime>{dayjs((createAt || 0) * 1000).format('YYYY/MM/DD HH:mm:ss')}</CommentTime>
           <CommentFooterBtn type="button" anime>
             <span className="material-icons-outlined">thumb_up</span>
           </CommentFooterBtn>

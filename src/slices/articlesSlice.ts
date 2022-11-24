@@ -26,11 +26,11 @@ export const articlesSlice = createSlice({
     },
     refreshThumbsUp(
       state,
-      { payload }: PayloadAction<{ articleId:string, thumbs_up: IThumbsUp[] }>,
+      { payload }: PayloadAction<{ articleId:string, article_likes: IThumbsUp[] }>,
     ) {
-      const { articleId, thumbs_up: thumbsUp } = payload;
+      const { articleId, article_likes: thumbsUp } = payload;
       const idx = state.articles.findIndex((article) => article.id === articleId);
-      if (idx !== -1) { state.articles[idx].thumbs_up = thumbsUp; }
+      if (idx !== -1) { state.articles[idx].article_likes = thumbsUp; }
     },
   },
 });

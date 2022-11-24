@@ -12,7 +12,7 @@ import {
 import { useAppSelector } from 'hooks';
 import Comment from 'pages/frontend/MyPage/components/Comment';
 import toast from 'react-hot-toast';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const ArticleCard = styled(Card)<IThemeProps>`
   overflow: hidden;
@@ -23,11 +23,23 @@ const ArticleCard = styled(Card)<IThemeProps>`
   padding: 20px 0 0;
 `;
 
-const Header = styled.div`
+const Header = styled.div<IThemeProps>`
   display: flex;
   align-items: center;
   margin-bottom: 15px;
   padding: 0 20px;
+  a {
+    display: inline-block;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: default;
+    color: ${({ theme }) => theme.color.blue_300};
+    margin-bottom: 3px;
+    transition: color .1s ease-in-out;
+    &:hover {
+      color: ${({ theme }) => theme.color.primary};
+    }
+  }
 `;
 
 const UserPhoto = styled.img<IThemeProps>`
@@ -38,12 +50,10 @@ const UserPhoto = styled.img<IThemeProps>`
   padding: 2px;
   margin-right: 18px;
   border-radius: 100%;
-`;
-
-const HeaderName = styled.p<IThemeProps>`
-  font-weight: 700;
-  color: ${({ theme }) => theme.color.blue_300};
-  margin-bottom: 3px;
+  transition: filter .1s ease-in-out;
+  &:hover {
+    filter: brightness(0.9);
+  }
 `;
 
 const ArticleTime = styled.p<IThemeProps>`
@@ -318,9 +328,10 @@ const Article: React.FC<IArticleProps> = ({
   sale, data, refreshThumbsUp, refreshComments, onDeleteArticle,
 }) => {
   const {
-    author, created_at: publishedAt, content, comments, id: articleId, thumbs_up: thumbsUp,
+    author, created_at: publishedAt, content, comments, id: articleId, article_likes: thumbsUp,
   } = data || {};
   const { uid: paramsUid } = useParams();
+  const navigate = useNavigate();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const [postCommentTrigger, postCommentResult] = usePostCommentMutation();
   const [
@@ -395,7 +406,7 @@ const Article: React.FC<IArticleProps> = ({
       const { isSuccess, isFetching, data: thumbsUpResult } = getThumbsUpByArticleIdResult;
       if (!isSuccess || isFetching) return;
       if (!thumbsUpResult || !articleId) return;
-      const { thumbs_up: thumbsUpData } = thumbsUpResult;
+      const { article_likes: thumbsUpData } = thumbsUpResult;
       refreshThumbsUp(articleId, thumbsUpData);
     };
 
@@ -417,9 +428,14 @@ const Article: React.FC<IArticleProps> = ({
     <li>
       <ArticleCard>
         <Header>
-          <UserPhoto src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" />
+          <UserPhoto
+            src={author?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+            onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
+            alt={author?.name}
+            onClick={() => navigate(`/${author?.uid}`)}
+          />
           <div>
-            <HeaderName>{author?.name}</HeaderName>
+            <Link to={`/${author?.uid}`}>{author?.name}</Link>
             <ArticleTime>{dayjs((publishedAt || 0) * 1000).format('YYYY/MM/DD HH:mm:ss')}</ArticleTime>
           </div>
           <MoreBtnContainer
@@ -470,8 +486,9 @@ const Article: React.FC<IArticleProps> = ({
                   <ThumbsUpUser key={thumbsUpItem.id} className="thumbs-up-user">
                     <Link to={`/${thumbsUpItem.author!.uid}`}>
                       <img
-                        src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80"
-                        alt={thumbsUpItem.author?.name}
+                        src={thumbsUpItem.author?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+                        onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
+                        alt={`user ${thumbsUpItem.author?.name}`}
                       />
                     </Link>
                   </ThumbsUpUser>
@@ -511,7 +528,11 @@ const Article: React.FC<IArticleProps> = ({
           ) : ''
         }
         <InputSection>
-          <img src="https://images.unsplash.com/photo-1622347379811-aa09b950bd5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80" alt="user portrait" />
+          <img
+            src={profile.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+            onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
+            alt={profile.name}
+          />
           <input
             type="text"
             value={commentInput}

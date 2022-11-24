@@ -252,11 +252,11 @@ const User: React.FC = () => {
             {profile?.uid === user?.uid
              && <input ref={avatarInputRef} type="file" onChange={uploadAvatarImg} />}
             <img
-              src={user?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.jpeg`}
+              src={user?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
               alt={user?.name}
               onError={({ currentTarget }) => {
                 currentTarget.onerror = null;
-                currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.jpeg`;
+                currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`;
               }}
             />
           </PhotoContainer>

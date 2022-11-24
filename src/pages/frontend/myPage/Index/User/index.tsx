@@ -116,7 +116,7 @@ const FanIndex: React.FC = () => {
     const index = articles.findIndex((article) => article.id === articleId);
     setArticles((prev) => {
       const tempArticles = [...prev];
-      tempArticles[index].thumbs_up = thumbsUpData;
+      tempArticles[index].article_likes = thumbsUpData;
       return tempArticles;
     });
   };

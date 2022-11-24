@@ -8,7 +8,7 @@ interface IGetPersonalPageArticleResponse {
 
 interface IGetThumbsUpByArticleIdResponse {
   message: string;
-  thumbs_up: IThumbsUp[];
+  article_likes: IThumbsUp[];
 }
 
 interface IGetArticlesByUidResponse {

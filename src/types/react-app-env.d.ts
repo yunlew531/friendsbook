@@ -30,6 +30,7 @@ interface IProfile {
 interface IAuthor {
   uid: string;
   name: string;
+  avatar_url?: string;
 }
 
 interface IArticle {
@@ -38,7 +39,7 @@ interface IArticle {
   created_at?: number;
   author?: IAuthor;
   comments?: IComment[];
-  thumbs_up?: IThumbsUp[];
+  article_likes?: IThumbsUp[];
 }
 
 interface IThumbsUp {
@@ -75,4 +76,5 @@ interface IFriend {
   nickname?: string;
   became_friend_time?: number;
   last_seen?: number;
+  avatar_url?: string;
 }
