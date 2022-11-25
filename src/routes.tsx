@@ -21,6 +21,7 @@ import General from 'pages/frontend/MyPage/Index/Settings/General';
 import Account from 'pages/frontend/MyPage/Index/Settings/Account';
 import User from 'pages/frontend/MyPage/Index/User';
 import UserIndex from 'pages/frontend/MyPage/Index/User/index';
+import Friends from 'pages/frontend/MyPage/Index/User/Friends';
 
 const routes: RouteObject[] = [
   {
@@ -113,6 +114,10 @@ const routes: RouteObject[] = [
           //   path: '/:uid/photos',
           //   element: <FanPhotos />,
           // },
+          {
+            path: '/:uid/friends',
+            element: <Friends />,
+          },
           // {
           //   path: '/:uid/clubs',
           //   element: <FanAbout />,

@@ -8,7 +8,11 @@ interface IGetRecommendFriendsResponse {
 
 interface IGetFriendsResponse {
   message: string;
-  friends: IFriend[];
+  friends: {
+    connected: IFriend[],
+    received: IFriend[],
+    sent: IFriend[],
+  };
 }
 
 const friendApi = createApi({
@@ -24,10 +28,14 @@ const friendApi = createApi({
     getRecommendFriends: builder.query<IGetRecommendFriendsResponse, number | void>({
       query: (num = 10) => `/friends/recommend/${num}`,
     }),
-    addFriend: builder.query<{ message: string }, string>({
-      query: (userId) => `/friend/add/${userId}`,
+    addFriend: builder.mutation<{ message: string }, string>({
+      query: (userId) => ({
+        url: `/friend/add/${userId}`,
+        method: 'POST',
+        body: {},
+      }),
     }),
-    getFriends: builder.query<IGetFriendsResponse, void>({
+    getFriendsByToken: builder.query<IGetFriendsResponse, void>({
       query: () => '/friends',
     }),
   }),
@@ -35,9 +43,9 @@ const friendApi = createApi({
 
 export const {
   useGetRecommendFriendsQuery,
-  useLazyAddFriendQuery,
-  useGetFriendsQuery,
-  useLazyGetFriendsQuery,
+  useAddFriendMutation,
+  useGetFriendsByTokenQuery,
+  useLazyGetFriendsByTokenQuery,
 } = friendApi;
 
 export default friendApi;

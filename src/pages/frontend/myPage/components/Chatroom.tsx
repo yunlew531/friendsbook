@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
+// import { useAppSelector } from 'hooks';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -223,8 +224,6 @@ const MsgItem = styled.li<IThemeProps & IMsgItemProps>`
 `;
 
 const Footer = styled.div<IThemeProps>`
-  position: absolute;
-  bottom: 0;
   display: flex;
   width: 100%;
   border-top: 1px solid ${({ theme }) => theme.color.gray_400};
@@ -265,6 +264,7 @@ const ThumbsUpBtn = styled(Btn)<IThemeProps>`
 `;
 
 const Chatroom: React.FC = () => {
+  // const profile = useAppSelector((state) => state.userInfo.profile);
   const [isChatroomShow, setIsChatroomShow] = useState(false);
   const [isChatroomUnFold, setIsChatroomUnFold] = useState(false);
   const [isMoreListShow, setIsMoreListShow] = useState(false);
@@ -272,104 +272,78 @@ const Chatroom: React.FC = () => {
 
   return (
     <Wrap>
-      <ChatroomEl
-        show={isChatroomShow}
-        unfold={isChatroomUnFold}
-        onClick={() => setIsChatroomUnFold(true)}
-      >
-        <Header>
-          <UsernameContainer>
-            <UsernameBtn
-              type="button"
-              active={isMoreListShow}
-              onClick={() => {
-                if (isChatroomUnFold)setIsMoreListShow(!isMoreListShow);
-              }}
-            >Tom Tom
-              <span className="material-icons-outlined">expand_more</span>
-            </UsernameBtn>
-            <MoreList show={isMoreListShow}>
-              <MoreItem>建立群聊</MoreItem>
-              <MoreItem>
-                <Link to="/user/userId">前往頁面</Link>
-              </MoreItem>
-            </MoreList>
-          </UsernameContainer>
-          <HeaderBtnGroup>
-            <button
-              type="button"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.stopPropagation();
-                setIsChatroomUnFold(false);
-              }}
-            >
-              <span className="material-icons-outlined">remove</span>
-            </button>
-            <button type="button" onClick={() => setIsChatroomShow(false)}>
-              <span className="material-icons-outlined">close</span>
-            </button>
-          </HeaderBtnGroup>
-        </Header>
-        <MsgList>
-          <MsgItem isMyself>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>1</p>
-          </MsgItem>
-          <MsgItem isMyself>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>1</p>
-          </MsgItem>
-          <MsgItem isMyself={false}>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat officiis quidem
-              voluptatem ipsum ipsa dolor iusto quod, perspiciatis quisquam iste. Officiis
-              doloremque alias esse. Veniam unde dolor sed vero aspernatur pariatur officia
-              eligendi dolorem quia molestias laboriosam ab, quos minima similique culpa quo
-              ßperspiciatis eveniet doloribus aut! Nesciunt, ipsam a?
-            </p>
-          </MsgItem>
-          <MsgItem isMyself>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat officiis quidem
-              voluptatem ipsum ipsa dolor iusto quod, perspiciatis quisquam iste. Officiis
-              doloremque alias esse. Veniam unde dolor sed vero aspernatur pariatur officia
-              eligendi dolorem quia molestias laboriosam ab, quos minima similique culpa quo
-              ßperspiciatis eveniet doloribus aut! Nesciunt, ipsam a?
-            </p>
-          </MsgItem>
-          <MsgItem isMyself={false}>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>1</p>
-          </MsgItem>
-          <MsgItem isMyself>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>1</p>
-          </MsgItem>
-          <MsgItem isMyself>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>1</p>
-          </MsgItem>
-          <MsgItem isMyself>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>1</p>
-          </MsgItem>
-          <MsgItem isMyself={false}>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>1</p>
-          </MsgItem>
-          <MsgItem isMyself>
-            <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
-            <p>1</p>
-          </MsgItem>
-        </MsgList>
-        <Footer>
-          <Input />
-          <SendMsgBtn type="button" anime>送出</SendMsgBtn>
-          <ThumbsUpBtn type="button" anime>
-            <span className="material-icons">thumb_up</span>
-          </ThumbsUpBtn>
-        </Footer>
-      </ChatroomEl>
+      {Array.from({ length: 2 }).map((item, key) => (
+        <ChatroomEl
+          // eslint-disable-next-line react/no-array-index-key
+          key={key}
+          show={isChatroomShow}
+          unfold={isChatroomUnFold}
+          onClick={() => setIsChatroomUnFold(true)}
+        >
+          <Header>
+            <UsernameContainer>
+              <UsernameBtn
+                type="button"
+                active={isMoreListShow}
+                onClick={() => {
+                  if (isChatroomUnFold)setIsMoreListShow(!isMoreListShow);
+                }}
+              >Tom Tom
+                <span className="material-icons-outlined">expand_more</span>
+              </UsernameBtn>
+              <MoreList show={isMoreListShow}>
+                <MoreItem>建立群聊</MoreItem>
+                <MoreItem>
+                  <Link to="/user/userId">前往頁面</Link>
+                </MoreItem>
+              </MoreList>
+            </UsernameContainer>
+            <HeaderBtnGroup>
+              <button
+                type="button"
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.stopPropagation();
+                  setIsChatroomUnFold(false);
+                }}
+              >
+                <span className="material-icons-outlined">remove</span>
+              </button>
+              <button type="button" onClick={() => setIsChatroomShow(false)}>
+                <span className="material-icons-outlined">close</span>
+              </button>
+            </HeaderBtnGroup>
+          </Header>
+          <MsgList>
+            <MsgItem isMyself>
+              <img
+                className="user-photo"
+                src=""
+            // src={friend.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+                onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
+                alt="user"
+              />
+              <p>1</p>
+            </MsgItem>
+            <MsgItem isMyself={false}>
+              <img className="user-photo" src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80" alt="user" />
+              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat officiis quidem
+                voluptatem ipsum ipsa dolor iusto quod, perspiciatis quisquam iste. Officiis
+                doloremque alias esse. Veniam unde dolor sed vero aspernatur pariatur officia
+                eligendi dolorem quia molestias laboriosam ab, quos minima similique culpa quo
+                ßperspiciatis eveniet doloribus aut! Nesciunt, ipsam a?
+              </p>
+            </MsgItem>
+          </MsgList>
+          <Footer>
+            <Input />
+            <SendMsgBtn type="button" anime>送出</SendMsgBtn>
+            <ThumbsUpBtn type="button" anime>
+              <span className="material-icons">thumb_up</span>
+            </ThumbsUpBtn>
+          </Footer>
+        </ChatroomEl>
+      ))}
+
       <ChatroomList unfold={isChatRoomListFold}>
         {
           new Array(3).fill(null).map((item, idx) => (

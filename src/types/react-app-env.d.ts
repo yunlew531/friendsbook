@@ -78,3 +78,9 @@ interface IFriend {
   last_seen?: number;
   avatar_url?: string;
 }
+
+interface IFriends {
+  connected: IFriend[],
+  received: IFriend[],
+  sent: IFriend[],
+}

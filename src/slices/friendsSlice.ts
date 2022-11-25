@@ -2,18 +2,22 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 interface IInitialState {
-  friends: IFriend[];
+  friends: IFriends;
 }
 
 const initialState: IInitialState = {
-  friends: [],
+  friends: {
+    connected: [],
+    received: [],
+    sent: [],
+  },
 };
 
 export const friendsSlice = createSlice({
   name: 'friends',
   initialState,
   reducers: {
-    getFriends(state, { payload }: PayloadAction<IFriend[]>) {
+    getFriends(state, { payload }: PayloadAction<IFriends>) {
       state.friends = payload;
     },
   },

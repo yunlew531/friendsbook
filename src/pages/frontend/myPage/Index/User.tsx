@@ -144,7 +144,7 @@ const User: React.FC = () => {
   const [imgs, setImgs] = useState<IImage[]>([]);
   const [user, setUser] = useState<IProfile>();
 
-  const navLinks = useRef([
+  const navLinks = [
     {
       title: '貼文',
       to: `/${paramUid}`,
@@ -158,6 +158,10 @@ const User: React.FC = () => {
       to: `/${paramUid}/photos`,
     },
     {
+      title: '好友',
+      to: `/${paramUid}/friends`,
+    },
+    {
       title: '社團',
       to: `/${paramUid}/clubs`,
     },
@@ -165,7 +169,7 @@ const User: React.FC = () => {
       title: '說讚的內容',
       to: `/${paramUid}/fans`,
     },
-  ]);
+  ];
 
   useEffect(() => {
     if (paramUid) {
@@ -227,7 +231,7 @@ const User: React.FC = () => {
         {
           user?.uid === profile?.uid && (
           <UploadBannerImgBtnContainer>
-            <p>加上封面相片</p>
+            <p>封面相片</p>
             <input ref={bannerInputRef} type="file" onChange={uploadBannerImg} />
           </UploadBannerImgBtnContainer>
           )
@@ -265,13 +269,17 @@ const User: React.FC = () => {
           <HeaderTextSection>
             <Title>{user?.nickname || user?.name}</Title>
           </HeaderTextSection>
-          <HeaderBtn type="button" anime>
-            <span className="material-icons-round">question_answer</span>
-            傳送訊息
-          </HeaderBtn>
+          {
+            paramUid !== profile.uid && (
+            <HeaderBtn type="button" anime>
+              <span className="material-icons-round">question_answer</span>
+              傳送訊息
+            </HeaderBtn>
+            )
+          }
         </HeaderMain>
       </Header>
-      <Navbar links={navLinks.current} />
+      <Navbar links={navLinks} />
       <Outlet context={{ imgs, setImgs }} />
     </Wrap>
   );

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import CardTitle from 'components/CardTitle';
 import Btn, { MoreBtn } from 'components/Btn';
-import { useGetRecommendFriendsQuery, useLazyAddFriendQuery, useLazyGetFriendsQuery } from 'services/friend';
+import { useGetRecommendFriendsQuery, useAddFriendMutation, useLazyGetFriendsByTokenQuery } from 'services/friend';
 import handleIsOnline from 'utils/handleIsOnline';
 import { useAppDispatch } from 'hooks';
 import { getFriends } from 'slices/friendsSlice';
@@ -93,8 +93,8 @@ const Follow: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { data: recommendFriendsResult } = useGetRecommendFriendsQuery();
-  const [addFriendTrigger, addFriendResult] = useLazyAddFriendQuery();
-  const [getFriendsTrigger, getFriendsResult] = useLazyGetFriendsQuery();
+  const [addFriendTrigger, addFriendResult] = useAddFriendMutation();
+  const [getFriendsTrigger, getFriendsResult] = useLazyGetFriendsByTokenQuery();
   const [recommendFriends, setRecommendFriends] = useState<IProfile[]>([]);
   const currentAddFriendUidRef = useRef('');
 
@@ -109,9 +109,9 @@ const Follow: React.FC = () => {
 
   useEffect(() => {
     const handleAddFriendResult = () => {
-      const { isSuccess, isFetching } = addFriendResult;
-      if (!isSuccess || isFetching) return;
-      toast.success('成功加入好友!');
+      const { isSuccess, isLoading } = addFriendResult;
+      if (!isSuccess || isLoading) return;
+      toast.success('已傳送好友邀請，等待對方回復!');
       getFriendsTrigger();
       const addFriendIndex = recommendFriends
         .findIndex((friend) => friend.uid === currentAddFriendUidRef.current);
@@ -129,6 +129,8 @@ const Follow: React.FC = () => {
     const handleGetFriendsByToken = () => {
       const { data, isSuccess, isFetching } = getFriendsResult;
       if (!isSuccess || isFetching) return;
+      console.log(data.friends);
+
       dispatch(getFriends(data.friends));
     };
 

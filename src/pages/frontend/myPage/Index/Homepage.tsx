@@ -1,21 +1,19 @@
 import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import Stories from 'pages/frontend/MyPage/components/Stories';
-import { MoreBtn } from 'components/Btn';
+import Btn, { MoreBtn } from 'components/Btn';
 import CardTitle from 'components/CardTitle';
 import PublishPanel from 'components/PublishPanel';
 import { useGetPersonalPageArticleQuery, useLazyGetPersonalPageArticleQuery } from 'services/article';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { getArticles, refreshComments, refreshThumbsUp } from 'slices/articlesSlice';
 import { getFriends } from 'slices/friendsSlice';
-import { useGetFriendsQuery } from 'services/friend';
-import handleIsOnline from 'utils/handleIsOnline';
+import { useGetFriendsByTokenQuery } from 'services/friend';
 import Article from 'pages/frontend/MyPage/components/Article';
-import dayjs from 'utils/dayjs';
 import convertArticleStrToObject from 'utils/convertArticleStrToObject';
-import { useNavigate } from 'react-router-dom';
-import Events from '../components/Events';
-import Follow from '../components/Follow';
+import Friend from 'pages/frontend/MyPage/components/Friend';
+import Events from 'pages/frontend/MyPage/components/Events';
+import Follow from 'pages/frontend/MyPage/components/Follow';
 
 const Wrap = styled.div<IThemeProps>`
   display: flex;
@@ -35,66 +33,7 @@ const ContactHeader = styled.div`
 
 const FriendList = styled.ul<IThemeProps>`
   list-style: none;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid ${({ theme }) => theme.color.gray_400};
   margin: 10px 0 20px;
-`;
-
-const FriendItem = styled.li<IThemeProps>`
-  display: flex;
-  align-items: center;
-  background-color: ${({ theme }) => theme.cardColor};  
-  border-bottom: 1px solid ${({ theme }) => theme.color.gray_400};
-  padding: 11px 23px;
-  .link-name {
-    font-weight: 700;
-    color: ${({ theme }) => theme.color.gray_500};
-  }
-  &:first-of-type {
-    border-radius: 8px 8px 0 0;
-  }
-  &:last-of-type {
-    border-radius: 0 0 8px 8px;
-    border-bottom: none;
-  }
-  &:hover {
-    filter: brightness(0.95);
-  }
-  &:active {
-    filter: brightness(0.9);
-  }
-`;
-
-const FriendItemPhoto = styled.div<IThemeProps & { online: boolean }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  border: 2px solid ${({ online, theme: { color: { green_100 } } }) => (online ? green_100 : 'transparent')};
-  overflow: hidden;
-  margin-right: 15px;
-  img {
-    width: 100%;
-    height: 100%;
-    border-radius: 100%;
-    border: 1px solid ${({ theme }) => theme.color.white_100};
-  }
-`;
-
-const FriendItemMain = styled.div<IThemeProps>`
-  flex-grow: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: ${({ theme }) => theme.fontSizes.fs_4};
-  color: ${({ theme }) => theme.color.gray_500};
-  cursor: default;
-  .last-seen {
-    text-align: center;
-    line-height: 1.3;
-    color: ${({ theme }) => theme.color.gray_300};
-    font-size: ${({ theme }) => theme.fontSizes.fs_5};
-  }
 `;
 
 const MainContent = styled.main`
@@ -119,16 +58,29 @@ const StoriesSection = styled.div`
   width: 360px;
 `;
 
+const SendMessageBtn = styled(Btn)<IThemeProps>`
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.color.white_100};
+  border-radius: 5px;
+  padding: 5px;
+  &:hover {
+    filter: brightness(0.9);
+  }
+  &:active {
+    filter: brightness(0.8);
+  }
+`;
+
 const Homepage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const articles = useAppSelector((state) => state.articles.articles);
   const {
     isSuccess: isGetArticlesSuccess,
     data: articlesResult,
   } = useGetPersonalPageArticleQuery();
   const [getPersonalPageArticleTrigger, articlesLazyResult] = useLazyGetPersonalPageArticleQuery();
-  const { data: FriendsResult, isSuccess: isGetFriendsSuccess } = useGetFriendsQuery();
+  const { data: FriendsResult, isSuccess: isGetFriendsSuccess } = useGetFriendsByTokenQuery();
 
   const refreshThumbsUpData = (articleId: string, thumbsUp: IThumbsUp[]) => {
     dispatch(refreshThumbsUp({ articleId, article_likes: thumbsUp }));
@@ -190,24 +142,19 @@ const Homepage: React.FC = () => {
         </ContactHeader>
         <FriendList>
           {
-            FriendsResult?.friends?.map((friend) => (
-              <FriendItem key={friend.uid} onClick={() => navigate(`/${friend.uid}`)}>
-                <FriendItemPhoto online={handleIsOnline(friend.last_seen)}>
-                  <img
-                    src={friend.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
-                    onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
-                    alt={`user ${friend.name}`}
-                  />
-                </FriendItemPhoto>
-                <FriendItemMain>
-                  <p className="link-name">{friend.nickname || friend.name}</p>
-                  {friend.last_seen && (
-                  <p className="last-seen">最後上線<br />
-                    {dayjs(friend.last_seen * 1000).fromNow()}
-                  </p>
-                  )}
-                </FriendItemMain>
-              </FriendItem>
+            FriendsResult?.friends.connected.map((friend) => (
+              <Friend
+                key={friend.uid}
+                friend={friend}
+                length={FriendsResult?.friends.connected.length}
+              >
+                <SendMessageBtn
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); }}
+                >
+                  <span className="material-icons-outlined">sms</span>
+                </SendMessageBtn>
+              </Friend>
             ))
           }
         </FriendList>
