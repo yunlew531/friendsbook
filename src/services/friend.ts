@@ -8,11 +8,7 @@ interface IGetRecommendFriendsResponse {
 
 interface IGetFriendsResponse {
   message: string;
-  friends: {
-    connected: IFriend[],
-    received: IFriend[],
-    sent: IFriend[],
-  };
+  friends: IFriends;
 }
 
 const friendApi = createApi({
@@ -28,9 +24,9 @@ const friendApi = createApi({
     getRecommendFriends: builder.query<IGetRecommendFriendsResponse, number | void>({
       query: (num = 10) => `/friends/recommend/${num}`,
     }),
-    addFriend: builder.mutation<{ message: string }, string>({
-      query: (userId) => ({
-        url: `/friend/add/${userId}`,
+    sentFriendInvite: builder.mutation<{ message: string }, string>({
+      query: (userUid) => ({
+        url: `/friend/invite/${userUid}`,
         method: 'POST',
         body: {},
       }),
@@ -38,14 +34,28 @@ const friendApi = createApi({
     getFriendsByToken: builder.query<IGetFriendsResponse, void>({
       query: () => '/friends',
     }),
+    removeFriendInvite: builder.mutation<{ message: string, code: number }, string>({
+      query: (friendId) => ({
+        url: `/friend/invite/${friendId}`,
+        method: 'DELETE',
+      }),
+    }),
+    deleteFriend: builder.mutation<{ message: string }, string>({
+      query: (friendId) => ({
+        url: `/friend/${friendId}`,
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
 export const {
   useGetRecommendFriendsQuery,
-  useAddFriendMutation,
+  useSentFriendInviteMutation,
   useGetFriendsByTokenQuery,
   useLazyGetFriendsByTokenQuery,
+  useRemoveFriendInviteMutation,
+  useDeleteFriendMutation,
 } = friendApi;
 
 export default friendApi;

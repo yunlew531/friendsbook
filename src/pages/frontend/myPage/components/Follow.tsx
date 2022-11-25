@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import CardTitle from 'components/CardTitle';
 import Btn, { MoreBtn } from 'components/Btn';
-import { useGetRecommendFriendsQuery, useAddFriendMutation, useLazyGetFriendsByTokenQuery } from 'services/friend';
+import { useGetRecommendFriendsQuery, useSentFriendInviteMutation, useLazyGetFriendsByTokenQuery } from 'services/friend';
 import handleIsOnline from 'utils/handleIsOnline';
 import { useAppDispatch } from 'hooks';
 import { getFriends } from 'slices/friendsSlice';
@@ -93,7 +93,7 @@ const Follow: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { data: recommendFriendsResult } = useGetRecommendFriendsQuery();
-  const [addFriendTrigger, addFriendResult] = useAddFriendMutation();
+  const [sentFriendInviteTrigger, sentFriendInviteResult] = useSentFriendInviteMutation();
   const [getFriendsTrigger, getFriendsResult] = useLazyGetFriendsByTokenQuery();
   const [recommendFriends, setRecommendFriends] = useState<IProfile[]>([]);
   const currentAddFriendUidRef = useRef('');
@@ -108,8 +108,8 @@ const Follow: React.FC = () => {
   }, [recommendFriendsResult]);
 
   useEffect(() => {
-    const handleAddFriendResult = () => {
-      const { isSuccess, isLoading } = addFriendResult;
+    const handleSentFriendInviteResult = () => {
+      const { isSuccess, isLoading } = sentFriendInviteResult;
       if (!isSuccess || isLoading) return;
       toast.success('已傳送好友邀請，等待對方回復!');
       getFriendsTrigger();
@@ -122,8 +122,8 @@ const Follow: React.FC = () => {
       });
     };
 
-    handleAddFriendResult();
-  }, [addFriendResult]);
+    handleSentFriendInviteResult();
+  }, [sentFriendInviteResult]);
 
   useEffect(() => {
     const handleGetFriendsByToken = () => {
@@ -162,7 +162,7 @@ const Follow: React.FC = () => {
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
                   currentAddFriendUidRef.current = recommendFriend.uid!;
-                  addFriendTrigger(recommendFriend.uid!);
+                  sentFriendInviteTrigger(recommendFriend.uid!);
                 }}
               >
                 <span className="material-icons-outlined person-add-icon">person_add</span>

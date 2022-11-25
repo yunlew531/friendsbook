@@ -71,6 +71,7 @@ interface IErrorResult {
 }
 
 interface IFriend {
+  id?: string;
   uid?: string;
   name?: string;
   nickname?: string;
@@ -80,7 +81,8 @@ interface IFriend {
 }
 
 interface IFriends {
-  connected: IFriend[],
-  received: IFriend[],
-  sent: IFriend[],
+  connected: IFriend[];
+  received: IFriend[];
+  sent: IFriend[];
+  [key: string]: IFriend[];
 }
