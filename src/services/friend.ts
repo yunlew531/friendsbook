@@ -11,6 +11,11 @@ interface IGetFriendsResponse {
   friends: IFriends;
 }
 
+interface IGetFriendsByUidResponse {
+  message: string;
+  friends: IFriend[];
+}
+
 const friendApi = createApi({
   reducerPath: 'friend',
   baseQuery: fetchBaseQuery({
@@ -33,6 +38,9 @@ const friendApi = createApi({
     }),
     getFriendsByToken: builder.query<IGetFriendsResponse, void>({
       query: () => '/friends',
+    }),
+    getFriendsByUid: builder.query<IGetFriendsByUidResponse, string>({
+      query: (userUid) => `/friends/${userUid}`,
     }),
     removeFriendInvite: builder.mutation<{ message: string, code: number }, string>({
       query: (friendId) => ({
@@ -59,6 +67,7 @@ export const {
   useGetRecommendFriendsQuery,
   useSentFriendInviteMutation,
   useGetFriendsByTokenQuery,
+  useLazyGetFriendsByUidQuery,
   useLazyGetFriendsByTokenQuery,
   useRemoveFriendInviteMutation,
   useDeleteFriendMutation,

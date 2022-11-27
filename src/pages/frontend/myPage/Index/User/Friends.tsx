@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Friend from 'pages/frontend/MyPage/components/Friend';
 import {
   useAgreeToBeFriendMutation, useDeleteFriendMutation, useLazyGetFriendsByTokenQuery,
+  useLazyGetFriendsByUidQuery,
   useRemoveFriendInviteMutation,
 } from 'services/friend';
 import { getFriends } from 'slices/friendsSlice';
@@ -99,13 +100,17 @@ const Friends: React.FC = () => {
   const [friends, setFriends] = useState<IFriends>({ connected: [], received: [], sent: [] });
   const [removeFriendInviteTrigger, removeFriendInviteResult] = useRemoveFriendInviteMutation();
   const [getFriendsByTokenTrigger, getFriendsByTokenResult] = useLazyGetFriendsByTokenQuery();
+  const [getFriendsByUidTrigger, getFriendsByUidResult] = useLazyGetFriendsByUidQuery();
   const [deleteFriend, deleteFriendResult] = useDeleteFriendMutation();
   const [agreeToBeFriendTrigger, agreeToBeFriendResult] = useAgreeToBeFriendMutation();
   const tempFriendUid = useRef('');
 
   useEffect(() => {
-    if (paramUid === profile.uid) getFriendsByTokenTrigger();
-  }, [profile.uid]);
+    if (paramUid) {
+      if (paramUid === profile.uid) getFriendsByTokenTrigger();
+      else getFriendsByUidTrigger(paramUid);
+    }
+  }, [profile.uid, paramUid]);
 
   useEffect(() => {
     const handleGetFriendsApi = () => {
@@ -117,6 +122,19 @@ const Friends: React.FC = () => {
 
     handleGetFriendsApi();
   }, [getFriendsByTokenResult]);
+
+  useEffect(() => {
+    const handleGetFriendsApi = () => {
+      const { isSuccess, isFetching, data } = getFriendsByUidResult;
+      if (!isSuccess || isFetching) return;
+      setFriends((prev) => ({
+        ...prev,
+        connected: data.friends,
+      }));
+    };
+
+    handleGetFriendsApi();
+  }, [getFriendsByUidResult]);
 
   useEffect(() => {
     const handleRemoveFriendInviteApi = () => {
@@ -253,15 +271,19 @@ const Friends: React.FC = () => {
                   >
                     <span className="material-icons-outlined">sms</span>
                   </FriendItemBtn>
-                  <CancelInviteFriendBtn
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteFriend(friend.id!);
-                      tempFriendUid.current = friend.uid!;
-                    }}
-                  >移除
-                  </CancelInviteFriendBtn>
+                  {
+                    paramUid === profile.uid && (
+                    <CancelInviteFriendBtn
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteFriend(friend.id!);
+                        tempFriendUid.current = friend.uid!;
+                      }}
+                    >移除
+                    </CancelInviteFriendBtn>
+                    )
+                  }
                 </BtnContainer>
               </Friend>
             ))
