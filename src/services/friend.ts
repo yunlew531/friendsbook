@@ -40,6 +40,12 @@ const friendApi = createApi({
         method: 'DELETE',
       }),
     }),
+    agreeToBeFriend: builder.mutation({
+      query: (friendId) => ({
+        url: `/friend/invite/${friendId}`,
+        method: 'PATCH',
+      }),
+    }),
     deleteFriend: builder.mutation<{ message: string }, string>({
       query: (friendId) => ({
         url: `/friend/${friendId}`,
@@ -56,6 +62,7 @@ export const {
   useLazyGetFriendsByTokenQuery,
   useRemoveFriendInviteMutation,
   useDeleteFriendMutation,
+  useAgreeToBeFriendMutation,
 } = friendApi;
 
 export default friendApi;

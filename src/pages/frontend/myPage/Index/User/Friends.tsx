@@ -3,7 +3,10 @@ import Card from 'components/Card';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import React, { useEffect, useRef, useState } from 'react';
 import Friend from 'pages/frontend/MyPage/components/Friend';
-import { useDeleteFriendMutation, useLazyGetFriendsByTokenQuery, useRemoveFriendInviteMutation } from 'services/friend';
+import {
+  useAgreeToBeFriendMutation, useDeleteFriendMutation, useLazyGetFriendsByTokenQuery,
+  useRemoveFriendInviteMutation,
+} from 'services/friend';
 import { getFriends } from 'slices/friendsSlice';
 import Btn from 'components/Btn';
 import { useParams } from 'react-router-dom';
@@ -97,6 +100,7 @@ const Friends: React.FC = () => {
   const [removeFriendInviteTrigger, removeFriendInviteResult] = useRemoveFriendInviteMutation();
   const [getFriendsByTokenTrigger, getFriendsByTokenResult] = useLazyGetFriendsByTokenQuery();
   const [deleteFriend, deleteFriendResult] = useDeleteFriendMutation();
+  const [agreeToBeFriendTrigger, agreeToBeFriendResult] = useAgreeToBeFriendMutation();
   const tempFriendUid = useRef('');
 
   useEffect(() => {
@@ -164,6 +168,17 @@ const Friends: React.FC = () => {
     handleDeleteFriendApi();
   }, [deleteFriendResult]);
 
+  useEffect(() => {
+    const handleAgreeToBeFriendApi = () => {
+      const { isSuccess, isLoading } = agreeToBeFriendResult;
+      if (!isSuccess || isLoading) return;
+      toast.success('新增好友!');
+      getFriendsByTokenTrigger();
+    };
+
+    handleAgreeToBeFriendApi();
+  }, [agreeToBeFriendResult]);
+
   return (
     <Wrap>
       {
@@ -176,7 +191,15 @@ const Friends: React.FC = () => {
             friends.received.map((friend) => (
               <Friend key={friend.uid} friend={friend} length={friends.received.length}>
                 <BtnContainer>
-                  <ApproveBeFriendBtn type="button">同意</ApproveBeFriendBtn>
+                  <ApproveBeFriendBtn
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      agreeToBeFriendTrigger(friend.id);
+                      tempFriendUid.current = friend.uid!;
+                    }}
+                  >同意
+                  </ApproveBeFriendBtn>
                   <CancelInviteFriendBtn
                     type="button"
                     onClick={(e) => {
