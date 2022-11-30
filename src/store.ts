@@ -5,10 +5,12 @@ import userApi from 'services/user';
 import imageApi from 'services/image';
 import articleApi from 'services/article';
 import friendApi from 'services/friend';
+import chatroomApi from 'services/chatroom';
 import { combineReducers } from 'redux';
 import articlesReducer, { articlesSlice } from 'slices/articlesSlice';
 import friendsReducer, { friendsSlice } from 'slices/friendsSlice';
 import userInfoReducer, { userInfoSlice } from 'slices/userInfoSlice';
+import chatroomsReducer, { chatroomsSlice } from 'slices/chatroomsSlice';
 
 const reducers = combineReducers({
   [accountApi.reducerPath]: accountApi.reducer,
@@ -16,9 +18,11 @@ const reducers = combineReducers({
   [imageApi.reducerPath]: imageApi.reducer,
   [articleApi.reducerPath]: articleApi.reducer,
   [friendApi.reducerPath]: friendApi.reducer,
+  [chatroomApi.reducerPath]: chatroomApi.reducer,
   [userInfoSlice.name]: userInfoReducer,
   [articlesSlice.name]: articlesReducer,
   [friendsSlice.name]: friendsReducer,
+  [chatroomsSlice.name]: chatroomsReducer,
 });
 
 const store = configureStore({
@@ -29,6 +33,7 @@ const store = configureStore({
     .concat(imageApi.middleware)
     .concat(articleApi.middleware)
     .concat(friendApi.middleware)
+    .concat(chatroomApi.middleware)
     .concat(rtkQueryErrorLogger),
 });
 
