@@ -75,7 +75,7 @@ interface IFriend {
   uid?: string;
   name?: string;
   nickname?: string;
-  became_friend_time?: number;
+  connected_time?: number;
   last_seen?: number;
   avatar_url?: string;
 }
@@ -86,3 +86,22 @@ interface IFriends {
   sent: IFriend[];
   [key: string]: IFriend[];
 }
+
+interface IChatroom {
+  id?: string;
+  name?: string;
+  type?: 1 | 2; // 1 = one to one, 2 = multiple
+  avatar_url?: string;
+  chats: IChat[];
+}
+
+interface IChat {
+  id?: string;
+  user_uid?: string;
+  content?: string;
+  created_at?: number;
+  status?: 1 | 2; // 1 = normal, 2 = delete
+  read_users?: string[];
+}
+
+type ChatroomType = 'oneToOne' | 'multiple' | null;

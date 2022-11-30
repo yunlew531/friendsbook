@@ -1,8 +1,9 @@
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
 // import { useAppSelector } from 'hooks';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { io, Socket } from 'socket.io-client';
 
 const Wrap = styled.div`
   position: fixed;
@@ -48,8 +49,18 @@ const HideChatroomBtn = styled(Btn)<IThemeProps>`
 `;
 
 const ChatroomItem = styled.li<IThemeProps>`
-  margin-bottom: 5px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadow.s};
+  border-radius: 100%;
+  cursor: default;
+  user-select: none;
   transition: transform .1s ease-in-out;
+  margin-bottom: 5px;
   img {
     width: 50px;
     height: 50px;
@@ -64,15 +75,16 @@ const ChatroomItem = styled.li<IThemeProps>`
   &:active {
     transform: scale(0.95);
   }
+  &.add-chatroom-btn {
+    margin-bottom: 10px;
+  }
 `;
 
 interface IChatroomElProps {
   unfold: boolean;
-  show: boolean;
 }
 
 const ChatroomEl = styled.div<IThemeProps & IChatroomElProps>`
-  display: ${({ show }) => (show ? 'block' : 'none')};
   position: relative;
   align-self: flex-end;
   transform: ${({ unfold }) => (unfold ? 'translateY(0)' : 'translateY(355px)')} ;
@@ -263,12 +275,39 @@ const ThumbsUpBtn = styled(Btn)<IThemeProps>`
   }
 `;
 
-const Chatroom: React.FC = () => {
+interface IChatroomProps {
+  showCreateChatRoomModel: () => void;
+}
+
+const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel }) => {
   // const profile = useAppSelector((state) => state.userInfo.profile);
-  const [isChatroomShow, setIsChatroomShow] = useState(false);
-  const [isChatroomUnFold, setIsChatroomUnFold] = useState(false);
-  const [isMoreListShow, setIsMoreListShow] = useState(false);
+  // const [isMoreListShow, setIsMoreListShow] = useState(false);
   const [isChatRoomListFold, setIsChatRoomListFold] = useState(false);
+  // const [isConnected, setIsConnected] = useState(socket.connected);
+  const [ws, setWs] = useState<Socket>();
+  const [chatroomIcons, setChatroomIcons] = useState<IChatroom[]>([]);
+
+  useEffect(() => {
+    setWs(io('http://localhost:5500'));
+
+    return () => {
+      ws?.off('connect');
+      ws?.off('disconnect');
+      ws?.off('pong');
+    };
+  }, []);
+
+  useEffect(() => {
+    // setInterval(() => {
+    ws?.emit('msg', 'hello');
+    // }, 1000);
+    ws?.on('msgs', (msg: string) => {
+      console.log(msg);
+    });
+    ws?.on('connect', () => {
+      console.log(ws?.id); // x8WIv7-mJelg7on_ALbx
+    });
+  }, [ws]);
 
   return (
     <Wrap>
@@ -276,23 +315,30 @@ const Chatroom: React.FC = () => {
         <ChatroomEl
           // eslint-disable-next-line react/no-array-index-key
           key={key}
-          show={isChatroomShow}
-          unfold={isChatroomUnFold}
-          onClick={() => setIsChatroomUnFold(true)}
+          // unfold={isChatroomUnFold = true}
+          unfold
+          // onClick={() => setIsChatroomUnFold(true)}
         >
           <Header>
             <UsernameContainer>
               <UsernameBtn
                 type="button"
-                active={isMoreListShow}
+                // active={isMoreListShow}
+                active
                 onClick={() => {
-                  if (isChatroomUnFold)setIsMoreListShow(!isMoreListShow);
+                  // if (isChatroomUnFold)setIsMoreListShow(!isMoreListShow);
                 }}
               >Tom Tom
                 <span className="material-icons-outlined">expand_more</span>
               </UsernameBtn>
-              <MoreList show={isMoreListShow}>
-                <MoreItem>建立群聊</MoreItem>
+              <MoreList show>
+                {/* <MoreList show={isMoreListShow}> */}
+                <MoreItem onClick={() => {
+                  ws?.emit('msg', 'body');
+                  console.log(ws);
+                }}
+                >建立群聊
+                </MoreItem>
                 <MoreItem>
                   <Link to="/user/userId">前往頁面</Link>
                 </MoreItem>
@@ -303,12 +349,12 @@ const Chatroom: React.FC = () => {
                 type="button"
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
-                  setIsChatroomUnFold(false);
+                  // setIsChatroomUnFold(false);
                 }}
               >
                 <span className="material-icons-outlined">remove</span>
               </button>
-              <button type="button" onClick={() => setIsChatroomShow(false)}>
+              <button type="button">
                 <span className="material-icons-outlined">close</span>
               </button>
             </HeaderBtnGroup>
@@ -343,23 +389,17 @@ const Chatroom: React.FC = () => {
           </Footer>
         </ChatroomEl>
       ))}
-
       <ChatroomList unfold={isChatRoomListFold}>
         {
-          new Array(3).fill(null).map((item, idx) => (
-            <ChatroomItem
-            // eslint-disable-next-line react/no-array-index-key
-              key={idx}
-              onClick={(e: React.MouseEvent<HTMLLIElement>) => {
-                e.stopPropagation();
-                setIsChatroomShow(true);
-                setIsChatroomUnFold(true);
-              }}
-            >
+          chatroomIcons.map((chatroom) => (
+            <ChatroomItem key={chatroom.id}>
               <img src="https://images.unsplash.com/photo-1603112579965-e24332cc453a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="user" />
             </ChatroomItem>
           ))
         }
+        <ChatroomItem className="add-chatroom-btn" onClick={showCreateChatRoomModel}>
+          <span className="material-icons-outlined">add</span>
+        </ChatroomItem>
         <li>
           <HideChatroomBtn type="button" anime onClick={() => setIsChatRoomListFold(!isChatRoomListFold)}>
             <span className={`material-icons ${isChatRoomListFold ? 'show' : ''}`}>people_alt</span>
@@ -367,7 +407,6 @@ const Chatroom: React.FC = () => {
           </HideChatroomBtn>
         </li>
       </ChatroomList>
-
     </Wrap>
   );
 };

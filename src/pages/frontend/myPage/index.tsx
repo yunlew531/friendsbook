@@ -1,7 +1,9 @@
 import styled from '@emotion/styled';
-import React from 'react';
+import { useAppSelector } from 'hooks';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Chatroom from './components/Chatroom';
+import CreateChatRoomModel from './components/CreateChatRoomModel';
 import Header from './components/Header';
 import SideBar from './components/Sidebar';
 
@@ -15,11 +17,20 @@ const MainContainer = styled.div`
   padding: 92px 30px 20px;
 `;
 
-// eslint-disable-next-line arrow-body-style
 const MyPage: React.FC = () => {
+  const friends = useAppSelector((state) => state.friends.friends);
+  const [isModelShow, setIsModelShow] = useState(false);
+  const closeCreateChatRoomModel = () => setIsModelShow(false);
+  const showCreateChatRoomModel = () => setIsModelShow(true);
+
   return (
     <Wrap>
-      <Chatroom />
+      <Chatroom showCreateChatRoomModel={showCreateChatRoomModel} />
+      <CreateChatRoomModel
+        isShow={isModelShow}
+        closeModel={closeCreateChatRoomModel}
+        friends={friends.connected}
+      />
       <Header />
       <SideBar />
       <MainContainer>
