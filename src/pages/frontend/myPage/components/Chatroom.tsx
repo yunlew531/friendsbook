@@ -1,8 +1,10 @@
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
-// import { useAppSelector } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useGetChatroomsQuery } from 'services/chatroom';
+import { getChatrooms } from 'slices/chatroomsSlice';
 import { io, Socket } from 'socket.io-client';
 
 const Wrap = styled.div`
@@ -280,34 +282,39 @@ interface IChatroomProps {
 }
 
 const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel }) => {
-  // const profile = useAppSelector((state) => state.userInfo.profile);
+  const dispatch = useAppDispatch();
+  const profile = useAppSelector((state) => state.userInfo.profile);
   // const [isMoreListShow, setIsMoreListShow] = useState(false);
   const [isChatRoomListFold, setIsChatRoomListFold] = useState(false);
   // const [isConnected, setIsConnected] = useState(socket.connected);
   const [ws, setWs] = useState<Socket>();
-  const [chatroomIcons, setChatroomIcons] = useState<IChatroom[]>([]);
+  const [chatroomIcons] = useState<IChatroom[]>([]);
+  const { data: chatroomsResult, isSuccess: isGetChatroomsSuccess } = useGetChatroomsQuery();
+  // const [chatroomIcons, setChatroomIcons] = useState<IChatroom[]>([]);
 
   useEffect(() => {
     setWs(io('http://localhost:5500'));
 
     return () => {
       ws?.off('connect');
-      ws?.off('disconnect');
-      ws?.off('pong');
+      ws?.off('msgs');
+      // ws?.off('disconnect');
     };
   }, []);
 
   useEffect(() => {
-    // setInterval(() => {
-    ws?.emit('msg', 'hello');
-    // }, 1000);
-    ws?.on('msgs', (msg: string) => {
-      console.log(msg);
-    });
+    if (isGetChatroomsSuccess) dispatch(getChatrooms(chatroomsResult));
+  }, [isGetChatroomsSuccess]);
+
+  useEffect(() => {
     ws?.on('connect', () => {
-      console.log(ws?.id); // x8WIv7-mJelg7on_ALbx
+      if (profile.uid) { ws.emit('join chatrooms', profile.uid); }
+
+      ws.on('msgs', (msg: string) => {
+        console.log(msg);
+      });
     });
-  }, [ws]);
+  }, [ws, profile]);
 
   return (
     <Wrap>
@@ -335,7 +342,6 @@ const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel }) => {
                 {/* <MoreList show={isMoreListShow}> */}
                 <MoreItem onClick={() => {
                   ws?.emit('msg', 'body');
-                  console.log(ws);
                 }}
                 >建立群聊
                 </MoreItem>

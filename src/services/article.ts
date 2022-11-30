@@ -19,7 +19,7 @@ interface IGetArticlesByUidResponse {
 const articleApi = createApi({
   reducerPath: 'article',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.REACT_APP_URL}`,
+    baseUrl: process.env.REACT_APP_URL,
     prepareHeaders: (headers) => {
       headers.set('Authorization', `Bearer ${Cookies.get('Friendsbook')}`);
       return headers;
