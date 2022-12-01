@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { useAppSelector } from 'hooks';
+import useWebSocket from 'hooks/useWebSocket';
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Chatroom from './components/Chatroom';
@@ -22,14 +23,16 @@ const MyPage: React.FC = () => {
   const [isModelShow, setIsModelShow] = useState(false);
   const closeCreateChatRoomModel = () => setIsModelShow(false);
   const showCreateChatRoomModel = () => setIsModelShow(true);
+  const { ws } = useWebSocket('http://localhost:5500');
 
   return (
     <Wrap>
-      <Chatroom showCreateChatRoomModel={showCreateChatRoomModel} />
+      <Chatroom ws={ws} showCreateChatRoomModel={showCreateChatRoomModel} />
       <CreateChatRoomModel
         isShow={isModelShow}
         closeModel={closeCreateChatRoomModel}
         friends={friends.connected}
+        ws={ws}
       />
       <Header />
       <SideBar />

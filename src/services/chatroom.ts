@@ -6,6 +6,11 @@ interface IGetChatroomsResponse {
   chatrooms: IChatroom[];
 }
 
+interface ICreateChatroomResponse {
+  message: string;
+  chatroom: IChatroom;
+}
+
 const chatroomApi = createApi({
   reducerPath: 'chatroom',
   baseQuery: fetchBaseQuery({
@@ -19,9 +24,16 @@ const chatroomApi = createApi({
     getChatrooms: builder.query<IGetChatroomsResponse, void>({
       query: () => '/chatrooms',
     }),
+    createChatroom: builder.mutation<ICreateChatroomResponse, IChatroom>({
+      query: (chatroom) => ({
+        url: '/chatroom',
+        method: 'POST',
+        body: chatroom,
+      }),
+    }),
   }),
 });
 
-export const { useGetChatroomsQuery } = chatroomApi;
+export const { useGetChatroomsQuery, useCreateChatroomMutation } = chatroomApi;
 
 export default chatroomApi;

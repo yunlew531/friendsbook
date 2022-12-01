@@ -92,7 +92,8 @@ interface IChatroom {
   name?: string;
   type?: 1 | 2; // 1 = one to one, 2 = multiple
   avatar_url?: string;
-  chats: IChat[];
+  chats?: IChat[];
+  members?: string[];
 }
 
 interface IChat {
@@ -104,4 +105,9 @@ interface IChat {
   read_users?: string[];
 }
 
-type ChatroomType = 'oneToOne' | 'multiple' | null;
+interface ISocketChat {
+  chatroom_id?: string;
+  content?: string;
+}
+
+type ChatroomType = 'oneToOne' | 'multiple' | 'multiple-create' | null;

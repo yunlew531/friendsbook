@@ -62,9 +62,9 @@ const FriendItemMain = styled.div<IThemeProps>`
 
 interface IFriendListProps {
   friends: IFriend[];
-  selectedUsers: IFriend[];
-  chatroomType: ChatroomType;
-  setSelectedUsers: React.Dispatch<React.SetStateAction<IFriend[]>>;
+  selectedUsers?: IFriend[];
+  chatroomType?: ChatroomType;
+  setSelectedUsers?: React.Dispatch<React.SetStateAction<IFriend[]>>;
   setFriends?: React.Dispatch<React.SetStateAction<IFriend[]>>;
   friendListType?: 'selected';
 }
@@ -76,9 +76,12 @@ const FriendList: React.FC<IFriendListProps> = ({
     if (!selectedUsers || !setSelectedUsers) return;
     const tempSelectedUsers = [...selectedUsers];
     if (chatroomType === 'oneToOne') {
-      if (tempSelectedUsers.length === 1) tempSelectedUsers.splice(0, selectedUsers.length);
+      // TODO: isChatroomExist use in create chatroom btn
+      // const isChatroomExist =
+      // chatrooms.some((chatroom) => chatroom.members.includes(friend.uid!));
+      tempSelectedUsers.splice(0, selectedUsers.length);
       tempSelectedUsers.push(friend);
-    } else if (chatroomType === 'multiple') {
+    } else if (chatroomType === 'multiple-create') {
       if (!setFriends) return;
       if (friendListType === 'selected') {
         const selectedIndex = tempSelectedUsers.findIndex((user) => user.id === friend.id);
@@ -133,6 +136,9 @@ const FriendList: React.FC<IFriendListProps> = ({
 FriendList.defaultProps = {
   friendListType: undefined,
   setFriends: undefined,
+  setSelectedUsers: undefined,
+  chatroomType: undefined,
+  selectedUsers: [],
 };
 
 export default FriendList;
