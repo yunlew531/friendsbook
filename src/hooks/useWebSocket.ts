@@ -12,6 +12,7 @@ const useWebSocket = (url: string) => {
   useEffect(() => {
     const handleSocket = () => {
       if (!profile.uid || !ws) return;
+      console.log(profile.uid);
       ws.on('connect', () => {
         if (profile.uid) ws.emit('join-chatrooms', profile.uid);
         console.log('connected');
