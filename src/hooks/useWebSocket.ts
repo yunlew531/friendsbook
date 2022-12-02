@@ -14,6 +14,7 @@ const useWebSocket = (url: string) => {
       if (!profile.uid || !ws) return;
       ws.on('connect', () => {
         if (profile.uid) ws.emit('join-chatrooms', profile.uid);
+        console.log('connected');
 
         ws.on('message', (data: ISocketChat) => {
           dispatch(updateChat(data));

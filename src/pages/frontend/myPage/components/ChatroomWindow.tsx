@@ -232,7 +232,7 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom, ws }) => {
           <MoreList show={false}>
             {/* <MoreList show={isMoreListShow}> */}
             <MoreItem onClick={() => {
-            // ws.emit('create chatroom', 'new');
+              // TODO:
             }}
             >建立群聊
             </MoreItem>
