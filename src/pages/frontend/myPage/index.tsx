@@ -23,7 +23,7 @@ const MyPage: React.FC = () => {
   const [isModelShow, setIsModelShow] = useState(false);
   const closeCreateChatRoomModel = () => setIsModelShow(false);
   const showCreateChatRoomModel = () => setIsModelShow(true);
-  const { ws } = useWebSocket('http://localhost:5500');
+  const { ws } = useWebSocket(process.env.REACT_APP_URL!);
 
   return (
     <Wrap>
