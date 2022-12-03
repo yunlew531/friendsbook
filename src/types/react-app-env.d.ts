@@ -30,6 +30,7 @@ interface IProfile {
 interface IAuthor {
   uid: string;
   name: string;
+  nickname: string;
   avatar_url?: string;
 }
 
@@ -90,10 +91,12 @@ interface IFriends {
 interface IChatroom {
   id?: string;
   name?: string;
+  nickname?: string;
   type?: 1 | 2; // 1 = one to one, 2 = multiple
   avatar_url?: string;
   chats?: IChat[];
   members?: string[];
+  fold?: boolean;
 }
 
 interface IChat {
@@ -103,6 +106,7 @@ interface IChat {
   created_at?: number;
   status?: 1 | 2; // 1 = normal, 2 = delete
   read_users?: string[];
+  author?: IAuthor;
 }
 
 interface ISocketChat {

@@ -7,8 +7,6 @@ import PublishPanel from 'components/PublishPanel';
 import { useGetPersonalPageArticleQuery, useLazyGetPersonalPageArticleQuery } from 'services/article';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { getArticles, refreshComments, refreshThumbsUp } from 'slices/articlesSlice';
-import { getFriends } from 'slices/friendsSlice';
-import { useGetFriendsByTokenQuery } from 'services/friend';
 import Article from 'pages/frontend/MyPage/components/Article';
 import convertArticleStrToObject from 'utils/convertArticleStrToObject';
 import Friend from 'pages/frontend/MyPage/components/Friend';
@@ -74,13 +72,13 @@ const SendMessageBtn = styled(Btn)<IThemeProps>`
 
 const Homepage: React.FC = () => {
   const dispatch = useAppDispatch();
+  const friends = useAppSelector((state) => state.friends.friends);
   const articles = useAppSelector((state) => state.articles.articles);
   const {
     isSuccess: isGetArticlesSuccess,
     data: articlesResult,
   } = useGetPersonalPageArticleQuery();
   const [getPersonalPageArticleTrigger, articlesLazyResult] = useLazyGetPersonalPageArticleQuery();
-  const { data: FriendsResult, isSuccess: isGetFriendsSuccess } = useGetFriendsByTokenQuery();
 
   const refreshThumbsUpData = (articleId: string, thumbsUp: IThumbsUp[]) => {
     dispatch(refreshThumbsUp({ articleId, article_likes: thumbsUp }));
@@ -122,15 +120,6 @@ const Homepage: React.FC = () => {
     handleLazyFetchArticle();
   }, [articlesLazyResult]);
 
-  useEffect(() => {
-    const handleGetFriendsApi = () => {
-      if (!FriendsResult) return;
-      dispatch(getFriends(FriendsResult.friends));
-    };
-
-    handleGetFriendsApi();
-  }, [isGetFriendsSuccess]);
-
   return (
     <Wrap>
       <Contact>
@@ -142,11 +131,11 @@ const Homepage: React.FC = () => {
         </ContactHeader>
         <FriendList>
           {
-            FriendsResult?.friends.connected.map((friend) => (
+            friends.connected.map((friend) => (
               <Friend
                 key={friend.uid}
                 friend={friend}
-                length={FriendsResult?.friends.connected.length}
+                length={friends.connected.length}
               >
                 <SendMessageBtn
                   type="button"

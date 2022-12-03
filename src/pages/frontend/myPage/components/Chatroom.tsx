@@ -18,6 +18,12 @@ const Wrap = styled.div`
   margin-right: 20px;
 `;
 
+const ChatroomWindowsContainer = styled.div`
+  display: flex;
+  flex-direction: row-reverse;
+  transform: translateY(100%);
+`;
+
 interface IChatroomListProps {
   unfold: boolean;
 }
@@ -128,9 +134,11 @@ const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel, ws }) => 
 
   return (
     <Wrap>
-      {chatrooms.chatroomWindows.map(
-        (chatroom) => <ChatroomWindow key={chatroom.id} chatroom={chatroom} ws={ws} />,
-      )}
+      <ChatroomWindowsContainer>
+        {chatrooms.chatroomWindows.map(
+          (chatroom) => <ChatroomWindow key={chatroom.id} chatroom={chatroom} ws={ws} />,
+        )}
+      </ChatroomWindowsContainer>
       <ChatroomList unfold={isChatRoomListFold}>
         {
           chatrooms.openedChatrooms.map((chatroom) => (

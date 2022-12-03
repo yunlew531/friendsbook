@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import Btn from 'components/Btn';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { closeChatroomWindow } from 'slices/chatroomsSlice';
+import { closeChatroomWindow, foldChatroomWindow } from 'slices/chatroomsSlice';
 import { Socket } from 'socket.io-client';
 
 interface IChatroomElProps {
-  unfold: boolean;
+  fold?: boolean;
 }
 
 const ChatroomEl = styled.div<IThemeProps & IChatroomElProps>`
   position: relative;
   align-self: flex-end;
-  transform: ${({ unfold }) => (unfold ? 'translateY(0)' : 'translateY(355px)')} ;
+  transform: ${({ fold }) => (fold ? 'translateY(-45px)' : 'translateY(-100%)')} ;
   width: 350px;
   height: 400px;
   background-color: ${({ theme }) => theme.color.white_100};
@@ -209,15 +209,45 @@ interface IChatroomWindowProps {
 const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom, ws }) => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
+  const msgListRef = useRef<HTMLUListElement>(null);
+  const msgItemRefs = useRef<HTMLLIElement[]>([]);
   const [input, setInput] = useState('');
+  const stopScrollDownMsg = useRef(false);
+
+  const scrollChatWindow = (e: React.MouseEvent<HTMLUListElement>) => {
+    const { scrollHeight, clientHeight, scrollTop } = e.target as HTMLUListElement;
+    // when scroll up (read msg), stop auto scroll down when new msg received
+    if (scrollHeight - clientHeight <= scrollTop + 30) stopScrollDownMsg.current = false;
+    else stopScrollDownMsg.current = true;
+    console.log(stopScrollDownMsg.current);
+  };
+
+  useEffect(() => {
+    const handleChatWindowScrollPosition = () => {
+      if (!msgListRef.current) return;
+      const { scrollHeight, clientHeight } = msgListRef.current;
+      if (!scrollHeight || !clientHeight) return;
+      const lastMsgTop = scrollHeight - clientHeight;
+
+      // TODO: scroll to unseen msg
+      // const top = msgItemRefs.current[msgItemRefs.current.length - 1].offsetTop;
+
+      // when receive msg, scroll to latest msg
+      if (!stopScrollDownMsg.current) msgListRef.current?.scrollTo({ top: lastMsgTop });
+    };
+
+    handleChatWindowScrollPosition();
+  }, [chatroom.chats]);
 
   return (
     <ChatroomEl
       key={chatroom.id}
-    // unfold={isChatroomUnFold = true}
-      unfold
+      fold={chatroom.fold}
     >
-      <Header>
+      <Header onClick={() => {
+        dispatch(foldChatroomWindow({ chatroomId: chatroom.id!, status: false }));
+      }}
+      >
         <UsernameContainer>
           <UsernameBtn
             type="button"
@@ -226,7 +256,7 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom, ws }) => {
             onClick={() => {
             // if (isChatroomUnFold)setIsMoreListShow(!isMoreListShow);
             }}
-          >{chatroom.name}
+          >{chatroom.nickname || chatroom.name}
             <span className="material-icons-outlined">expand_more</span>
           </UsernameBtn>
           <MoreList show={false}>
@@ -246,23 +276,35 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom, ws }) => {
             type="button"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation();
-            // setIsChatroomUnFold(false);
+              dispatch(foldChatroomWindow({ chatroomId: chatroom.id!, status: true }));
             }}
           >
             <span className="material-icons-outlined">remove</span>
           </button>
-          <button type="button" onClick={() => dispatch(closeChatroomWindow(chatroom))}>
+          <button
+            type="button"
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.stopPropagation();
+              dispatch(closeChatroomWindow(chatroom));
+            }}
+          >
             <span className="material-icons-outlined">close</span>
           </button>
         </HeaderBtnGroup>
       </Header>
-      <MsgList>
-        {chatroom.chats?.map((chat) => (
-          <MsgItem key={chat.id} isMyself={chat.user_uid === profile.uid}>
+      <MsgList
+        ref={msgListRef}
+        onScroll={scrollChatWindow}
+      >
+        {chatroom.chats?.map((chat, key) => (
+          <MsgItem
+            ref={(el: HTMLLIElement) => { msgItemRefs.current[key] = el; }}
+            key={chat.id}
+            isMyself={chat.user_uid === profile.uid}
+          >
             <img
               className="user-photo"
-              src={`${process.env.PUBLIC_URL}/images/avatar.png`}
-      // src={friend.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+              src={chat.author?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
               onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
               alt="user"
             />

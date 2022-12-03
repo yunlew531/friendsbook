@@ -12,7 +12,6 @@ const useWebSocket = (url: string) => {
   useEffect(() => {
     const handleSocket = () => {
       if (!profile.uid || !ws) return;
-      console.log(profile.uid);
       ws.on('connect', () => {
         if (profile.uid) ws.emit('join-chatrooms', profile.uid);
         console.log('connected');
@@ -20,11 +19,20 @@ const useWebSocket = (url: string) => {
         ws.on('message', (data: ISocketChat) => {
           dispatch(updateChat(data));
         });
+
+        ws.on('error-message', (msg: string) => {
+          console.log(msg);
+        });
       });
     };
 
     handleSocket();
   }, [ws, profile.uid]);
+
+  useEffect(() => () => {
+    ws.off('connected');
+    ws.off('message');
+  }, []);
 
   return {
     ws,

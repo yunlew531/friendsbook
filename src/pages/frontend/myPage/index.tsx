@@ -1,8 +1,10 @@
 import styled from '@emotion/styled';
-import { useAppSelector } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import useWebSocket from 'hooks/useWebSocket';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useGetFriendsByTokenQuery } from 'services/friend';
+import { getFriends } from 'slices/friendsSlice';
 import Chatroom from './components/Chatroom';
 import CreateChatRoomModel from './components/CreateChatRoomModel';
 import Header from './components/Header';
@@ -19,11 +21,22 @@ const MainContainer = styled.div`
 `;
 
 const MyPage: React.FC = () => {
+  const dispatch = useAppDispatch();
   const friends = useAppSelector((state) => state.friends.friends);
+  const { data: FriendsResult, isSuccess: isGetFriendsSuccess } = useGetFriendsByTokenQuery();
   const [isModelShow, setIsModelShow] = useState(false);
   const closeCreateChatRoomModel = () => setIsModelShow(false);
   const showCreateChatRoomModel = () => setIsModelShow(true);
   const { ws } = useWebSocket(process.env.REACT_APP_SOCKET_URL!);
+
+  useEffect(() => {
+    const handleGetFriendsApi = () => {
+      if (!FriendsResult) return;
+      dispatch(getFriends(FriendsResult.friends));
+    };
+
+    handleGetFriendsApi();
+  }, [isGetFriendsSuccess]);
 
   return (
     <Wrap>
