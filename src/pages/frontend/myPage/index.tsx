@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import useWebSocket from 'hooks/useWebSocket';
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useGetFriendsByTokenQuery } from 'services/friend';
@@ -27,7 +26,7 @@ const MyPage: React.FC = () => {
   const [isModelShow, setIsModelShow] = useState(false);
   const closeCreateChatRoomModel = () => setIsModelShow(false);
   const showCreateChatRoomModel = () => setIsModelShow(true);
-  const { ws } = useWebSocket(process.env.REACT_APP_SOCKET_URL!);
+  // const { ws } = useWebSocket(process.env.REACT_APP_SOCKET_URL!);
 
   useEffect(() => {
     const handleGetFriendsApi = () => {
@@ -40,12 +39,13 @@ const MyPage: React.FC = () => {
 
   return (
     <Wrap>
-      <Chatroom ws={ws} showCreateChatRoomModel={showCreateChatRoomModel} />
+      <Chatroom showCreateChatRoomModel={showCreateChatRoomModel} />
+      {/* <Chatroom ws={ws} showCreateChatRoomModel={showCreateChatRoomModel} /> */}
       <CreateChatRoomModel
         isShow={isModelShow}
         closeModel={closeCreateChatRoomModel}
         friends={friends.connected}
-        ws={ws}
+        // ws={ws}
       />
       <Header />
       <SideBar />

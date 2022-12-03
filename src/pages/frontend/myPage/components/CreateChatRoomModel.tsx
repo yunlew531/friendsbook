@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from 'hooks';
 import { openChatroom, openChatroomWindow, createChatroom } from 'slices/chatroomsSlice';
 import toast from 'react-hot-toast';
 import { useCreateChatroomMutation } from 'services/chatroom';
-import { Socket } from 'socket.io-client';
+import { useWebSocket } from 'hooks/useWebSocket';
 import ChatroomList from './ChatroomList';
 
 const Wrap = styled.div<{ isShow: boolean }>`
@@ -83,15 +83,15 @@ interface ICreateChatRoomModelProps {
   friends: IFriend[];
   closeModel: ()=> void;
   isShow: boolean;
-  ws: Socket;
 }
 
 const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
-  friends, isShow, closeModel, ws,
+  friends, isShow, closeModel,
 }) => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const chatrooms = useAppSelector((state) => state.chatrooms);
+  const ws = useWebSocket();
   const [users, setUsers] = useState<IFriend[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<IFriend[]>([]);
   const [selectedChatroom, setSelectedChatroom] = useState<IChatroom>();

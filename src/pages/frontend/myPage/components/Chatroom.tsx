@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from 'hooks';
 import React, { useEffect, useState } from 'react';
 import { useGetChatroomsQuery } from 'services/chatroom';
 import { getChatrooms, openChatroomWindow, removeChatroom } from 'slices/chatroomsSlice';
-import { Socket } from 'socket.io-client';
 import ChatroomWindow from './ChatroomWindow';
 
 const Wrap = styled.div`
@@ -116,10 +115,9 @@ const RemoveChatroomBtn = styled.button<IThemeProps>`
 
 interface IChatroomProps {
   showCreateChatRoomModel: () => void;
-  ws: Socket;
 }
 
-const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel, ws }) => {
+const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel }) => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const chatrooms = useAppSelector((state) => state.chatrooms);
@@ -136,7 +134,7 @@ const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel, ws }) => 
     <Wrap>
       <ChatroomWindowsContainer>
         {chatrooms.chatroomWindows.map(
-          (chatroom) => <ChatroomWindow key={chatroom.id} chatroom={chatroom} ws={ws} />,
+          (chatroom) => <ChatroomWindow key={chatroom.id} chatroom={chatroom} />,
         )}
       </ChatroomWindowsContainer>
       <ChatroomList unfold={isChatRoomListFold}>

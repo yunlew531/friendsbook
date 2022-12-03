@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Btn from 'components/Btn';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { closeChatroomWindow, foldChatroomWindow } from 'slices/chatroomsSlice';
-import { Socket } from 'socket.io-client';
+import { useWebSocket } from 'hooks/useWebSocket';
 
 interface IChatroomElProps {
   fold?: boolean;
@@ -203,12 +203,12 @@ const MsgItem = styled.li<IThemeProps & IMsgItemProps>`
 
 interface IChatroomWindowProps {
   chatroom: IChatroom;
-  ws: Socket;
 }
 
-const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom, ws }) => {
+const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom }) => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
+  const ws = useWebSocket();
   const msgListRef = useRef<HTMLUListElement>(null);
   const msgItemRefs = useRef<HTMLLIElement[]>([]);
   const [input, setInput] = useState('');
@@ -219,7 +219,6 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom, ws }) => {
     // when scroll up (read msg), stop auto scroll down when new msg received
     if (scrollHeight - clientHeight <= scrollTop + 30) stopScrollDownMsg.current = false;
     else stopScrollDownMsg.current = true;
-    console.log(stopScrollDownMsg.current);
   };
 
   useEffect(() => {
