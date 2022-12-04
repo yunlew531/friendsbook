@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Btn from 'components/Btn';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { closeChatroomWindow, foldChatroomWindow } from 'slices/chatroomsSlice';
-import { useWebSocket } from 'hooks/useWebSocket';
+import { useWebSocket } from 'context/WebSocketProvider';
 
 interface IChatroomElProps {
   fold?: boolean;
@@ -225,14 +225,18 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom }) => {
     const handleChatWindowScrollPosition = () => {
       if (!msgListRef.current) return;
       const { scrollHeight, clientHeight } = msgListRef.current;
-      if (!scrollHeight || !clientHeight) return;
       const lastMsgTop = scrollHeight - clientHeight;
 
       // TODO: scroll to unseen msg
       // const top = msgItemRefs.current[msgItemRefs.current.length - 1].offsetTop;
 
       // when receive msg, scroll to latest msg
-      if (!stopScrollDownMsg.current) msgListRef.current?.scrollTo({ top: lastMsgTop });
+      if (!chatroom.chats?.length) return;
+      if (stopScrollDownMsg.current) {
+        const { length } = chatroom.chats;
+        const isSelf = chatroom.chats[length - 1].author?.uid === profile.uid;
+        if (isSelf) msgListRef.current?.scrollTo({ top: lastMsgTop });
+      } else msgListRef.current?.scrollTo({ top: lastMsgTop });
     };
 
     handleChatWindowScrollPosition();
@@ -244,7 +248,11 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom }) => {
       fold={chatroom.fold}
     >
       <Header onClick={() => {
-        dispatch(foldChatroomWindow({ chatroomId: chatroom.id!, status: false }));
+        dispatch(foldChatroomWindow({
+          chatroomId: chatroom.id!,
+          status: false,
+          uid: profile.uid!,
+        }));
       }}
       >
         <UsernameContainer>
@@ -275,7 +283,11 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom }) => {
             type="button"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation();
-              dispatch(foldChatroomWindow({ chatroomId: chatroom.id!, status: true }));
+              dispatch(foldChatroomWindow({
+                chatroomId: chatroom.id!,
+                status: true,
+                uid: profile.uid!,
+              }));
             }}
           >
             <span className="material-icons-outlined">remove</span>
@@ -284,7 +296,7 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom }) => {
             type="button"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation();
-              dispatch(closeChatroomWindow(chatroom));
+              dispatch(closeChatroomWindow({ chatroom, uid: profile.uid! }));
             }}
           >
             <span className="material-icons-outlined">close</span>
@@ -312,7 +324,17 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom }) => {
         ))}
       </MsgList>
       <Footer>
-        <Input type="text" value={input} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)} />
+        <Input
+          type="text"
+          value={input}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
+          onKeyUp={(e) => {
+            const enters = ['Enter', 'NumpadEnter'];
+            if (!enters.includes(e.code)) return;
+            ws.emit('chat', { chatroom_id: chatroom.id, content: input, user_uid: profile.uid });
+            setInput('');
+          }}
+        />
         <SendMsgBtn
           type="button"
           anime

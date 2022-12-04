@@ -8,7 +8,7 @@ import { io, Socket } from 'socket.io-client';
 const webSocketContext = createContext({} as Socket);
 export const useWebSocket = () => useContext(webSocketContext);
 
-const ProvideWebSocket: React.FC<PropsWithChildren> = ({ children }) => {
+const WebSocketProvide: React.FC<PropsWithChildren> = ({ children }) => {
   const profile = useAppSelector((state) => state.userInfo.profile);
   const [ws] = useState<Socket>(io(process.env.REACT_APP_SOCKET_URL!));
   const dispatch = useAppDispatch();
@@ -17,8 +17,8 @@ const ProvideWebSocket: React.FC<PropsWithChildren> = ({ children }) => {
     if (ws && profile.uid) {
       ws.emit('join-chatrooms', profile.uid);
 
-      ws.on('chat', (data: ISocketChat) => {
-        dispatch(updateChat(data));
+      ws.on('chat', (chat: ISocketChat) => {
+        dispatch(updateChat({ chat, uid: profile.uid! }));
       });
 
       ws.on('message', (msg: string) => {
@@ -48,4 +48,4 @@ const ProvideWebSocket: React.FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export default ProvideWebSocket;
+export default WebSocketProvide;

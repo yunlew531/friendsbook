@@ -81,7 +81,7 @@ const FriendList: React.FC<IFriendListProps> = ({
       // chatrooms.some((chatroom) => chatroom.members.includes(friend.uid!));
       tempSelectedUsers.splice(0, selectedUsers.length);
       tempSelectedUsers.push(friend);
-    } else if (chatroomType === 'multiple-create') {
+    } else if (chatroomType === 'multipleCreate') {
       if (!setFriends) return;
       if (friendListType === 'selected') {
         const selectedIndex = tempSelectedUsers.findIndex((user) => user.id === friend.id);

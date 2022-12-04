@@ -8,7 +8,7 @@ import { useAppDispatch } from 'hooks';
 import { getProfile } from 'slices/userInfoSlice';
 import { useLazyGetUserByTokenQuery } from 'services/user';
 import Cookies from 'js-cookie';
-import ProvideWebSocket from 'hooks/useWebSocket';
+import WebSocketProvider from 'context/WebSocketProvider';
 import routes from './routes';
 
 const Wrap = styled.div`
@@ -46,14 +46,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <ProvideWebSocket>
+    <WebSocketProvider>
       <ThemeProvider theme={currentTheme}>
         <Wrap>
           <Toaster toastOptions={toastOptions} containerStyle={{ marginTop: '60px' }} />
           {element}
         </Wrap>
       </ThemeProvider>
-    </ProvideWebSocket>
+    </WebSocketProvider>
   );
 };
 

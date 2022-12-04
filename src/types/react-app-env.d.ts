@@ -97,6 +97,8 @@ interface IChatroom {
   chats?: IChat[];
   members?: string[];
   fold?: boolean;
+  inOpenList?: boolean;
+  openWindow?: boolean;
 }
 
 interface IChat {
@@ -112,6 +114,36 @@ interface IChat {
 interface ISocketChat {
   chatroom_id?: string;
   content?: string;
+  avatar_url?: string;
+  user_uid?: string;
 }
 
-type ChatroomType = 'oneToOne' | 'multiple' | 'multiple-create' | null;
+interface ISocketChatPayload {
+  chat: ISocketChat;
+}
+
+interface IChatroomWindowPayload {
+  chatroomId: string;
+  status: boolean;
+  uid: string;
+}
+
+interface IUsersChatrooms {
+  [uid: string]: ILocalChatrooms
+}
+
+interface ILocalChatrooms {
+  [chatroomId: string]: IChatroom;
+}
+
+interface IChatroomsPayload {
+  uid: string;
+  chatrooms: IChatroom[];
+}
+
+interface IChatroomPayload {
+  uid: string;
+  chatroom: IChatroom;
+}
+
+type ChatroomType = 'oneToOne' | 'multiple' | 'multipleCreate' | null;

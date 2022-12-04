@@ -127,26 +127,34 @@ const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel }) => {
   const { data: chatroomsResult, isSuccess: isGetChatroomsSuccess } = useGetChatroomsQuery();
 
   useEffect(() => {
-    if (isGetChatroomsSuccess) dispatch(getChatrooms(chatroomsResult));
-  }, [isGetChatroomsSuccess]);
+    if (isGetChatroomsSuccess && profile.uid) {
+      dispatch(getChatrooms({
+        chatrooms: chatroomsResult.chatrooms,
+        uid: profile.uid!,
+      }));
+    }
+  }, [isGetChatroomsSuccess, profile.uid]);
 
   return (
     <Wrap>
       <ChatroomWindowsContainer>
-        {chatrooms.chatroomWindows.map(
+        {chatrooms.chatrooms.filter((chatroom) => chatroom.openWindow).map(
           (chatroom) => <ChatroomWindow key={chatroom.id} chatroom={chatroom} />,
         )}
       </ChatroomWindowsContainer>
       <ChatroomList unfold={isChatRoomListFold}>
         {
-          chatrooms.openedChatrooms.map((chatroom) => (
-            <ChatroomItem key={chatroom.id} onClick={() => dispatch(openChatroomWindow(chatroom))}>
+          chatrooms.chatrooms.filter((chatroom) => chatroom.inOpenList).map((chatroom) => (
+            <ChatroomItem
+              key={chatroom.id}
+              onClick={() => dispatch(openChatroomWindow({ chatroom, uid: profile.uid! }))}
+            >
               <RemoveChatroomBtn
                 type="button"
                 className="remove-chatroom-btn"
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
-                  dispatch(removeChatroom(chatroom));
+                  dispatch(removeChatroom({ chatroom, uid: profile.uid! }));
                 }}
               >
                 <span className="material-icons-outlined">close</span>

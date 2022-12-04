@@ -7,8 +7,8 @@ import { useAppDispatch, useAppSelector } from 'hooks';
 import { openChatroom, openChatroomWindow, createChatroom } from 'slices/chatroomsSlice';
 import toast from 'react-hot-toast';
 import { useCreateChatroomMutation } from 'services/chatroom';
-import { useWebSocket } from 'hooks/useWebSocket';
-import ChatroomList from './ChatroomList';
+import { useWebSocket } from 'context/WebSocketProvider';
+import ChatroomList from 'pages/frontend/MyPage/components/ChatroomList';
 
 const Wrap = styled.div<{ isShow: boolean }>`
   display: ${({ isShow }) => (isShow ? 'block' : 'none')};
@@ -61,6 +61,24 @@ const CloseModelBtn = styled(Btn)<IThemeProps>`
   padding: 5px;
 `;
 
+const NameGroup = styled.div<IThemeProps>`
+  display: flex;
+  align-items: center;
+  h4 {
+    margin-right: 10px;
+  }
+  input {
+    width: 200px;
+    border-radius: 5px;
+    border: 1px solid ${({ theme }) => theme.color.gray_300};
+    padding: 5px 10px;
+    &:focus-visible {
+      border: 1px solid transparent;
+      outline: 1px solid ${({ theme }) => theme.color.primary};
+    }
+  }
+`;
+
 const ModelFooter = styled.div`
   display: flex;
   justify-content: end;
@@ -92,12 +110,13 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
   const profile = useAppSelector((state) => state.userInfo.profile);
   const chatrooms = useAppSelector((state) => state.chatrooms);
   const ws = useWebSocket();
+  const [createChatroomTrigger, createChatroomResult] = useCreateChatroomMutation();
   const [users, setUsers] = useState<IFriend[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<IFriend[]>([]);
   const [selectedChatroom, setSelectedChatroom] = useState<IChatroom>();
   const [chatroomType, setChatroomType] = useState<ChatroomType>(null);
-  const [chatroomsExcludeOpened, setChatroomsExcludeOpened] = useState<IChatroom[]>([]);
-  const [createChatroomTrigger, createChatroomResult] = useCreateChatroomMutation();
+  const [multiplePeopleChatrooms, setMultiplePeopleChatrooms] = useState<IChatroom[]>([]);
+  const [roomName, setRoomName] = useState('');
 
   const resetModel = () => {
     setSelectedUsers([]);
@@ -112,61 +131,58 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
   };
 
   const addChatroom = () => {
-    if (chatroomType === 'multiple-create') return;
     if (chatroomType === null) return;
+    enum Type {
+      'oneToOne' = 1,
+      'multipleCreate' = 2,
+    }
     if (chatroomType === 'multiple') {
       if (!selectedChatroom?.id) {
         toast.error('請選擇聊天室');
         return;
       }
-      dispatch(openChatroom(selectedChatroom));
+      dispatch(openChatroom({ chatroom: selectedChatroom, uid: profile.uid! }));
       closeCreateChatroomModel();
     } else if (chatroomType === 'oneToOne') {
+      if (!selectedUsers.length) {
+        toast.error('請選擇用戶');
+        return;
+      }
       const isChatroomExist = chatrooms.chatrooms.some(
         (chatroom) => chatroom.type === 1 && chatroom.members?.includes(selectedUsers[0].uid!),
       );
       if (!isChatroomExist) {
-        enum Type {
-          'oneToOne' = 1,
-          'multiple' = 2,
-        }
         createChatroomTrigger({
           members: [profile.uid!, ...selectedUsers.map((user) => user.uid!)],
           type: Type[chatroomType],
         });
       } else {
-        // find exist chatroom in state.openedChatrooms,
+        // find exist chatroom in state.chatrooms, add to aside opened list,
         // and show chatroom window
-        const hasOpenedChatroom = chatrooms.openedChatrooms.filter(
+        const hasOpenedChatroom = chatrooms.chatrooms.filter(
           (chatroom) => chatroom.type === 1 && chatroom.members?.includes(selectedUsers[0].uid!),
         );
         if (hasOpenedChatroom.length) {
-          dispatch(openChatroomWindow(hasOpenedChatroom[0]));
-          closeCreateChatroomModel();
-        } else {
-          // find exist chatroom in state.chatrooms,
-          // add it in openedChatrooms and show chatroom window
-          const chatroomData = chatrooms.chatrooms.filter(
-            (chatroom) => chatroom.type === 1 && chatroom.members?.includes(selectedUsers[0].uid!),
-          );
-          dispatch(openChatroom(chatroomData[0]));
+          dispatch(openChatroomWindow({ chatroom: hasOpenedChatroom[0], uid: profile.uid! }));
           closeCreateChatroomModel();
         }
       }
+    } else if (chatroomType === 'multipleCreate') {
+      if (!profile.uid) return;
+      createChatroomTrigger({
+        members: [profile.uid, ...selectedUsers.map((user) => user.uid!)],
+        type: Type[chatroomType],
+        name: roomName,
+      });
     }
   };
 
   useEffect(() => {
     // exclude chatrooms that opened
-    const excludeOpenedChatrooms = chatrooms.chatrooms.filter(
-      (chatroom) => {
-        const isOpened = chatrooms.openedChatrooms.some(
-          (openedChatroomData) => openedChatroomData.id === chatroom.id,
-        );
-        return !isOpened;
-      },
+    const multiplePeopleChatroomsData = chatrooms.chatrooms.filter(
+      (chatroom) => chatroom.type === 2,
     );
-    setChatroomsExcludeOpened(excludeOpenedChatrooms);
+    setMultiplePeopleChatrooms(multiplePeopleChatroomsData);
   }, [chatrooms]);
 
   useEffect(() => {
@@ -177,7 +193,10 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
     const handleCreateChatroomApi = () => {
       const { isSuccess, isLoading, data } = createChatroomResult;
       if (!isSuccess || isLoading) return;
-      dispatch(createChatroom(data.chatroom));
+      dispatch(createChatroom({
+        chatroom: data.chatroom,
+        uid: profile.uid!,
+      }));
       ws.emit('join-chatroom', data.chatroom.id);
       closeCreateChatroomModel();
     };
@@ -189,9 +208,20 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
     <Wrap isShow={isShow}>
       <Model>
         <ModelTitle>
-          {chatroomType === 'multiple-create' && '建立聊天室'}
+          {chatroomType === 'multipleCreate' && '建立聊天室'}
           {(chatroomType === 'oneToOne' || chatroomType === 'multiple') && '開啟聊天'}
         </ModelTitle>
+        {chatroomType === 'multipleCreate'
+            && (
+              <NameGroup>
+                <h4>聊天室名稱</h4>
+                <input
+                  type="text"
+                  value={roomName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRoomName(e.target.value)}
+                />
+              </NameGroup>
+            )}
         <CloseModelBtn
           type="button"
           anime
@@ -219,13 +249,13 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
           {chatroomType === 'multiple'
             && (
             <ChatroomList
-              chatrooms={chatroomsExcludeOpened}
+              chatrooms={multiplePeopleChatrooms}
               selectedChatroom={selectedChatroom}
               setSelectedChatroom={setSelectedChatroom}
             />
             )}
           {/* create new multiple chatroom */}
-          {chatroomType === 'multiple-create' && (
+          {chatroomType === 'multipleCreate' && (
             <>
               <FriendList
                 friends={users}
@@ -251,7 +281,7 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
             <CreateChatRoomBtn
               className="create-chatroom-btn"
               type="button"
-              onClick={() => setChatroomType('multiple-create')}
+              onClick={() => setChatroomType('multipleCreate')}
             >建立新聊天室
             </CreateChatRoomBtn>
             )}
@@ -262,7 +292,7 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
               onClick={() => addChatroom()}
             >
                 {(chatroomType === 'oneToOne' || chatroomType === 'multiple') && '開啟'}
-                {chatroomType === 'multiple-create' && '建立'}
+                {chatroomType === 'multipleCreate' && '建立'}
             </CreateChatRoomBtn>
           )}
         </ModelFooter>
