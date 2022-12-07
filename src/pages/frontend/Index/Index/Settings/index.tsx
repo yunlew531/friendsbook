@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import React from 'react';
-import Sidebar from 'pages/frontend/MyPage/Index/Settings/components/Sidebar';
+import Sidebar from 'pages/frontend/Index/Index/Settings/components/Sidebar';
 import { Outlet } from 'react-router-dom';
 
 const Wrap = styled.div`

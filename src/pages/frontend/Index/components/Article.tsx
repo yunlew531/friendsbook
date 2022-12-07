@@ -10,7 +10,7 @@ import {
   useDeleteArticleMutation,
 } from 'services/article';
 import { useAppSelector } from 'hooks';
-import Comment from 'pages/frontend/MyPage/components/Comment';
+import Comment from 'pages/frontend/Index/components/Comment';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 

@@ -18,9 +18,11 @@ const Wrap = styled.div`
 `;
 
 const ChatroomWindowsContainer = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 50px;
   display: flex;
   flex-direction: row-reverse;
-  transform: translateY(100%);
 `;
 
 interface IChatroomListProps {
@@ -115,15 +117,18 @@ const RemoveChatroomBtn = styled.button<IThemeProps>`
 
 interface IChatroomProps {
   showCreateChatRoomModel: () => void;
+  setChatroomType: React.Dispatch<React.SetStateAction<ChatroomType>>;
+  setSelectedUsers: React.Dispatch<React.SetStateAction<IFriend[]>>;
+  setUsers: React.Dispatch<React.SetStateAction<IFriend[]>>;
 }
 
-const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel }) => {
+const Chatroom: React.FC<IChatroomProps> = ({
+  showCreateChatRoomModel, setChatroomType, setSelectedUsers, setUsers,
+}) => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const chatrooms = useAppSelector((state) => state.chatrooms);
-  // const [isMoreListShow, setIsMoreListShow] = useState(false);
   const [isChatRoomListFold, setIsChatRoomListFold] = useState(false);
-  // const [isConnected, setIsConnected] = useState(socket.connected);
   const { data: chatroomsResult, isSuccess: isGetChatroomsSuccess } = useGetChatroomsQuery();
 
   useEffect(() => {
@@ -139,7 +144,16 @@ const Chatroom: React.FC<IChatroomProps> = ({ showCreateChatRoomModel }) => {
     <Wrap>
       <ChatroomWindowsContainer>
         {chatrooms.chatrooms.filter((chatroom) => chatroom.openWindow).map(
-          (chatroom) => <ChatroomWindow key={chatroom.id} chatroom={chatroom} />,
+          (chatroom) => (
+            <ChatroomWindow
+              key={chatroom.id}
+              chatroom={chatroom}
+              showCreateChatRoomModel={showCreateChatRoomModel}
+              setChatroomType={setChatroomType}
+              setSelectedUsers={setSelectedUsers}
+              setUsers={setUsers}
+            />
+          ),
         )}
       </ChatroomWindowsContainer>
       <ChatroomList unfold={isChatRoomListFold}>

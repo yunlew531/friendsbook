@@ -31,8 +31,8 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (userResult.isSuccess) { dispatch(getProfile(userResult.data.profile)); }
-  }, [userResult]);
+    if (userResult.isSuccess) dispatch(getProfile(userResult.data.profile));
+  }, [userResult.isSuccess]);
 
   // TODO: 切換主題色功能
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

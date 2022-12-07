@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Btn from 'components/Btn';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { closeChatroomWindow, foldChatroomWindow } from 'slices/chatroomsSlice';
+import { closeChatroomWindow, foldChatroomWindow, displayMoreList } from 'slices/chatroomsSlice';
 import { useWebSocket } from 'context/WebSocketProvider';
 
 interface IChatroomElProps {
@@ -203,10 +203,17 @@ const MsgItem = styled.li<IThemeProps & IMsgItemProps>`
 
 interface IChatroomWindowProps {
   chatroom: IChatroom;
+  showCreateChatRoomModel: () => void;
+  setChatroomType: React.Dispatch<React.SetStateAction<ChatroomType>>;
+  setSelectedUsers: React.Dispatch<React.SetStateAction<IFriend[]>>;
+  setUsers: React.Dispatch<React.SetStateAction<IFriend[]>>;
 }
 
-const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom }) => {
+const ChatroomWindow: React.FC<IChatroomWindowProps> = ({
+  chatroom, showCreateChatRoomModel, setChatroomType, setSelectedUsers, setUsers,
+}) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const ws = useWebSocket();
   const msgListRef = useRef<HTMLUListElement>(null);
@@ -258,23 +265,52 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({ chatroom }) => {
         <UsernameContainer>
           <UsernameBtn
             type="button"
-          // active={isMoreListShow}
-            active
-            onClick={() => {
-            // if (isChatroomUnFold)setIsMoreListShow(!isMoreListShow);
+            active={chatroom.moreList!}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.stopPropagation();
+              dispatch(displayMoreList({ chatroom, status: !chatroom.moreList }));
             }}
           >{chatroom.nickname || chatroom.name}
             <span className="material-icons-outlined">expand_more</span>
           </UsernameBtn>
-          <MoreList show={false}>
-            {/* <MoreList show={isMoreListShow}> */}
+          <MoreList show={chatroom.moreList!}>
+            {chatroom.type === 1 && (
+              <>
+                <MoreItem onClick={() => {
+                  dispatch(displayMoreList({ chatroom, status: !chatroom.moreList }));
+                  showCreateChatRoomModel();
+                  setChatroomType('multipleCreate');
+                  const chatroomUserUid = chatroom.members!.filter(
+                    (member) => member !== profile.uid,
+                  )[0];
+
+                  setUsers((prev) => {
+                    const selectedUsersArray: IFriend[] = [];
+                    const users: IFriend[] = [];
+                    prev.forEach((user) => {
+                      if (user.uid === chatroomUserUid) selectedUsersArray.push(user);
+                      else users.push(user);
+                    });
+                    setSelectedUsers(selectedUsersArray);
+
+                    return users;
+                  });
+                }}
+                >建立群聊
+                </MoreItem>
+                <MoreItem
+                  onClick={() => {
+                    navigate(`/${chatroom.members?.filter((member) => member !== profile.uid)}`);
+                    dispatch(displayMoreList({ chatroom, status: false }));
+                  }}
+                >前往頁面
+                </MoreItem>
+              </>
+            )}
             <MoreItem onClick={() => {
               // TODO:
             }}
-            >建立群聊
-            </MoreItem>
-            <MoreItem>
-              <Link to="/user/userId">前往頁面</Link>
+            >完整聊天室
             </MoreItem>
           </MoreList>
         </UsernameContainer>

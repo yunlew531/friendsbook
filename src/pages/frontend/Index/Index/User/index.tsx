@@ -7,7 +7,7 @@ import { useLazyGetArticlesByUidQuery } from 'services/article';
 import convertArticleStrToObject from 'utils/convertArticleStrToObject';
 import { useAppSelector } from 'hooks';
 import useFileUpload from 'hooks/useFileUpload';
-import Article from 'pages/frontend/MyPage/components/Article';
+import Article from 'pages/frontend/Index/components/Article';
 import toast from 'react-hot-toast';
 
 const Wrap = styled.div`

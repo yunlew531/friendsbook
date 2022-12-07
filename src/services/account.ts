@@ -30,6 +30,13 @@ const accountApi = createApi({
         body: user,
       }),
     }),
+    loginTestAccount: builder.mutation<ILoginResponse, void>({
+      query: () => ({
+        url: '/account/login?account_type=test',
+        method: 'POST',
+        body: {},
+      }),
+    }),
     checkLogin: builder.query<ICheckLoginResponse, void>({
       query: () => '/auth/check',
     }),
@@ -39,6 +46,7 @@ const accountApi = createApi({
 export const {
   useLoginMutation,
   useCheckLoginQuery,
+  useLoginTestAccountMutation,
 } = accountApi;
 
 export default accountApi;

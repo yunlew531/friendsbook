@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import Card from 'components/Card';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import React, { useEffect, useRef, useState } from 'react';
-import Friend from 'pages/frontend/MyPage/components/Friend';
+import Friend from 'pages/frontend/Index/components/Friend';
 import {
   useAgreeToBeFriendMutation, useDeleteFriendMutation, useLazyGetFriendsByTokenQuery,
   useLazyGetFriendsByUidQuery,
@@ -153,9 +153,9 @@ const Friends: React.FC = () => {
       toast.success(ToastType[code]);
       // update friends.received or friends.sent
       setFriends((prev) => {
-        const index = prev[InviteType[code]]
+        const index = prev[InviteType[code] as keyof typeof InviteType]
           .findIndex((friend) => friend.uid === tempFriendUid.current);
-        const tempFriendType = [...prev[InviteType[code]]];
+        const tempFriendType = [...prev[InviteType[code] as keyof typeof InviteType]];
         tempFriendType.splice(index, 1);
         return {
           ...prev,

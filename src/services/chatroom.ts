@@ -11,6 +11,8 @@ interface ICreateChatroomResponse {
   chatroom: IChatroom;
 }
 
+type CreateChatroomRequest = RequiredPick<IChatroom, 'type' | 'members'> & Pick<IChatroom, 'name'>;
+
 const chatroomApi = createApi({
   reducerPath: 'chatroom',
   baseQuery: fetchBaseQuery({
@@ -24,7 +26,7 @@ const chatroomApi = createApi({
     getChatrooms: builder.query<IGetChatroomsResponse, void>({
       query: () => '/chatrooms',
     }),
-    createChatroom: builder.mutation<ICreateChatroomResponse, IChatroom>({
+    createChatroom: builder.mutation<ICreateChatroomResponse, CreateChatroomRequest>({
       query: (chatroom) => ({
         url: '/chatroom',
         method: 'POST',

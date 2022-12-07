@@ -39,17 +39,19 @@ export const chatroomsSlice = createSlice({
       const localChatrooms: ILocalChatrooms = JSON.parse(localStorage.getItem('chatrooms') || '{}')[uid] || {};
 
       state.chatrooms = chatrooms.map((chatroom) => {
-        const chatroomObj = localChatrooms[chatroom.id as keyof ILocalChatrooms];
+        const localChatroom: LocalChatroom = localChatrooms[chatroom.id as keyof ILocalChatrooms];
 
         return {
           ...chatroom,
           fold: true,
           inOpenList: false,
           openWindow: false,
-          ...chatroomObj,
+          moreList: false,
+          ...localChatroom,
         };
       });
     },
+    // use after restful api createChatroom success
     createChatroom(state, { payload: { chatroom, uid } }: PayloadAction<IChatroomPayload>) {
       state.chatrooms.push({
         ...chatroom,
@@ -93,9 +95,15 @@ export const chatroomsSlice = createSlice({
       };
       updateLocalChatrooms(payload.uid, state.chatrooms);
     },
+    displayMoreList(state, { payload }: PayloadAction<{ status: boolean, chatroom: IChatroom }>) {
+      const index = findChatroomIndex(payload.chatroom.id!, state.chatrooms);
+      state.chatrooms[index].moreList = payload.status;
+    },
     updateChat(state, { payload }: PayloadAction<ISocketChatPayload & { uid: string }>) {
       const index = findChatroomIndex(payload.chat.chatroom_id!, state.chatrooms);
+
       state.chatrooms[index] = {
+        ...state.chatrooms[index],
         chats: [...(state.chatrooms[index].chats || []), payload.chat],
         fold: false,
         inOpenList: true,
@@ -113,7 +121,7 @@ export const chatroomsSlice = createSlice({
 
 export const {
   getChatrooms, openChatroom, removeChatroom, openChatroomWindow, closeChatroomWindow, updateChat,
-  createChatroom, foldChatroomWindow,
+  createChatroom, foldChatroomWindow, displayMoreList,
 } = chatroomsSlice.actions;
 
 export default chatroomsSlice.reducer;

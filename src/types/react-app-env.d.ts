@@ -85,7 +85,6 @@ interface IFriends {
   connected: IFriend[];
   received: IFriend[];
   sent: IFriend[];
-  [key: string]: IFriend[];
 }
 
 interface IChatroom {
@@ -99,6 +98,7 @@ interface IChatroom {
   fold?: boolean;
   inOpenList?: boolean;
   openWindow?: boolean;
+  moreList?: boolean;
 }
 
 interface IChat {
@@ -132,8 +132,10 @@ interface IUsersChatrooms {
   [uid: string]: ILocalChatrooms
 }
 
+type LocalChatroom = Pick<IChatroom, 'fold' | 'inOpenList' | 'openWindow'>;
+
 interface ILocalChatrooms {
-  [chatroomId: string]: IChatroom;
+  [chatroomId: string]: LocalChatroom;
 }
 
 interface IChatroomsPayload {
@@ -147,3 +149,5 @@ interface IChatroomPayload {
 }
 
 type ChatroomType = 'oneToOne' | 'multiple' | 'multipleCreate' | null;
+
+type RequiredPick<T, K extends keyof T> = Required<Pick<T, K>>;

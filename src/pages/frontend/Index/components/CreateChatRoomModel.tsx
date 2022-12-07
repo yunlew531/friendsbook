@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import Card from 'components/Card';
 import Btn from 'components/Btn';
-import FriendList from 'pages/frontend/MyPage/components/FriendList';
+import FriendList from 'pages/frontend/Index/components/FriendList';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { openChatroom, openChatroomWindow, createChatroom } from 'slices/chatroomsSlice';
 import toast from 'react-hot-toast';
 import { useCreateChatroomMutation } from 'services/chatroom';
 import { useWebSocket } from 'context/WebSocketProvider';
-import ChatroomList from 'pages/frontend/MyPage/components/ChatroomList';
+import ChatroomList from 'pages/frontend/Index/components/ChatroomList';
 
 const Wrap = styled.div<{ isShow: boolean }>`
   display: ${({ isShow }) => (isShow ? 'block' : 'none')};
@@ -101,20 +101,24 @@ interface ICreateChatRoomModelProps {
   friends: IFriend[];
   closeModel: ()=> void;
   isShow: boolean;
+  chatroomType: ChatroomType;
+  setChatroomType: React.Dispatch<React.SetStateAction<ChatroomType>>;
+  users: IFriend[];
+  setUsers: React.Dispatch<React.SetStateAction<IFriend[]>>;
+  selectedUsers: IFriend[];
+  setSelectedUsers: React.Dispatch<React.SetStateAction<IFriend[]>>;
 }
 
 const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
-  friends, isShow, closeModel,
+  friends, isShow, closeModel, chatroomType, setChatroomType, selectedUsers, setSelectedUsers,
+  users, setUsers,
 }) => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const chatrooms = useAppSelector((state) => state.chatrooms);
   const ws = useWebSocket();
   const [createChatroomTrigger, createChatroomResult] = useCreateChatroomMutation();
-  const [users, setUsers] = useState<IFriend[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<IFriend[]>([]);
   const [selectedChatroom, setSelectedChatroom] = useState<IChatroom>();
-  const [chatroomType, setChatroomType] = useState<ChatroomType>(null);
   const [multiplePeopleChatrooms, setMultiplePeopleChatrooms] = useState<IChatroom[]>([]);
   const [roomName, setRoomName] = useState('');
 
@@ -169,10 +173,14 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
       }
     } else if (chatroomType === 'multipleCreate') {
       if (!profile.uid) return;
+      if (!roomName.trim()) {
+        toast.error('請填寫聊天室名稱');
+        return;
+      }
       createChatroomTrigger({
         members: [profile.uid, ...selectedUsers.map((user) => user.uid!)],
         type: Type[chatroomType],
-        name: roomName,
+        name: roomName.trim(),
       });
     }
   };
@@ -191,8 +199,8 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
 
   useEffect(() => {
     const handleCreateChatroomApi = () => {
-      const { isSuccess, isLoading, data } = createChatroomResult;
-      if (!isSuccess || isLoading) return;
+      const { isSuccess, data } = createChatroomResult;
+      if (!isSuccess) return;
       dispatch(createChatroom({
         chatroom: data.chatroom,
         uid: profile.uid!,
@@ -202,7 +210,7 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
     };
 
     handleCreateChatroomApi();
-  }, [createChatroomResult]);
+  }, [createChatroomResult.isSuccess]);
 
   return (
     <Wrap isShow={isShow}>
