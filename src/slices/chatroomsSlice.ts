@@ -72,7 +72,8 @@ export const chatroomsSlice = createSlice({
     },
     removeChatroom(state, { payload }: PayloadAction<IChatroomPayload>) {
       const index = findChatroomIndex(payload.chatroom.id!, state.chatrooms);
-      state.chatrooms.splice(index, 1);
+      state.chatrooms[index].inOpenList = false;
+      state.chatrooms[index].openWindow = false;
       updateLocalChatrooms(payload.uid, state.chatrooms);
     },
     openChatroomWindow(state, { payload }: PayloadAction<IChatroomPayload>) {

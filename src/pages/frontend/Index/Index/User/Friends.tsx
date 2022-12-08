@@ -12,6 +12,7 @@ import { getFriends } from 'slices/friendsSlice';
 import Btn from 'components/Btn';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import useChatrooms from 'hooks/useChatrooms';
 import EmptyBox from '../../components/EmptyBox';
 
 const Wrap = styled.div<IThemeProps>`
@@ -97,6 +98,7 @@ const Friends: React.FC = () => {
   const profile = useAppSelector((state) => state.userInfo.profile);
   const dispatch = useAppDispatch();
   const { uid: paramUid } = useParams();
+  const { openMsgWindow } = useChatrooms();
   const [friends, setFriends] = useState<IFriends>({ connected: [], received: [], sent: [] });
   const [removeFriendInviteTrigger, removeFriendInviteResult] = useRemoveFriendInviteMutation();
   const [getFriendsByTokenTrigger, getFriendsByTokenResult] = useLazyGetFriendsByTokenQuery();
@@ -267,7 +269,10 @@ const Friends: React.FC = () => {
                 <BtnContainer>
                   <FriendItemBtn
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); }}
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      e.stopPropagation();
+                      openMsgWindow(friend.uid!);
+                    }}
                   >
                     <span className="material-icons-outlined">sms</span>
                   </FriendItemBtn>

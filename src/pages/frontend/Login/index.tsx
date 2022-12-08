@@ -9,11 +9,10 @@ import { useLoginMutation } from 'services/account';
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
 import { useLazyGetUserByTokenQuery, useRegisterMutation } from 'services/user';
-import { useAppDispatch } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { getProfile } from 'slices/userInfoSlice';
 
 const Wrap = styled.div<IThemeProps>`
-  min-height: 100vh;
   overflow: hidden;
   background-color: ${({ theme }) => theme.color.orange_100};
   padding: 30px 50px;
@@ -131,6 +130,7 @@ type CurrentCardDisplay = 'login' | 'register';
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const userInfo = useAppSelector((state) => state.userInfo);
   const [currentCardDisplay, setCurrentCardDisplay] = useState<CurrentCardDisplay>('login');
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({ email: '', password: '', name: '' });
@@ -138,6 +138,10 @@ const Login: React.FC = () => {
   const [loginTrigger, loginResult] = useLoginMutation();
   const [registerTrigger, registerResult] = useRegisterMutation();
   const [getUserByTokenTrigger, userResult] = useLazyGetUserByTokenQuery();
+
+  useEffect(() => {
+    if (userInfo.isLogin) navigate('/');
+  }, [userInfo.isLogin]);
 
   useEffect(() => {
     const handleLogin = () => {

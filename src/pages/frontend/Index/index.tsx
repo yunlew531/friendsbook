@@ -18,7 +18,7 @@ const Wrap = styled.div`
 const MainContainer = styled.div`
   background-color: transparent;
   margin-left: 75px;
-  padding: 92px 30px 0;
+  padding: 92px 30px 50px;
 `;
 
 const Index: React.FC = () => {
@@ -30,10 +30,11 @@ const Index: React.FC = () => {
   );
   const [isModelShow, setIsModelShow] = useState(false);
   const [chatroomType, setChatroomType] = useState<ChatroomType>(null);
-  const closeCreateChatRoomModel = () => setIsModelShow(false);
-  const showCreateChatRoomModel = () => setIsModelShow(true);
   const [users, setUsers] = useState<IFriend[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<IFriend[]>([]);
+
+  const closeCreateChatRoomModel = () => setIsModelShow(false);
+  const showCreateChatRoomModel = () => setIsModelShow(true);
 
   useEffect(() => {
     const handleGetFriendsApi = () => {

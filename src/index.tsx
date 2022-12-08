@@ -17,7 +17,7 @@ root.render(
       <HashRouter>
         <App />
       </HashRouter>
-    </Provider>,
+    </Provider>
   </React.StrictMode>,
 );
 

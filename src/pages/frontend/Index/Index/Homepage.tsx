@@ -19,6 +19,7 @@ import { useLoginTestAccountMutation } from 'services/account';
 import { useLazyGetUserByTokenQuery } from 'services/user';
 import { getProfile } from 'slices/userInfoSlice';
 import Cookies from 'js-cookie';
+import useChatrooms from 'hooks/useChatrooms';
 
 const Wrap = styled.div<IThemeProps>`
   display: flex;
@@ -93,7 +94,7 @@ const NoLoggingCard = styled(Card)`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 180px;
+    width: 200px;
     height: 120px;
     cursor: pointer;
     color: ${({ theme }) => theme.color.black_100};
@@ -109,6 +110,7 @@ const Homepage: React.FC = () => {
   const dispatch = useAppDispatch();
   const friends = useAppSelector((state) => state.friends.friends);
   const articles = useAppSelector((state) => state.articles.articles);
+  const { openMsgWindow } = useChatrooms();
   const {
     isSuccess: isGetArticlesSuccess,
     data: articlesResult,
@@ -132,7 +134,7 @@ const Homepage: React.FC = () => {
 
   useEffect(() => {
     const handleFetchArticle = () => {
-      if (!articlesResult) return;
+      if (!isGetArticlesSuccess) return;
       let { articles: articlesData } = articlesResult;
       articlesData = convertArticleStrToObject(articlesData);
       articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
@@ -144,8 +146,8 @@ const Homepage: React.FC = () => {
 
   useEffect(() => {
     const handleLazyFetchArticle = () => {
-      const { isSuccess, isFetching } = articlesLazyResult;
-      if (!isSuccess || isFetching) return;
+      const { isSuccess } = articlesLazyResult;
+      if (!isSuccess) return;
       let { articles: articlesData } = articlesLazyResult.data;
       articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
       articlesData = convertArticleStrToObject(articlesData);
@@ -153,7 +155,7 @@ const Homepage: React.FC = () => {
     };
 
     handleLazyFetchArticle();
-  }, [articlesLazyResult]);
+  }, [articlesLazyResult.isSuccess]);
 
   return (
     <Wrap>
@@ -174,7 +176,10 @@ const Homepage: React.FC = () => {
               >
                 <SendMessageBtn
                   type="button"
-                  onClick={(e) => { e.stopPropagation(); }}
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    e.stopPropagation();
+                    openMsgWindow(friend.uid!);
+                  }}
                 >
                   <span className="material-icons-outlined">sms</span>
                 </SendMessageBtn>
@@ -217,12 +222,14 @@ const WrapHomepage: React.FC = () => {
   const [getUserByTokenTrigger, userResult] = useLazyGetUserByTokenQuery();
 
   useEffect(() => {
-    if (loginTestAccountResult.isSuccess) {
+    const handleLoginTestAccountApi = () => {
+      if (!loginTestAccountResult.isSuccess) return;
       const { data: { token } } = loginTestAccountResult;
       Cookies.set('Friendsbook', token, { expires: 7 });
-
       getUserByTokenTrigger();
-    }
+    };
+
+    handleLoginTestAccountApi();
   }, [loginTestAccountResult.isSuccess]);
 
   useEffect(() => {
@@ -235,7 +242,7 @@ const WrapHomepage: React.FC = () => {
         <NoLoggingContainer>
           <NoLoggingCard>
             <Btn type="button" onClick={() => loginTestAccountTrigger()}>
-              登入測試用戶
+              一鍵登入測試用戶
             </Btn>
           </NoLoggingCard>
           <NoLoggingCard>
