@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import Btn from 'components/Btn';
-import { useAppSelector } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
+import Card from 'components/Card';
+import { logout } from 'slices/userInfoSlice';
 import Notifications from './Notifications';
 
-const Wrap = styled.header<IThemeProps>`
+const Wrap = styled.header<IThemeProps & { isLogin: boolean }>`
   position: fixed;
   right: 0;
   left: 0;
   z-index: 99;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   background-color: ${({ theme }) => theme.cardColor};
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-  padding: 0 17px 0 75px;
+  padding: ${({ isLogin }) => (isLogin ? '0 17px 0 75px' : '0 17px')};
 `;
 
-const Nav = styled.nav<IThemeProps>`
+const Nav = styled.nav<IThemeProps & { isLogin: boolean }>`
   display: flex;
+  flex-grow: 1;
+  justify-content: ${({ isLogin }) => (isLogin ? 'center' : 'space-between')};
   align-items: stretch;
   height: 70px;
   a, .notice-btn {
@@ -42,6 +47,16 @@ const Nav = styled.nav<IThemeProps>`
     }
     &:hover {
       filter: brightness(0.95);
+    }
+  }
+  .homepage-link {
+    padding: 0;
+    cursor: pointer;
+    img {
+      margin: 0 0 2px 1px;
+    }
+    &:hover {
+      filter: brightness(1);
     }
   }
 `;
@@ -132,9 +147,86 @@ const NotificationNum = styled.p<IThemeProps>`
   margin-left: 5px;
 `;
 
+const FriendsIcon = styled.img`
+  width: 40px;
+  height: 40px;
+  margin-top: 15px;
+`;
+
+const UserInfoContainer = styled.div<IThemeProps>`
+  width: 50px;
+  height: 50px;
+  position: relative;
+`;
+
+const UserInfo = styled(Card)<IThemeProps & { show: boolean }>`
+  background-color: ${({ theme }) => theme.color.white_100};
+  position: absolute;
+  right: 0;
+  top: ${({ show }) => (show ? '-8px' : '0')};
+  right: ${({ show }) => (show ? '-15px' : '0')};
+  padding: ${({ show }) => (show ? '8px 15px' : '0')};
+  transition: .3s ease-in-out;
+  border: 1px solid ${({ show, theme: { color: { gray_400 } } }) => (show ? gray_400 : 'transparent')};
+`;
+
+const UserInfoHeader = styled.div<IThemeProps & { show: boolean }>`
+  display: flex;
+  align-items: center;
+  transition: margin .3s linear;
+  margin-bottom: ${({ show }) => (show ? '10px' : 0)};
+  a {
+    text-decoration: none;
+    color: ${({ theme }) => theme.color.black_300};
+    font-weight: 700;
+  }
+  .name {
+    transition: width .2s ease-in-out, opacity 0.2s 0s;
+    width: 0;
+    overflow: hidden;
+    text-align: center;
+    margin-right: 0;
+    opacity: 0;
+    &.show {
+      width: 70px;
+      margin-right: 16px;
+      opacity: 1;
+      transition: width .2s ease-in-out, opacity 0.2s 0.2s;
+    }
+  }
+`;
+
+const UserInfoBtn = styled(Btn)<IThemeProps & { show: boolean }>`
+  display: block;
+  width: 100%;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.color.white_100};
+  color: ${({ theme }) => theme.color.black_200};
+  font-weight: 700;
+  margin: auto;
+  transition: filter .1s ease-in-out, height .2s ease-in-out, opacity .1s;
+  &.show {
+    opacity: 1;
+    height: 35px;
+    transition: filter .1s ease-in-out, height .2s ease-in-out, opacity 0.3s 0.2s;
+  }
+  &:hover {
+    filter: brightness(0.92);
+  }
+  &:active {
+    filter: brightness(0.85);
+  }
+`;
+
 const Header: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const userInfo = useAppSelector((state) => state.userInfo);
   const [isNotificationShow, setIsNotificationShow] = useState(false);
+  const [isUserInfoShow, setIsUserInfoShow] = useState(false);
 
   useEffect(() => {
     const hideNotification = ({ target }: MouseEvent) => {
@@ -151,12 +243,13 @@ const Header: React.FC = () => {
   const { profile, isLogin } = userInfo;
 
   return (
-    <Wrap>
+    <Wrap isLogin={userInfo.isLogin}>
       <div />
-      <Nav>
+      <Nav isLogin={userInfo.isLogin}>
         {
           userInfo.isLogin ? (
-            <><NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>首頁</NavLink>
+            <>
+              <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>首頁</NavLink>
               <NoticeContainer isNotificationShow={isNotificationShow} className="notice-container">
                 <button
                   type="button"
@@ -175,7 +268,15 @@ const Header: React.FC = () => {
               <NavLink to="/clubs" className={({ isActive }) => (isActive ? 'active' : '')}>社團</NavLink>
               <NavLink to="/fans" className={({ isActive }) => (isActive ? 'active' : '')}>粉絲專頁</NavLink>
             </>
-          ) : <Link to="/login" className="login-btn">您尚未登入，點選這裡登入</Link>
+          ) : (
+            <>
+              <Link to="/" className="homepage-link">
+                <FriendsIcon src={`${process.env.PUBLIC_URL}/images/friends.png`} />
+              </Link>
+              <Link to="/login" className="login-btn">您尚未登入，點選這裡登入</Link>
+              <div />
+            </>
+          )
         }
       </Nav>
       <HeaderRightSide>
@@ -187,13 +288,41 @@ const Header: React.FC = () => {
         </SearchContainer>
         {
           isLogin && (
-          <Link to={`/${profile.uid}`}>
-            <UserPhoto
-              src={profile.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
-              onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
-              alt={profile.name}
-            />
-          </Link>
+            <UserInfoContainer>
+              <UserInfo
+                show={isUserInfoShow}
+                onMouseLeave={() => setIsUserInfoShow(false)}
+              >
+                <UserInfoHeader show={isUserInfoShow}>
+                  <Link to={`/${profile.uid}`} className={`name ${isUserInfoShow && 'show'}`}>
+                    {profile.name}
+                  </Link>
+                  <UserPhoto
+                    src={profile.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+                    onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
+                    alt={profile.name}
+                    onMouseEnter={() => setIsUserInfoShow(true)}
+                  />
+                </UserInfoHeader>
+                <UserInfoBtn
+                  type="button"
+                  show={isUserInfoShow}
+                  className={`${isUserInfoShow && 'show'}`}
+                  onClick={() => navigate(`/${profile.uid}`)}
+                >個人頁面
+                </UserInfoBtn>
+                <UserInfoBtn
+                  type="button"
+                  show={isUserInfoShow}
+                  className={`${isUserInfoShow && 'show'}`}
+                  onClick={() => {
+                    dispatch(logout());
+                    navigate(0);
+                  }}
+                >登出
+                </UserInfoBtn>
+              </UserInfo>
+            </UserInfoContainer>
           )
         }
       </HeaderRightSide>

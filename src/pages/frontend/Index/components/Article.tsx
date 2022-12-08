@@ -19,7 +19,6 @@ const ArticleCard = styled(Card)<IThemeProps>`
   box-shadow: ${({ theme }) => theme.shadow.s};
   border: 1px solid ${({ theme }) => theme.color.gray_200};
   border-bottom: none;
-  margin-bottom: 20px;
   padding: 20px 0 0;
 `;
 

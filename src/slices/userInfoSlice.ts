@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
 
 export interface IUserInfoState {
   isLogin: boolean;
@@ -27,11 +28,16 @@ export const userInfoSlice = createSlice({
     postAvatarImg(state, { payload }: PayloadAction<string>) {
       state.profile.avatar_url = payload;
     },
+    logout(state) {
+      Cookies.set('Friendsbook', '');
+      state.isLogin = false;
+      state.profile = {};
+    },
   },
 });
 
 export const {
-  getProfile, postBannerImg, postAvatarImg,
+  getProfile, postBannerImg, postAvatarImg, logout,
 } = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;

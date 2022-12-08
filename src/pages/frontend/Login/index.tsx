@@ -140,7 +140,10 @@ const Login: React.FC = () => {
   const [getUserByTokenTrigger, userResult] = useLazyGetUserByTokenQuery();
 
   useEffect(() => {
-    if (userInfo.isLogin) navigate('/');
+    if (userInfo.isLogin) {
+      toast.success('已登入，跳轉至首頁');
+      navigate('/');
+    }
   }, [userInfo.isLogin]);
 
   useEffect(() => {
@@ -176,7 +179,7 @@ const Login: React.FC = () => {
   return (
     <Wrap>
       <Header>
-        <LogoLink to="/home">
+        <LogoLink to="/">
           <img src={`${process.env.PUBLIC_URL}/images/friends.png`} alt="friends logo" />
           <LogoTitle>Friendsbook</LogoTitle>
         </LogoLink>

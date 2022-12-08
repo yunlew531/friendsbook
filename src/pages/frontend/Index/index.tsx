@@ -18,7 +18,7 @@ const Wrap = styled.div`
 const MainContainer = styled.div`
   background-color: transparent;
   margin-left: 75px;
-  padding: 92px 30px 50px;
+  padding: 92px 30px 70px;
 `;
 
 const Index: React.FC = () => {
@@ -65,9 +65,9 @@ const Index: React.FC = () => {
           selectedUsers={selectedUsers}
           setSelectedUsers={setSelectedUsers}
         />
+        <SideBar />
       </PrivateRoute>
       <Header />
-      <SideBar />
       <MainContainer>
         <Outlet />
       </MainContainer>

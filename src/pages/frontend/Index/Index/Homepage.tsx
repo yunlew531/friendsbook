@@ -57,6 +57,13 @@ const ArticlesSection = styled.div`
 
 const ArticleList = styled.ul`
   list-style: none;
+  margin-bottom: 0;
+  li {
+    margin-bottom: 20px;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
 `;
 
 const StoriesSection = styled.div`
@@ -87,6 +94,7 @@ const NoLoggingContainer = styled.div<IThemeProps>`
 
 const NoLoggingCard = styled(Card)`
   padding: 0;
+  margin-right: 100px;
   a {
     text-decoration: none;
   }
@@ -101,8 +109,8 @@ const NoLoggingCard = styled(Card)`
     font-weight: 700;
     font-size: ${({ theme }) => theme.fontSizes.fs_3};
   }
-  &:first-of-type {
-    margin-right: 150px;
+  &:last-of-type {
+    margin-right: 0;
   }
 `;
 
@@ -233,8 +241,14 @@ const WrapHomepage: React.FC = () => {
   }, [loginTestAccountResult.isSuccess]);
 
   useEffect(() => {
-    if (userResult.isSuccess) dispatch(getProfile(userResult.data.profile));
-  }, [userResult.isSuccess]);
+    const handleGetProfileApi = () => {
+      const { isSuccess, isFetching } = userResult;
+      if (!isSuccess || isFetching) return;
+      dispatch(getProfile(userResult.data.profile));
+    };
+
+    handleGetProfileApi();
+  }, [userResult]);
 
   return (
     <>
@@ -248,6 +262,11 @@ const WrapHomepage: React.FC = () => {
           <NoLoggingCard>
             <Link to="/login">
               註冊頁面
+            </Link>
+          </NoLoggingCard>
+          <NoLoggingCard>
+            <Link to="/home">
+              介紹頁面
             </Link>
           </NoLoggingCard>
         </NoLoggingContainer>

@@ -22,11 +22,11 @@ const WebSocketProvide: React.FC<PropsWithChildren> = ({ children }) => {
       });
 
       ws.on('message', (msg: string) => {
-        console.log(msg);
+        if (process.env.NODE_ENV === 'development') console.log(msg);
       });
 
       ws.on('error-message', (msg: string) => {
-        console.log(msg);
+        if (process.env.NODE_ENV === 'development') console.log(msg);
       });
     }
   };
