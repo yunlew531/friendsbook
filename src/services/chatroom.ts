@@ -11,7 +11,7 @@ interface ICreateChatroomResponse {
   chatroom: IChatroom;
 }
 
-type CreateChatroomRequest = RequiredPick<IChatroom, 'type' | 'members'> & Pick<IChatroom, 'name'>;
+type CreateChatroomRequest = RequiredPick<IChatroom, 'name' | 'members'>;
 
 const chatroomApi = createApi({
   reducerPath: 'chatroom',

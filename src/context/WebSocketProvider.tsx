@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from 'hooks';
 import React, {
   createContext, PropsWithChildren, useContext, useEffect, useState,
 } from 'react';
-import { updateChat } from 'slices/chatroomsSlice';
+import { pushChatroom, updateChat } from 'slices/chatroomsSlice';
 import { io, Socket } from 'socket.io-client';
 
 const webSocketContext = createContext({} as Socket);
@@ -16,6 +16,15 @@ const WebSocketProvide: React.FC<PropsWithChildren> = ({ children }) => {
   const initSocket = () => {
     if (ws && profile.uid) {
       ws.emit('join-chatrooms', profile.uid);
+
+      ws.on('get-chatroom', (chatroom: IChatroom) => {
+        dispatch(pushChatroom({ chatroom }));
+        ws.emit('join-chatroom', chatroom.id);
+      });
+
+      ws.on('join-chatroom', (chatroomId: string) => {
+        ws.emit('join-chatroom', chatroomId);
+      });
 
       ws.on('chat', (chat: ISocketChat) => {
         dispatch(updateChat({ chat, uid: profile.uid! }));

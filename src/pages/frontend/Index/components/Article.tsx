@@ -402,8 +402,8 @@ const Article: React.FC<IArticleProps> = ({
 
   useEffect(() => {
     const handleReceiveThumbsUp = () => {
-      const { isSuccess, isFetching, data: thumbsUpResult } = getThumbsUpByArticleIdResult;
-      if (!isSuccess || isFetching) return;
+      const { isSuccess, data: thumbsUpResult } = getThumbsUpByArticleIdResult;
+      if (!isSuccess) return;
       if (!thumbsUpResult || !articleId) return;
       const { article_likes: thumbsUpData } = thumbsUpResult;
       refreshThumbsUp(articleId, thumbsUpData);

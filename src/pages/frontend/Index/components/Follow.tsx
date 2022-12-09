@@ -127,10 +127,8 @@ const Follow: React.FC = () => {
 
   useEffect(() => {
     const handleGetFriendsByToken = () => {
-      const { data, isSuccess, isFetching } = getFriendsResult;
-      if (!isSuccess || isFetching) return;
-      console.log(data.friends);
-
+      const { data, isSuccess } = getFriendsResult;
+      if (!isSuccess) return;
       dispatch(getFriends(data.friends));
     };
 

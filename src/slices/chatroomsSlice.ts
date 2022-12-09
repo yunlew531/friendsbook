@@ -61,6 +61,9 @@ export const chatroomsSlice = createSlice({
       });
       updateLocalChatrooms(uid, state.chatrooms);
     },
+    pushChatroom(state, { payload }: PayloadAction<{ chatroom: IChatroom }>) {
+      state.chatrooms.push(payload.chatroom);
+    },
     openChatroom(state, { payload }: PayloadAction<IChatroomPayload>) {
       const index = findChatroomIndex(payload.chatroom.id!, state.chatrooms);
       state.chatrooms[index].inOpenList = true;
@@ -122,7 +125,7 @@ export const chatroomsSlice = createSlice({
 
 export const {
   getChatrooms, openChatroom, removeChatroom, openChatroomWindow, closeChatroomWindow, updateChat,
-  createChatroom, foldChatroomWindow, displayMoreList,
+  createChatroom, foldChatroomWindow, displayMoreList, pushChatroom,
 } = chatroomsSlice.actions;
 
 export default chatroomsSlice.reducer;

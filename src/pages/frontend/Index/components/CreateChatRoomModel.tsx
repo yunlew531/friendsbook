@@ -4,11 +4,10 @@ import Card from 'components/Card';
 import Btn from 'components/Btn';
 import FriendList from 'pages/frontend/Index/components/FriendList';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { openChatroom, openChatroomWindow, createChatroom } from 'slices/chatroomsSlice';
+import { openChatroom } from 'slices/chatroomsSlice';
 import toast from 'react-hot-toast';
-import { useCreateChatroomMutation } from 'services/chatroom';
-import { useWebSocket } from 'context/WebSocketProvider';
 import ChatroomList from 'pages/frontend/Index/components/ChatroomList';
+import useChatrooms from 'hooks/useChatrooms';
 
 const Wrap = styled.div<{ isShow: boolean }>`
   display: ${({ isShow }) => (isShow ? 'block' : 'none')};
@@ -116,8 +115,7 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const chatrooms = useAppSelector((state) => state.chatrooms);
-  const ws = useWebSocket();
-  const [createChatroomTrigger, createChatroomResult] = useCreateChatroomMutation();
+  const { createChatroom, openMsgWindowByUid, createChatroomResult } = useChatrooms();
   const [selectedChatroom, setSelectedChatroom] = useState<IChatroom>();
   const [multiplePeopleChatrooms, setMultiplePeopleChatrooms] = useState<IChatroom[]>([]);
   const [roomName, setRoomName] = useState('');
@@ -136,10 +134,6 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
 
   const addChatroom = () => {
     if (chatroomType === null) return;
-    enum Type {
-      'oneToOne' = 1,
-      'multipleCreate' = 2,
-    }
     if (chatroomType === 'multiple') {
       if (!selectedChatroom?.id) {
         toast.error('請選擇聊天室');
@@ -148,40 +142,19 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
       dispatch(openChatroom({ chatroom: selectedChatroom, uid: profile.uid! }));
       closeCreateChatroomModel();
     } else if (chatroomType === 'oneToOne') {
-      if (!selectedUsers.length) {
+      const selectedUser = selectedUsers[0].uid;
+      if (!selectedUser) {
         toast.error('請選擇用戶');
         return;
       }
-      const isChatroomExist = chatrooms.chatrooms.some(
-        (chatroom) => chatroom.type === 1 && chatroom.members?.includes(selectedUsers[0].uid!),
-      );
-      if (!isChatroomExist) {
-        createChatroomTrigger({
-          members: [profile.uid!, ...selectedUsers.map((user) => user.uid!)],
-          type: Type[chatroomType],
-        });
-      } else {
-        // find exist chatroom in state.chatrooms, add to aside opened list,
-        // and show chatroom window
-        const hasOpenedChatroom = chatrooms.chatrooms.filter(
-          (chatroom) => chatroom.type === 1 && chatroom.members?.includes(selectedUsers[0].uid!),
-        );
-        if (hasOpenedChatroom.length) {
-          dispatch(openChatroomWindow({ chatroom: hasOpenedChatroom[0], uid: profile.uid! }));
-          closeCreateChatroomModel();
-        }
-      }
+      openMsgWindowByUid(selectedUser);
+      closeCreateChatroomModel();
     } else if (chatroomType === 'multipleCreate') {
-      if (!profile.uid) return;
-      if (!roomName.trim()) {
-        toast.error('請填寫聊天室名稱');
-        return;
-      }
-      createChatroomTrigger({
-        members: [profile.uid, ...selectedUsers.map((user) => user.uid!)],
-        type: Type[chatroomType],
-        name: roomName.trim(),
-      });
+      const chatroomOps: ICreateChatroomOps = {
+        members: [...selectedUsers.map((user) => user.uid!)],
+        roomName,
+      };
+      createChatroom(chatroomOps);
     }
   };
 
@@ -198,19 +171,8 @@ const CreateChatRoomModel: React.FC<ICreateChatRoomModelProps> = ({
   }, [friends]);
 
   useEffect(() => {
-    const handleCreateChatroomApi = () => {
-      const { isSuccess, data } = createChatroomResult;
-      if (!isSuccess) return;
-      dispatch(createChatroom({
-        chatroom: data.chatroom,
-        uid: profile.uid!,
-      }));
-      ws.emit('join-chatroom', data.chatroom.id);
-      closeCreateChatroomModel();
-    };
-
-    handleCreateChatroomApi();
-  }, [createChatroomResult.isSuccess]);
+    if (createChatroomResult.isSuccess) closeCreateChatroomModel();
+  }, [createChatroomResult]);
 
   return (
     <Wrap isShow={isShow}>

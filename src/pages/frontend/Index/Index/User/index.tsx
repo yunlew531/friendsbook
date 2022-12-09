@@ -148,8 +148,8 @@ const FanIndex: React.FC = () => {
 
   useEffect(() => {
     const handleGetImgsApi = () => {
-      const { isSuccess, isFetching } = getImgsResult;
-      if (!isSuccess || isFetching) return;
+      const { isSuccess } = getImgsResult;
+      if (!isSuccess) return;
       const { data: { images } } = getImgsResult;
       const sortImagesByTime = [...images].sort((a, b) => b.created_at! - a.created_at!);
       setImgs(sortImagesByTime);
@@ -170,8 +170,8 @@ const FanIndex: React.FC = () => {
 
   useEffect(() => {
     const handleGetArticlesApi = () => {
-      const { isSuccess, isFetching, data } = getArticlesByUidResult;
-      if (!isSuccess || isFetching) return;
+      const { isSuccess, data } = getArticlesByUidResult;
+      if (!isSuccess) return;
       const articlesSortTime = [...data.articles].sort((a, b) => b.created_at! - a.created_at!);
       setArticles(convertArticleStrToObject(articlesSortTime));
     };

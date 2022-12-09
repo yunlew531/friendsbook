@@ -32,7 +32,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (userResult.isSuccess) dispatch(getProfile(userResult.data.profile));
-  }, [userResult.isSuccess]);
+  }, [userResult]);
 
   // TODO: 切換主題色功能
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

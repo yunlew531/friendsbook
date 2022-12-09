@@ -98,7 +98,7 @@ const Friends: React.FC = () => {
   const profile = useAppSelector((state) => state.userInfo.profile);
   const dispatch = useAppDispatch();
   const { uid: paramUid } = useParams();
-  const { openMsgWindow } = useChatrooms();
+  const { openMsgWindowByUid } = useChatrooms();
   const [friends, setFriends] = useState<IFriends>({ connected: [], received: [], sent: [] });
   const [removeFriendInviteTrigger, removeFriendInviteResult] = useRemoveFriendInviteMutation();
   const [getFriendsByTokenTrigger, getFriendsByTokenResult] = useLazyGetFriendsByTokenQuery();
@@ -116,8 +116,8 @@ const Friends: React.FC = () => {
 
   useEffect(() => {
     const handleGetFriendsApi = () => {
-      const { isSuccess, isFetching, data } = getFriendsByTokenResult;
-      if (!isSuccess || isFetching) return;
+      const { isSuccess, data } = getFriendsByTokenResult;
+      if (!isSuccess) return;
       dispatch(getFriends(data.friends));
       setFriends(data.friends);
     };
@@ -127,8 +127,8 @@ const Friends: React.FC = () => {
 
   useEffect(() => {
     const handleGetFriendsApi = () => {
-      const { isSuccess, isFetching, data } = getFriendsByUidResult;
-      if (!isSuccess || isFetching) return;
+      const { isSuccess, data } = getFriendsByUidResult;
+      if (!isSuccess) return;
       setFriends((prev) => ({
         ...prev,
         connected: data.friends,
@@ -140,8 +140,8 @@ const Friends: React.FC = () => {
 
   useEffect(() => {
     const handleRemoveFriendInviteApi = () => {
-      const { isSuccess, isLoading, data } = removeFriendInviteResult;
-      if (!isSuccess || isLoading) return;
+      const { isSuccess, data } = removeFriendInviteResult;
+      if (!isSuccess) return;
       const { code } = data;
       if (!code) return;
       enum ToastType {
@@ -171,12 +171,12 @@ const Friends: React.FC = () => {
 
   useEffect(() => {
     const handleDeleteFriendApi = () => {
-      const { isSuccess, isLoading } = deleteFriendResult;
-      if (!isSuccess || isLoading) return;
+      const { isSuccess } = deleteFriendResult;
+      if (!isSuccess) return;
       toast.success('已删除好友!');
       setFriends((prev) => {
         const index = prev.connected.findIndex((friend) => friend.uid === tempFriendUid.current);
-        const tempConnected = [...prev.sent];
+        const tempConnected = [...prev.connected];
         tempConnected.splice(index, 1);
         return {
           ...prev,
@@ -190,8 +190,8 @@ const Friends: React.FC = () => {
 
   useEffect(() => {
     const handleAgreeToBeFriendApi = () => {
-      const { isSuccess, isLoading } = agreeToBeFriendResult;
-      if (!isSuccess || isLoading) return;
+      const { isSuccess } = agreeToBeFriendResult;
+      if (!isSuccess) return;
       toast.success('新增好友!');
       getFriendsByTokenTrigger();
     };
@@ -215,7 +215,7 @@ const Friends: React.FC = () => {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      agreeToBeFriendTrigger(friend.id);
+                      agreeToBeFriendTrigger(friend.id!);
                       tempFriendUid.current = friend.uid!;
                     }}
                   >同意
@@ -271,7 +271,7 @@ const Friends: React.FC = () => {
                     type="button"
                     onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                       e.stopPropagation();
-                      openMsgWindow(friend.uid!);
+                      openMsgWindowByUid(friend.uid!);
                     }}
                   >
                     <span className="material-icons-outlined">sms</span>

@@ -48,7 +48,7 @@ const friendApi = createApi({
         method: 'DELETE',
       }),
     }),
-    agreeToBeFriend: builder.mutation({
+    agreeToBeFriend: builder.mutation<{ message: string }, string>({
       query: (friendId) => ({
         url: `/friend/invite/${friendId}`,
         method: 'PATCH',

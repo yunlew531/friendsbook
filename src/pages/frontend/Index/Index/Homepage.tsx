@@ -118,7 +118,7 @@ const Homepage: React.FC = () => {
   const dispatch = useAppDispatch();
   const friends = useAppSelector((state) => state.friends.friends);
   const articles = useAppSelector((state) => state.articles.articles);
-  const { openMsgWindow } = useChatrooms();
+  const { openMsgWindowByUid } = useChatrooms();
   const {
     isSuccess: isGetArticlesSuccess,
     data: articlesResult,
@@ -154,16 +154,17 @@ const Homepage: React.FC = () => {
 
   useEffect(() => {
     const handleLazyFetchArticle = () => {
-      const { isSuccess } = articlesLazyResult;
-      if (!isSuccess) return;
-      let { articles: articlesData } = articlesLazyResult.data;
-      articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
-      articlesData = convertArticleStrToObject(articlesData);
-      dispatch(getArticles(articlesData));
+      const { isSuccess, data } = articlesLazyResult;
+      if (isSuccess) {
+        let { articles: articlesData } = data;
+        articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
+        articlesData = convertArticleStrToObject(articlesData);
+        dispatch(getArticles(articlesData));
+      }
     };
 
     handleLazyFetchArticle();
-  }, [articlesLazyResult.isSuccess]);
+  }, [articlesLazyResult]);
 
   return (
     <Wrap>
@@ -186,7 +187,7 @@ const Homepage: React.FC = () => {
                   type="button"
                   onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation();
-                    openMsgWindow(friend.uid!);
+                    openMsgWindowByUid(friend.uid!);
                   }}
                 >
                   <span className="material-icons-outlined">sms</span>
@@ -238,12 +239,12 @@ const WrapHomepage: React.FC = () => {
     };
 
     handleLoginTestAccountApi();
-  }, [loginTestAccountResult.isSuccess]);
+  }, [loginTestAccountResult]);
 
   useEffect(() => {
     const handleGetProfileApi = () => {
-      const { isSuccess, isFetching } = userResult;
-      if (!isSuccess || isFetching) return;
+      const { isSuccess } = userResult;
+      if (!isSuccess) return;
       dispatch(getProfile(userResult.data.profile));
     };
 

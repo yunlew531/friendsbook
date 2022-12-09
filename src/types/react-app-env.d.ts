@@ -148,6 +148,11 @@ interface IChatroomPayload {
   chatroom: IChatroom;
 }
 
+interface ICreateChatroomOps {
+  members: string[];
+  roomName?: string;
+}
+
 type ChatroomType = 'oneToOne' | 'multiple' | 'multipleCreate' | null;
 
 type RequiredPick<T, K extends keyof T> = Required<Pick<T, K>>;

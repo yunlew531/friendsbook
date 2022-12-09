@@ -179,8 +179,8 @@ const User: React.FC = () => {
 
   useEffect(() => {
     const handleGetUserByUid = () => {
-      const { isSuccess, isFetching, data } = getUserProfileByUidResult;
-      if (!isSuccess || isFetching) return;
+      const { isSuccess, data } = getUserProfileByUidResult;
+      if (!isSuccess) return;
       setUser(data.profile);
     };
 
@@ -215,8 +215,8 @@ const User: React.FC = () => {
 
   useEffect(() => {
     const handleGetImgsApi = () => {
-      const { isSuccess, isFetching } = getImgsResult;
-      if (!isSuccess || isFetching) return;
+      const { isSuccess } = getImgsResult;
+      if (!isSuccess) return;
       const { data: { images } } = getImgsResult;
       const sortImagesByTime = [...images].sort((a, b) => b.created_at! - a.created_at!);
       setImgs(sortImagesByTime);
