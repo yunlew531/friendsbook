@@ -64,7 +64,7 @@ const friendApi = createApi({
 });
 
 export const {
-  useGetRecommendFriendsQuery,
+  useLazyGetRecommendFriendsQuery,
   useSentFriendInviteMutation,
   useGetFriendsByTokenQuery,
   useLazyGetFriendsByUidQuery,

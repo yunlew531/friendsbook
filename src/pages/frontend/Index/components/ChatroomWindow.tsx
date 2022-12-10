@@ -17,7 +17,7 @@ const ChatroomEl = styled.div<IThemeProps & IChatroomElProps>`
   width: 350px;
   height: 400px;
   background-color: ${({ theme }) => theme.color.white_100};
-  border: 1px solid ${({ theme }) => theme.color.gray_400};
+  border: 1px solid ${({ theme }) => theme.color.gray_100};
   border-radius: 8px 8px 0 0;
   box-shadow: ${({ theme }) => theme.shadow.l};
   transition: transform .2s ease-in-out;
@@ -364,7 +364,7 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({
           type="text"
           value={input}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
-          onKeyUp={(e) => {
+          onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
             const enters = ['Enter', 'NumpadEnter'];
             if (!enters.includes(e.code)) return;
             ws.emit('chat', { chatroom_id: chatroom.id, content: input, user_uid: profile.uid });

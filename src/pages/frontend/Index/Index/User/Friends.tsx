@@ -6,13 +6,13 @@ import Friend from 'pages/frontend/Index/components/Friend';
 import {
   useAgreeToBeFriendMutation, useDeleteFriendMutation, useLazyGetFriendsByTokenQuery,
   useLazyGetFriendsByUidQuery,
-  useRemoveFriendInviteMutation,
 } from 'services/friend';
 import { getFriends } from 'slices/friendsSlice';
 import Btn from 'components/Btn';
 import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import useChatrooms from 'hooks/useChatrooms';
+import useFriends from 'hooks/useFriends';
 import EmptyBox from '../../components/EmptyBox';
 
 const Wrap = styled.div<IThemeProps>`
@@ -78,6 +78,22 @@ const FriendItemBtn = styled(Btn)<IThemeProps>`
   }
 `;
 
+const AddToFriendsBtn = styled(Btn)<IThemeProps>`
+  display: flex;
+  align-items: center;
+  font-size: ${({ theme }) => theme.fontSizes.fs_3};
+  font-weight: 700;
+  border-radius: 10px;
+  background-color: ${({ theme }) => theme.color.gray_400};
+  padding: 8px 10px;
+  font-size: ${({ theme }) => theme.fontSizes.fs_5};
+  margin-left: auto;
+  .person-add-icon {
+    font-size: ${({ theme }) => theme.fontSizes.fs_4};
+    margin-right: 5px;
+  }
+`;
+
 const BtnContainer = styled.div`
   display: flex;
   align-items: center;
@@ -96,15 +112,18 @@ const ApproveBeFriendBtn = styled(FriendItemBtn)`
 
 const Friends: React.FC = () => {
   const profile = useAppSelector((state) => state.userInfo.profile);
+  const myFriends = useAppSelector((state) => state.friends.friends);
   const dispatch = useAppDispatch();
   const { uid: paramUid } = useParams();
   const { openMsgWindowByUid } = useChatrooms();
   const [friends, setFriends] = useState<IFriends>({ connected: [], received: [], sent: [] });
-  const [removeFriendInviteTrigger, removeFriendInviteResult] = useRemoveFriendInviteMutation();
   const [getFriendsByTokenTrigger, getFriendsByTokenResult] = useLazyGetFriendsByTokenQuery();
   const [getFriendsByUidTrigger, getFriendsByUidResult] = useLazyGetFriendsByUidQuery();
   const [deleteFriend, deleteFriendResult] = useDeleteFriendMutation();
   const [agreeToBeFriendTrigger, agreeToBeFriendResult] = useAgreeToBeFriendMutation();
+  const {
+    sentFriendInviteTrigger, removeFriendInviteTrigger, removeFriendInviteResult,
+  } = useFriends();
   const tempFriendUid = useRef('');
 
   useEffect(() => {
@@ -144,15 +163,10 @@ const Friends: React.FC = () => {
       if (!isSuccess) return;
       const { code } = data;
       if (!code) return;
-      enum ToastType {
-        '已移除邀請' = 1,
-        '已拒絕邀請' = 2,
-      }
       enum InviteType {
         'sent' = 1,
         'received' = 2,
       }
-      toast.success(ToastType[code]);
       // update friends.received or friends.sent
       setFriends((prev) => {
         const index = prev[InviteType[code] as keyof typeof InviteType]
@@ -240,20 +254,20 @@ const Friends: React.FC = () => {
             <h2>送出的好友邀請</h2>
             <FriendList>
               {
-            friends.sent.map((friend) => (
-              <Friend key={friend.uid} friend={friend} length={friends.sent.length}>
-                <CancelInviteFriendBtn
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeFriendInviteTrigger(friend.id!);
-                    tempFriendUid.current = friend.uid!;
-                  }}
-                >取消
-                </CancelInviteFriendBtn>
-              </Friend>
-            ))
-          }
+                friends.sent.map((friend) => (
+                  <Friend key={friend.uid} friend={friend} length={friends.sent.length}>
+                    <CancelInviteFriendBtn
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFriendInviteTrigger(friend.id!);
+                        tempFriendUid.current = friend.uid!;
+                      }}
+                    >取消
+                    </CancelInviteFriendBtn>
+                  </Friend>
+                ))
+              }
               {friends.sent.length === 0 && <li><EmptyBox /></li>}
             </FriendList>
           </Sent>
@@ -267,15 +281,51 @@ const Friends: React.FC = () => {
             friends.connected.map((friend) => (
               <Friend key={friend.uid} friend={friend} length={friends.connected.length}>
                 <BtnContainer>
-                  <FriendItemBtn
-                    type="button"
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                      e.stopPropagation();
-                      openMsgWindowByUid(friend.uid!);
-                    }}
-                  >
-                    <span className="material-icons-outlined">sms</span>
-                  </FriendItemBtn>
+                  { myFriends.connected.some((myFriend) => myFriend.uid === friend.uid)
+                   && profile.uid !== friend.uid && (
+                   <FriendItemBtn
+                     type="button"
+                     onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                       e.stopPropagation();
+                       openMsgWindowByUid(friend.uid!);
+                     }}
+                   >
+                     <span className="material-icons-outlined">sms</span>
+                   </FriendItemBtn>
+                  )}
+                  { profile.uid && myFriends.connected[0] && profile.uid !== friend.uid
+                   && !myFriends.connected.some((myFriend) => myFriend.uid === friend.uid)
+                   && !myFriends.received.some((myFriend) => myFriend.uid === friend.uid)
+                   && !myFriends.sent.some((myFriend) => myFriend.uid === friend.uid) && (
+                   <AddToFriendsBtn
+                     type="button"
+                     anime
+                     onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                       e.stopPropagation();
+                       sentFriendInviteTrigger(friend.uid!);
+                     }}
+                   >
+                     <span className="material-icons-outlined person-add-icon">person_add</span>
+                     加好友
+                   </AddToFriendsBtn>
+                  )}
+                  { profile.uid && myFriends.sent[0]
+                    && myFriends.sent.some((myFriend) => myFriend.uid === friend.uid)
+                    && (
+                    <AddToFriendsBtn
+                      type="button"
+                      anime
+                      onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                        e.stopPropagation();
+                        const friendInMine = myFriends.sent.filter(
+                          (myFriend) => myFriend.uid === friend.uid,
+                        )[0];
+                        if (!friendInMine?.id) return;
+                        removeFriendInviteTrigger(friendInMine.id);
+                      }}
+                    >取消邀請
+                    </AddToFriendsBtn>
+                    )}
                   {
                     paramUid === profile.uid && (
                     <CancelInviteFriendBtn

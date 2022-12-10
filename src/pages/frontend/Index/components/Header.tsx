@@ -181,12 +181,12 @@ const UserInfoHeader = styled.div<IThemeProps & { show: boolean }>`
     font-weight: 700;
   }
   .name {
-    transition: width .2s ease-in-out, opacity 0.2s 0s;
     width: 0;
     overflow: hidden;
     text-align: center;
     margin-right: 0;
     opacity: 0;
+    transition: width .2s ease-in-out, opacity 0.2s 0s, margin .2s ease-in-out;
     &.show {
       width: 70px;
       margin-right: 16px;

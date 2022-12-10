@@ -3,6 +3,7 @@ import React, {
   createContext, PropsWithChildren, useContext, useEffect, useState,
 } from 'react';
 import { pushChatroom, updateChat } from 'slices/chatroomsSlice';
+import { getFriends } from 'slices/friendsSlice';
 import { io, Socket } from 'socket.io-client';
 
 const webSocketContext = createContext({} as Socket);
@@ -10,7 +11,8 @@ export const useWebSocket = () => useContext(webSocketContext);
 
 const WebSocketProvide: React.FC<PropsWithChildren> = ({ children }) => {
   const profile = useAppSelector((state) => state.userInfo.profile);
-  const [ws] = useState<Socket>(io(process.env.REACT_APP_SOCKET_URL!));
+  const friends = useAppSelector((state) => state.friends.friends);
+  const [ws, setWs] = useState<Socket>();
   const dispatch = useAppDispatch();
 
   const initSocket = () => {
@@ -41,17 +43,44 @@ const WebSocketProvide: React.FC<PropsWithChildren> = ({ children }) => {
   };
 
   useEffect(() => {
-    initSocket();
+    const handleUpdateLastSeenPerMin = () => {
+      ws?.on('friends-last-seen', (
+        friendsLastSeen: RequiredPick<IFriend, 'id' | 'uid' | 'last_seen'>[],
+      ) => {
+        const tempFriends = friends.connected.map((friend) => {
+          const tempFriend = { ...friend };
+          friendsLastSeen.forEach((friendLastSeen) => {
+            if (friend.id === friendLastSeen.id) {
+              tempFriend.last_seen = friendLastSeen.last_seen;
+            }
+          });
+          return tempFriend;
+        });
+        dispatch(getFriends({ ...friends, connected: tempFriends }));
+      });
+    };
+
+    handleUpdateLastSeenPerMin();
 
     return () => {
-      ws.off('chat');
-      ws.off('message');
-      ws.off('error-message');
+      ws?.off('friends-last-seen');
     };
+  }, [friends.connected]);
+
+  useEffect(() => {
+    setWs(io(process.env.REACT_APP_SOCKET_URL!));
+
+    return () => {
+      ws?.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    initSocket();
   }, [ws, profile.uid]);
 
   return (
-    <webSocketContext.Provider value={ws}>
+    <webSocketContext.Provider value={ws!}>
       {children}
     </webSocketContext.Provider>
   );

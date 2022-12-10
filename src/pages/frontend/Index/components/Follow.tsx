@@ -2,12 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import CardTitle from 'components/CardTitle';
 import Btn, { MoreBtn } from 'components/Btn';
-import { useGetRecommendFriendsQuery, useSentFriendInviteMutation, useLazyGetFriendsByTokenQuery } from 'services/friend';
+import { useLazyGetRecommendFriendsQuery } from 'services/friend';
 import handleIsOnline from 'utils/handleIsOnline';
-import { useAppDispatch } from 'hooks';
-import { getFriends } from 'slices/friendsSlice';
-import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import useFriends from 'hooks/useFriends';
 
 const FollowHeader = styled.div<IThemeProps>`
   display: flex;
@@ -90,29 +88,30 @@ const AddToFriendsBtn = styled(FansPageBtn)`
 `;
 
 const Follow: React.FC = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { data: recommendFriendsResult } = useGetRecommendFriendsQuery();
-  const [sentFriendInviteTrigger, sentFriendInviteResult] = useSentFriendInviteMutation();
-  const [getFriendsTrigger, getFriendsResult] = useLazyGetFriendsByTokenQuery();
+  const [getRecommendFriendTrigger, getRecommendFriendResult] = useLazyGetRecommendFriendsQuery();
+  const { sentFriendInviteTrigger, sentFriendInviteResult } = useFriends();
   const [recommendFriends, setRecommendFriends] = useState<IProfile[]>([]);
   const currentAddFriendUidRef = useRef('');
 
   useEffect(() => {
+    getRecommendFriendTrigger();
+  }, []);
+
+  useEffect(() => {
     const handleRecommendFriendsApi = () => {
-      if (!recommendFriendsResult) return;
-      setRecommendFriends(recommendFriendsResult.users);
+      const { isSuccess, data } = getRecommendFriendResult;
+      if (!isSuccess) return;
+      setRecommendFriends(data.users);
     };
 
     handleRecommendFriendsApi();
-  }, [recommendFriendsResult]);
+  }, [getRecommendFriendResult]);
 
   useEffect(() => {
     const handleSentFriendInviteResult = () => {
-      const { isSuccess, isLoading } = sentFriendInviteResult;
-      if (!isSuccess || isLoading) return;
-      toast.success('已傳送好友邀請，等待對方回復!');
-      getFriendsTrigger();
+      const { isSuccess } = sentFriendInviteResult;
+      if (!isSuccess) return;
       const addFriendIndex = recommendFriends
         .findIndex((friend) => friend.uid === currentAddFriendUidRef.current);
       setRecommendFriends((prev) => {
@@ -124,16 +123,6 @@ const Follow: React.FC = () => {
 
     handleSentFriendInviteResult();
   }, [sentFriendInviteResult]);
-
-  useEffect(() => {
-    const handleGetFriendsByToken = () => {
-      const { data, isSuccess } = getFriendsResult;
-      if (!isSuccess) return;
-      dispatch(getFriends(data.friends));
-    };
-
-    handleGetFriendsByToken();
-  }, [getFriendsResult]);
 
   return (
     <>

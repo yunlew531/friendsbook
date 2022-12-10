@@ -22,7 +22,6 @@ const ChatroomWindowsContainer = styled.div`
   top: 100%;
   right: 50px;
   display: flex;
-  flex-direction: row-reverse;
 `;
 
 interface IChatroomListProps {
@@ -92,7 +91,7 @@ const ChatroomItem = styled.li<IThemeProps>`
     display: none;
   }
   &:hover {
-    .remove-chatroom-btn {
+    .remove-chatroom-btn, .chatroom-item-name {
       display: block;
     }
   }
@@ -113,6 +112,18 @@ const RemoveChatroomBtn = styled.button<IThemeProps>`
     font-size: ${({ theme }) => theme.fontSizes.fs_3};
     font-weight: 700;
   }
+`;
+
+const ChatroomItemName = styled.p<IThemeProps>`
+  display: none;
+  position: absolute;
+  left: -3px;
+  top: 50%;
+  transform: translateX(-100%) translateY(-50%);
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.color.white_100};
+  padding: 3px 6px;
+  border: 1px solid ${({ theme }) => theme.color.gray_100};
 `;
 
 interface IChatroomProps {
@@ -163,6 +174,7 @@ const Chatroom: React.FC<IChatroomProps> = ({
               key={chatroom.id}
               onClick={() => dispatch(openChatroomWindow({ chatroom, uid: profile.uid! }))}
             >
+              <ChatroomItemName className="chatroom-item-name">{chatroom.name}</ChatroomItemName>
               <RemoveChatroomBtn
                 type="button"
                 className="remove-chatroom-btn"

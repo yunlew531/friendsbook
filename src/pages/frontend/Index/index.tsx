@@ -6,6 +6,7 @@ import { Outlet } from 'react-router-dom';
 import { useGetFriendsByTokenQuery } from 'services/friend';
 import { getFriends } from 'slices/friendsSlice';
 import PrivateRoute from 'context/PrivateRoute';
+import { useWebSocket } from 'context/WebSocketProvider';
 import Chatroom from './components/Chatroom';
 import CreateChatRoomModel from './components/CreateChatRoomModel';
 import Header from './components/Header';
@@ -28,6 +29,7 @@ const Index: React.FC = () => {
   const { data: FriendsResult, isSuccess: isGetFriendsSuccess } = useGetFriendsByTokenQuery(
     userInfo.isLogin ? undefined : skipToken,
   );
+  const ws = useWebSocket();
   const [isModelShow, setIsModelShow] = useState(false);
   const [chatroomType, setChatroomType] = useState<ChatroomType>(null);
   const [users, setUsers] = useState<IFriend[]>([]);
@@ -44,6 +46,22 @@ const Index: React.FC = () => {
 
     handleGetFriendsApi();
   }, [isGetFriendsSuccess]);
+
+  useEffect(() => {
+    let lastSeenTimeout: NodeJS.Timeout;
+    const updateLastSeenPerMin = () => {
+      if (!userInfo.profile.uid || !friends.connected[0]) return;
+      lastSeenTimeout = setTimeout(() => {
+        ws.emit('friends-last-seen', userInfo.profile.uid);
+      }, 60 * 1000);
+    };
+
+    updateLastSeenPerMin();
+
+    return () => {
+      clearTimeout(lastSeenTimeout);
+    };
+  }, [friends.connected]);
 
   return (
     <Wrap>

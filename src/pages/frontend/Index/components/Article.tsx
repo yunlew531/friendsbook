@@ -12,7 +12,7 @@ import {
 import { useAppSelector } from 'hooks';
 import Comment from 'pages/frontend/Index/components/Comment';
 import toast from 'react-hot-toast';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ArticleCard = styled(Card)<IThemeProps>`
   overflow: hidden;
@@ -329,7 +329,6 @@ const Article: React.FC<IArticleProps> = ({
   const {
     author, created_at: publishedAt, content, comments, id: articleId, article_likes: thumbsUp,
   } = data || {};
-  const { uid: paramsUid } = useParams();
   const navigate = useNavigate();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const [postCommentTrigger, postCommentResult] = usePostCommentMutation();
@@ -444,15 +443,19 @@ const Article: React.FC<IArticleProps> = ({
             {isMoreListShow && (
             <ArticleMoreList>
               {
-                paramsUid === profile.uid && (
+                author?.uid === profile.uid && (
                 <li>
                   <button className="delete-article-btn" onClick={() => deleteArticleTrigger(articleId!)} type="button">刪除</button>
                 </li>
                 )
               }
-              <li>
-                <button type="button">檢舉</button>
-              </li>
+              {
+                author?.uid !== profile.uid && (
+                  <li>
+                    <button type="button">檢舉</button>
+                  </li>
+                )
+              }
             </ArticleMoreList>
             )}
             <MoreBtn className="more-btn" type="button">
@@ -536,8 +539,13 @@ const Article: React.FC<IArticleProps> = ({
             type="text"
             value={commentInput}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCommentInput(e.target.value)}
+            onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
+              const enters = ['Enter', 'NumpadEnter'];
+              if (!enters.includes(e.code)) return;
+              postComment();
+            }}
           />
-          <PostCommentBtn type="button" anime onClick={() => postComment()}>送出</PostCommentBtn>
+          <PostCommentBtn type="button" anime onClick={postComment}>送出</PostCommentBtn>
         </InputSection>
       </ArticleCard>
     </li>
