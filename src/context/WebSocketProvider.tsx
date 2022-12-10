@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from 'hooks';
 import React, {
   createContext, PropsWithChildren, useContext, useEffect, useState,
 } from 'react';
-import { pushChatroom, updateChat } from 'slices/chatroomsSlice';
+import { joinWebSocketChatroom, pushChatroom, updateChat } from 'slices/chatroomsSlice';
 import { getFriends } from 'slices/friendsSlice';
 import { io, Socket } from 'socket.io-client';
 
@@ -10,10 +10,10 @@ const webSocketContext = createContext({} as Socket);
 export const useWebSocket = () => useContext(webSocketContext);
 
 const WebSocketProvide: React.FC<PropsWithChildren> = ({ children }) => {
+  const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const friends = useAppSelector((state) => state.friends.friends);
   const [ws, setWs] = useState<Socket>();
-  const dispatch = useAppDispatch();
 
   const initSocket = () => {
     if (ws && profile.uid) {
@@ -37,6 +37,11 @@ const WebSocketProvide: React.FC<PropsWithChildren> = ({ children }) => {
       });
 
       ws.on('error-message', (msg: string) => {
+        if (process.env.NODE_ENV === 'development') console.log(msg);
+      });
+
+      ws.on('join-chatrooms-success', (msg: string) => {
+        dispatch(joinWebSocketChatroom());
         if (process.env.NODE_ENV === 'development') console.log(msg);
       });
     }

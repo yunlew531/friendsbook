@@ -3,6 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 interface IInitialState {
   chatrooms: IChatroom[];
+  isJoinWebSocketChatroom: boolean;
 }
 
 const findChatroomIndex = (roomId: string, chatrooms: IChatroom[]) => chatrooms.findIndex(
@@ -29,6 +30,7 @@ const updateLocalChatrooms = (uid: string, chatrooms: IChatroom[]) => {
 
 const initialState: IInitialState = {
   chatrooms: [],
+  isJoinWebSocketChatroom: false,
 };
 
 export const chatroomsSlice = createSlice({
@@ -120,12 +122,15 @@ export const chatroomsSlice = createSlice({
       state.chatrooms[index].fold = payload.status;
       updateLocalChatrooms(payload.uid!, state.chatrooms);
     },
+    joinWebSocketChatroom(state) {
+      state.isJoinWebSocketChatroom = true;
+    },
   },
 });
 
 export const {
   getChatrooms, openChatroom, removeChatroom, openChatroomWindow, closeChatroomWindow, updateChat,
-  createChatroom, foldChatroomWindow, displayMoreList, pushChatroom,
+  createChatroom, foldChatroomWindow, displayMoreList, pushChatroom, joinWebSocketChatroom,
 } = chatroomsSlice.actions;
 
 export default chatroomsSlice.reducer;

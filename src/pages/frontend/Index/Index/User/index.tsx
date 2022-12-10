@@ -9,6 +9,8 @@ import { useAppSelector } from 'hooks';
 import useFileUpload from 'hooks/useFileUpload';
 import Article from 'pages/frontend/Index/components/Article';
 import toast from 'react-hot-toast';
+import ArticleSkeleton from 'pages/frontend/Index/components/ArticleSkeleton';
+import Skeleton from 'react-loading-skeleton';
 
 const Wrap = styled.div`
   display: flex;
@@ -58,6 +60,10 @@ const ImagesList = styled.ul`
       filter: grayscale(1);
     }
   }
+  .img-skeleton {
+    height: 130px;
+    border-radius: 3px;
+  }
 `;
 
 const UploadImgBtn = styled.button<IThemeProps>`
@@ -92,6 +98,12 @@ const ArticleList = styled.ul`
     width: 50px;
     height: 50px;
     border-radius: 3px;
+  }
+  li {
+    margin-bottom: 20px;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
   }
 `;
 
@@ -196,6 +208,7 @@ const FanIndex: React.FC = () => {
       <Aside>
         <AsideContent>
           <UserPageCard>
+            {/* // TODO: skeleton */}
             <h4 className="title">簡介</h4>
             <p>偶像偶像偶像偶像偶像偶像偶像偶像偶像偶像偶像偶像</p>
           </UserPageCard>
@@ -210,12 +223,24 @@ const FanIndex: React.FC = () => {
                   </UploadImgBtn>
                 </li>
               )}
-              {imgs?.map((img) => (
+              {getImgsResult.isFetching ? (
+                <>
+                  <div><Skeleton className="img-skeleton" height={130} /></div>
+                  <div><Skeleton className="img-skeleton" height={130} /></div>
+                  <div><Skeleton className="img-skeleton" height={130} /></div>
+                  <div><Skeleton className="img-skeleton" height={130} /></div>
+                  <div><Skeleton className="img-skeleton" height={130} /></div>
+                  <div><Skeleton className="img-skeleton" height={130} /></div>
+                  <div><Skeleton className="img-skeleton" height={130} /></div>
+                  <div><Skeleton className="img-skeleton" height={130} /></div>
+                  <div><Skeleton className="img-skeleton" height={130} /></div>
+                </>
+              ) : imgs.map((img) => (
                 <li key={img.id}><img src={img.url} alt={img.url} />
                   <button type="button" onClick={() => deleteImgTrigger(img.id)}>123</button>
                 </li>
-              ))}
-              {profile.uid !== paramUid && imgs?.length === 0
+              )) }
+              {profile.uid !== paramUid && getImgsResult.isSuccess && imgs?.length === 0
                 && (
                 <li className="empty-box">
                   <img src={`${process.env.PUBLIC_URL}/images/empty-box.png`} alt="empty box" />
@@ -226,15 +251,16 @@ const FanIndex: React.FC = () => {
         </AsideContent>
       </Aside>
       <ArticleList>
-        {articles?.map((article) => (
-          <Article
-            key={article.id}
-            data={article}
-            refreshThumbsUp={refreshThumbsUpData}
-            refreshComments={refreshCommentsData}
-            onDeleteArticle={updateArticle}
-          />
-        ))}
+        {getArticlesByUidResult.isFetching ? <ArticleSkeleton />
+          : articles?.map((article) => (
+            <Article
+              key={article.id}
+              data={article}
+              refreshThumbsUp={refreshThumbsUpData}
+              refreshComments={refreshCommentsData}
+              onDeleteArticle={updateArticle}
+            />
+          )) }
       </ArticleList>
     </Wrap>
   );

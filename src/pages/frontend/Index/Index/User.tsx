@@ -8,18 +8,24 @@ import useFileUpload from 'hooks/useFileUpload';
 import { postAvatarImg, postBannerImg } from 'slices/userInfoSlice';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { useLazyGetImgsByUidQuery } from 'services/image';
+import Skeleton from 'react-loading-skeleton';
 
 const Wrap = styled.div`
   max-width: 1140px;
   margin: -21px auto 0;
 `;
 
-const Banner = styled.div<{ url?: string }>`
+interface IBannerProps {
+  url?: string;
+  isFetching: boolean;
+}
+
+const Banner = styled.div<IBannerProps>`
   height: 400px;
   display: flex;
   justify-content: end;
   align-items: end;
-  background: url(${({ url }) => url || `${process.env.PUBLIC_URL}/images/banner.jpeg`}) no-repeat center;
+  background: url(${({ url, isFetching }) => (isFetching ? `${process.env.PUBLIC_URL}/images/banner.jpeg` : url || `${process.env.PUBLIC_URL}/images/banner.jpeg`)}) no-repeat center;
   background-size: cover;
   border-radius: 0 0 3px 3px;
   padding: 10px;
@@ -227,7 +233,7 @@ const User: React.FC = () => {
 
   return (
     <Wrap>
-      <Banner url={user?.banner_url}>
+      <Banner url={user?.banner_url} isFetching={getUserProfileByUidResult.isFetching}>
         {
           user?.uid === profile?.uid && (
           <UploadBannerImgBtnContainer>
@@ -255,22 +261,30 @@ const User: React.FC = () => {
           <PhotoContainer>
             {profile?.uid === user?.uid
              && <input ref={avatarInputRef} type="file" onChange={uploadAvatarImg} />}
-            <img
-              src={user?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
-              alt={user?.name}
-              onError={({ currentTarget }) => {
-                currentTarget.onerror = null;
-                currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`;
-              }}
-            />
+            {
+              getUserProfileByUidResult.isFetching
+                ? <Skeleton width={150} height={150} borderRadius={50} />
+                : (
+                  <img
+                    src={user?.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+                    alt={user?.name}
+                    onError={({ currentTarget }) => {
+                      currentTarget.onerror = null;
+                      currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`;
+                    }}
+                  />
+                )
+             }
           </PhotoContainer>
         </PhotoSection>
         <HeaderMain>
           <HeaderTextSection>
-            <Title>{user?.nickname || user?.name}</Title>
+            {getUserProfileByUidResult.isFetching
+              ? <Skeleton width={150} height={40} borderRadius={8} />
+              : <Title>{user?.nickname || user?.name}</Title>}
           </HeaderTextSection>
           {
-            paramUid !== profile.uid && (
+            profile.uid && (paramUid !== profile.uid) && (
             <HeaderBtn type="button" anime>
               <span className="material-icons-round">question_answer</span>
               傳送訊息

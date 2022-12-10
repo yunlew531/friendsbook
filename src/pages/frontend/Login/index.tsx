@@ -162,7 +162,6 @@ const Login: React.FC = () => {
     if (userResult.isSuccess) {
       dispatch(getProfile(userResult.data.profile));
       navigate('/');
-      toast.success('成功登入!');
     }
   }, [userResult]);
 

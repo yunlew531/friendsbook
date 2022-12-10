@@ -188,15 +188,7 @@ const Friends: React.FC = () => {
       const { isSuccess } = deleteFriendResult;
       if (!isSuccess) return;
       toast.success('已删除好友!');
-      setFriends((prev) => {
-        const index = prev.connected.findIndex((friend) => friend.uid === tempFriendUid.current);
-        const tempConnected = [...prev.connected];
-        tempConnected.splice(index, 1);
-        return {
-          ...prev,
-          connected: tempConnected,
-        };
-      });
+      getFriendsByTokenTrigger();
     };
 
     handleDeleteFriendApi();

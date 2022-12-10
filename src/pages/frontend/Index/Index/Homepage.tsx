@@ -20,6 +20,9 @@ import { useLazyGetUserByTokenQuery } from 'services/user';
 import { getProfile } from 'slices/userInfoSlice';
 import Cookies from 'js-cookie';
 import useChatrooms from 'hooks/useChatrooms';
+import toast from 'react-hot-toast';
+import Skeleton from 'react-loading-skeleton';
+import ArticleSkeleton from 'pages/frontend/Index/components/ArticleSkeleton';
 
 const Wrap = styled.div<IThemeProps>`
   display: flex;
@@ -40,6 +43,9 @@ const ContactHeader = styled.div`
 const FriendList = styled.ul<IThemeProps>`
   list-style: none;
   margin: 10px 0 20px;
+  .friend-skeleton {
+    margin-bottom: 5px;
+  }
 `;
 
 const MainContent = styled.main`
@@ -155,12 +161,11 @@ const Homepage: React.FC = () => {
   useEffect(() => {
     const handleLazyFetchArticle = () => {
       const { isSuccess, data } = articlesLazyResult;
-      if (isSuccess) {
-        let { articles: articlesData } = data;
-        articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
-        articlesData = convertArticleStrToObject(articlesData);
-        dispatch(getArticles(articlesData));
-      }
+      if (!isSuccess) return;
+      let { articles: articlesData } = data;
+      articlesData = [...articlesData]?.sort((a, b) => b.created_at! - a.created_at!);
+      articlesData = convertArticleStrToObject(articlesData);
+      dispatch(getArticles(articlesData));
     };
 
     handleLazyFetchArticle();
@@ -176,8 +181,8 @@ const Homepage: React.FC = () => {
           </MoreBtn>
         </ContactHeader>
         <FriendList>
-          {
-            friends.connected.map((friend) => (
+          { friends.connected.length
+            ? friends.connected.map((friend) => (
               <Friend
                 key={friend.uid}
                 friend={friend}
@@ -193,15 +198,14 @@ const Homepage: React.FC = () => {
                   <span className="material-icons-outlined">sms</span>
                 </SendMessageBtn>
               </Friend>
-            ))
-          }
+            )) : <Skeleton className="friend-skeleton" height={65} borderRadius={8} count={6} />}
         </FriendList>
       </Contact>
       <MainContent>
         <ArticlesSection>
           <PublishPanel onPublished={getPersonalPageArticleTrigger} />
           <ArticleList>
-            {articles?.map((
+            {isGetArticlesSuccess ? articles?.map((
               article,
             ) => (
               <Article
@@ -211,7 +215,7 @@ const Homepage: React.FC = () => {
                 refreshComments={refreshCommentsData}
                 onDeleteArticle={updateArticle}
               />
-            ))}
+            )) : <ArticleSkeleton /> }
           </ArticleList>
         </ArticlesSection>
       </MainContent>
@@ -236,6 +240,7 @@ const WrapHomepage: React.FC = () => {
       const { data: { token } } = loginTestAccountResult;
       Cookies.set('Friendsbook', token, { expires: 7 });
       getUserByTokenTrigger();
+      toast.success('登入成功');
     };
 
     handleLoginTestAccountApi();
@@ -262,7 +267,7 @@ const WrapHomepage: React.FC = () => {
           </NoLoggingCard>
           <NoLoggingCard>
             <Link to="/login">
-              註冊頁面
+              登入頁面
             </Link>
           </NoLoggingCard>
           <NoLoggingCard>

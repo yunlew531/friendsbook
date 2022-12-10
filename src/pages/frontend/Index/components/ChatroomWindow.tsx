@@ -5,6 +5,7 @@ import Btn from 'components/Btn';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { closeChatroomWindow, foldChatroomWindow, displayMoreList } from 'slices/chatroomsSlice';
 import { useWebSocket } from 'context/WebSocketProvider';
+import Skeleton from 'react-loading-skeleton';
 
 interface IChatroomElProps {
   fold?: boolean;
@@ -141,6 +142,9 @@ const Footer = styled.div<IThemeProps>`
   width: 100%;
   border-top: 1px solid ${({ theme }) => theme.color.gray_400};
   padding: 10px;
+  .skeleton {
+    flex-grow: 1;
+  }
 `;
 
 const Input = styled.input<IThemeProps>`
@@ -215,6 +219,7 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const profile = useAppSelector((state) => state.userInfo.profile);
+  const chatrooms = useAppSelector((state) => state.chatrooms);
   const ws = useWebSocket();
   const msgListRef = useRef<HTMLUListElement>(null);
   const msgItemRefs = useRef<HTMLLIElement[]>([]);
@@ -360,29 +365,33 @@ const ChatroomWindow: React.FC<IChatroomWindowProps> = ({
         ))}
       </MsgList>
       <Footer>
-        <Input
-          type="text"
-          value={input}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
-          onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
-            const enters = ['Enter', 'NumpadEnter'];
-            if (!enters.includes(e.code)) return;
-            ws.emit('chat', { chatroom_id: chatroom.id, content: input, user_uid: profile.uid });
-            setInput('');
-          }}
-        />
-        <SendMsgBtn
-          type="button"
-          anime
-          onClick={() => {
-            ws.emit('chat', { chatroom_id: chatroom.id, content: input, user_uid: profile.uid });
-            setInput('');
-          }}
-        >送出
-        </SendMsgBtn>
-        <ThumbsUpBtn type="button" anime>
-          <span className="material-icons">thumb_up</span>
-        </ThumbsUpBtn>
+        {chatrooms.isJoinWebSocketChatroom ? (
+          <>
+            <Input
+              type="text"
+              value={input}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
+              onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                const enters = ['Enter', 'NumpadEnter'];
+                if (!enters.includes(e.code)) return;
+                ws.emit('chat', { chatroom_id: chatroom.id, content: input, user_uid: profile.uid });
+                setInput('');
+              }}
+            />
+            <SendMsgBtn
+              type="button"
+              anime
+              onClick={() => {
+                ws.emit('chat', { chatroom_id: chatroom.id, content: input, user_uid: profile.uid });
+                setInput('');
+              }}
+            >送出
+            </SendMsgBtn>
+            <ThumbsUpBtn type="button" anime>
+              <span className="material-icons">thumb_up</span>
+            </ThumbsUpBtn>
+          </>
+        ) : <div className="skeleton"><Skeleton height={25} /></div>}
       </Footer>
     </ChatroomEl>
   );

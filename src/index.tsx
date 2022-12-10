@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'reseter.css';
 import './index.scss';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import App from './App';

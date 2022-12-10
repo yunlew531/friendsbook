@@ -6,6 +6,7 @@ import { useLazyGetRecommendFriendsQuery } from 'services/friend';
 import handleIsOnline from 'utils/handleIsOnline';
 import { useNavigate } from 'react-router-dom';
 import useFriends from 'hooks/useFriends';
+import Skeleton from 'react-loading-skeleton';
 
 const FollowHeader = styled.div<IThemeProps>`
   display: flex;
@@ -87,6 +88,12 @@ const AddToFriendsBtn = styled(FansPageBtn)`
   }
 `;
 
+const FollowListSkeleton = styled.div`
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 16px 0; 
+`;
+
 const Follow: React.FC = () => {
   const navigate = useNavigate();
   const [getRecommendFriendTrigger, getRecommendFriendResult] = useLazyGetRecommendFriendsQuery();
@@ -132,33 +139,40 @@ const Follow: React.FC = () => {
           <span className="material-icons-outlined">more_horiz</span>
         </MoreBtn>
       </FollowHeader>
-      <FollowList>
-        {
-          recommendFriends.map((recommendFriend) => (
-            <FollowItem key={recommendFriend.uid} onClick={() => navigate(`/${recommendFriend.uid}`)}>
-              <FriendItemPhoto online={handleIsOnline(recommendFriend.last_seen)}>
-                <img
-                  src="https://images.unsplash.com/photo-1589424987100-72303ec43d04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=692&q=80"
-                  alt={recommendFriend.name}
-                />
-              </FriendItemPhoto>
-              <Username>{recommendFriend.nickname || recommendFriend.name}</Username>
-              <AddToFriendsBtn
-                type="button"
-                anime
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.stopPropagation();
-                  currentAddFriendUidRef.current = recommendFriend.uid!;
-                  sentFriendInviteTrigger(recommendFriend.uid!);
-                }}
-              >
-                <span className="material-icons-outlined person-add-icon">person_add</span>
-                加好友
-              </AddToFriendsBtn>
-            </FollowItem>
-          ))
-        }
-      </FollowList>
+      { recommendFriends.length
+        ? (
+          <FollowList>
+            {recommendFriends.map((recommendFriend) => (
+              <FollowItem key={recommendFriend.uid} onClick={() => navigate(`/${recommendFriend.uid}`)}>
+                <FriendItemPhoto online={handleIsOnline(recommendFriend.last_seen)}>
+                  <img
+                    src={recommendFriend.avatar_url || `${process.env.PUBLIC_URL}/images/avatar.png`}
+                    onError={({ currentTarget }) => { currentTarget.src = `${process.env.PUBLIC_URL}/images/avatar.png`; }}
+                    alt={recommendFriend.name}
+                  />
+                </FriendItemPhoto>
+                <Username>{recommendFriend.nickname || recommendFriend.name}</Username>
+                <AddToFriendsBtn
+                  type="button"
+                  anime
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    e.stopPropagation();
+                    currentAddFriendUidRef.current = recommendFriend.uid!;
+                    sentFriendInviteTrigger(recommendFriend.uid!);
+                  }}
+                >
+                  <span className="material-icons-outlined person-add-icon">person_add</span>
+                  加好友
+                </AddToFriendsBtn>
+              </FollowItem>
+            ))}
+          </FollowList>
+        )
+        : (
+          <FollowListSkeleton>
+            <Skeleton height={65} count={3} />
+          </FollowListSkeleton>
+        ) }
     </>
   );
 };
