@@ -1,11 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import Cookies from 'js-cookie';
 
-interface IUploadImgResponse {
-  message: string;
-  url: string;
-}
-
 interface IGetImgsByUidResponse {
   message: string;
   images: IImage[];

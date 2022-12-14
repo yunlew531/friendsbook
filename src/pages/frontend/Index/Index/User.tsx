@@ -137,14 +137,13 @@ const HeaderBtn = styled(Btn)<IThemeProps>`
 `;
 
 const User: React.FC = () => {
-  const params = useParams();
-  const paramUid = params.uid;
+  const { uid: paramUid } = useParams();
   const profile = useAppSelector((state) => state.userInfo.profile);
   const dispatch = useAppDispatch();
   const avatarInputRef = useRef(null);
   const { uploadAvatarImg, uploadAvatarImgResult } = useFileUpload(avatarInputRef);
   const [getUserProfileByUidTrigger, getUserProfileByUidResult] = useLazyGetUserByUidQuery();
-  const [getImgsTrigger, getImgsResult] = useLazyGetImgsByUidQuery();
+  const [getImgsTrigger, getImagesResult] = useLazyGetImgsByUidQuery();
   const bannerInputRef = useRef(null);
   const { uploadBannerImg, uploadBannerImgResult } = useFileUpload(bannerInputRef);
   const [imgs, setImgs] = useState<IImage[]>([]);
@@ -177,8 +176,13 @@ const User: React.FC = () => {
     },
   ];
 
+  const refreshImages = () => {
+    if (paramUid) getImgsTrigger(paramUid);
+  };
+
   useEffect(() => {
     if (paramUid) {
+      getImgsTrigger(paramUid);
       getUserProfileByUidTrigger(paramUid);
     }
   }, [paramUid]);
@@ -195,8 +199,8 @@ const User: React.FC = () => {
 
   useEffect(() => {
     const handleUploadBannerImg = () => {
-      const { isSuccess, isLoading, data: { url = '' } = {} } = uploadBannerImgResult;
-      if (!isSuccess || isLoading) return;
+      const { isSuccess, data: { url = '' } = {} } = uploadBannerImgResult;
+      if (!isSuccess) return;
       dispatch(postBannerImg(url));
       if (!paramUid) return;
       getImgsTrigger(paramUid);
@@ -208,8 +212,8 @@ const User: React.FC = () => {
 
   useEffect(() => {
     const handleUploadAvatarImg = () => {
-      const { isSuccess, isLoading, data: { url = '' } = {} } = uploadAvatarImgResult;
-      if (!isSuccess || isLoading) return;
+      const { isSuccess, data: { url = '' } = {} } = uploadAvatarImgResult;
+      if (!isSuccess) return;
       dispatch(postAvatarImg(url));
       if (!paramUid) return;
       getImgsTrigger(paramUid);
@@ -221,15 +225,15 @@ const User: React.FC = () => {
 
   useEffect(() => {
     const handleGetImgsApi = () => {
-      const { isSuccess } = getImgsResult;
+      const { isSuccess } = getImagesResult;
       if (!isSuccess) return;
-      const { data: { images } } = getImgsResult;
+      const { data: { images } } = getImagesResult;
       const sortImagesByTime = [...images].sort((a, b) => b.created_at! - a.created_at!);
       setImgs(sortImagesByTime);
     };
 
     handleGetImgsApi();
-  }, [getImgsResult]);
+  }, [getImagesResult]);
 
   return (
     <Wrap>
@@ -294,7 +298,10 @@ const User: React.FC = () => {
         </HeaderMain>
       </Header>
       <Navbar links={navLinks} />
-      <Outlet context={{ imgs, setImgs }} />
+      <Outlet context={{
+        imgs, refreshImages, getImagesResult,
+      }}
+      />
     </Wrap>
   );
 };

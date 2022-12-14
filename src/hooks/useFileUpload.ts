@@ -8,22 +8,23 @@ const useFileUpload = (inputRef: InputRef) => {
   const [uploadBannerImgTrigger, uploadBannerImgResult] = usePostBannerImgMutation();
   const [uploadAvatarImgTrigger, uploadAvatarImgResult] = usePostAvatarImgMutation();
 
-  const createFormData = (inputElRef: InputRef) => {
+  const createFormData = () => {
     const formData = new FormData();
-    if (!inputElRef?.current) throw new Error('useFileUpload hook, parameter "inputRef" not found');
-    const file = (<FileList>inputElRef.current.files)[0];
+    if (!inputRef?.current) throw new Error('useFileUpload hook, parameter "inputRef" not found');
+    const file = (<FileList>inputRef.current.files)[0];
     formData.append('image-file', file);
     return formData;
   };
 
-  const uploadImg = () => uploadImgTrigger(createFormData(inputRef));
-  const uploadBannerImg = () => uploadBannerImgTrigger(createFormData(inputRef));
-  const uploadAvatarImg = () => uploadAvatarImgTrigger(createFormData(inputRef));
+  const uploadImg = () => uploadImgTrigger(createFormData());
+  const uploadBannerImg = () => uploadBannerImgTrigger(createFormData());
+  const uploadAvatarImg = () => uploadAvatarImgTrigger(createFormData());
 
   return {
     uploadImg,
     uploadBannerImg,
     uploadAvatarImg,
+    createFormData,
     uploadImgResult,
     uploadBannerImgResult,
     uploadAvatarImgResult,

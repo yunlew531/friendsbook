@@ -153,6 +153,17 @@ interface ICreateChatroomOps {
   roomName?: string;
 }
 
+interface IUploadImgResponse {
+  message: string;
+  url: string;
+}
+
+interface IOutletContext {
+  imgs: IImage[];
+  getImagesResult: UseQueryStateDefaultResult<QueryDefinition<string, BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>, never, IGetImgsByUidResponse, 'image'>>
+  refreshImages: () => void;
+}
+
 type ChatroomType = 'oneToOne' | 'multiple' | 'multipleCreate' | null;
 
 type RequiredPick<T, K extends keyof T> = Required<Pick<T, K>>;
