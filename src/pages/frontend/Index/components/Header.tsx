@@ -5,6 +5,9 @@ import Btn from 'components/Btn';
 import { useAppDispatch, useAppSelector } from 'hooks';
 import Card from 'components/Card';
 import { logout } from 'slices/userInfoSlice';
+import { useGetNotificationsByTokenQuery } from 'services/notification';
+import Cookies from 'js-cookie';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
 import Notifications from './Notifications';
 
 const Wrap = styled.header<IThemeProps & { isLogin: boolean }>`
@@ -139,6 +142,7 @@ const NoticeContainer = styled.div<IThemeProps & INoticeContainerProps>`
 `;
 
 const NotificationNum = styled.p<IThemeProps>`
+  min-width: 15px;
   color: ${({ theme }) => theme.color.white_100};
   font-size: ${({ theme }) => theme.fontSizes.fs_5};
   padding: 2px 2px 1px;
@@ -224,9 +228,14 @@ const UserInfoBtn = styled(Btn)<IThemeProps & { show: boolean }>`
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const jwtToken = Cookies.get('Friendsbook');
   const userInfo = useAppSelector((state) => state.userInfo);
+  const {
+    data: notificationsResult, isSuccess: isGetNotificationSuccess,
+  } = useGetNotificationsByTokenQuery(jwtToken || skipToken);
   const [isNotificationShow, setIsNotificationShow] = useState(false);
   const [isUserInfoShow, setIsUserInfoShow] = useState(false);
+  const [notifications, setNotifications] = useState<INotification[]>([]);
 
   useEffect(() => {
     const hideNotification = ({ target }: MouseEvent) => {
@@ -239,6 +248,10 @@ const Header: React.FC = () => {
 
     return () => document.body.removeEventListener('click', hideNotification);
   }, [isNotificationShow]);
+
+  useEffect(() => {
+    if (notificationsResult) setNotifications(notificationsResult.notifications);
+  }, [isGetNotificationSuccess]);
 
   const { profile, isLogin } = userInfo;
 
@@ -260,9 +273,14 @@ const Header: React.FC = () => {
                   }}
                 >
                   通知
-                  <NotificationNum>30</NotificationNum>
+                  <NotificationNum>
+                    {notifications.filter((notification) => !notification.read).length}
+                  </NotificationNum>
                 </button>
-                <Notifications isNotificationShow={isNotificationShow} />
+                <Notifications
+                  isNotificationShow={isNotificationShow}
+                  notifications={notifications}
+                />
               </NoticeContainer>
               <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? 'active' : '')}>聊天室</NavLink>
               <NavLink to="/clubs" className={({ isActive }) => (isActive ? 'active' : '')}>社團</NavLink>

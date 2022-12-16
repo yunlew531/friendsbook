@@ -11,6 +11,7 @@ import articlesReducer, { articlesSlice } from 'slices/articlesSlice';
 import friendsReducer, { friendsSlice } from 'slices/friendsSlice';
 import userInfoReducer, { userInfoSlice } from 'slices/userInfoSlice';
 import chatroomsReducer, { chatroomsSlice } from 'slices/chatroomsSlice';
+import notificationApi from 'services/notification';
 
 const reducers = combineReducers({
   [accountApi.reducerPath]: accountApi.reducer,
@@ -19,6 +20,7 @@ const reducers = combineReducers({
   [articleApi.reducerPath]: articleApi.reducer,
   [friendApi.reducerPath]: friendApi.reducer,
   [chatroomApi.reducerPath]: chatroomApi.reducer,
+  [notificationApi.reducerPath]: notificationApi.reducer,
   [userInfoSlice.name]: userInfoReducer,
   [articlesSlice.name]: articlesReducer,
   [friendsSlice.name]: friendsReducer,
@@ -34,6 +36,7 @@ const store = configureStore({
     .concat(articleApi.middleware)
     .concat(friendApi.middleware)
     .concat(chatroomApi.middleware)
+    .concat(notificationApi.middleware)
     .concat(rtkQueryErrorLogger),
 });
 

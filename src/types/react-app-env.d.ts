@@ -158,6 +158,21 @@ interface IUploadImgResponse {
   url: string;
 }
 
+interface INotification {
+  id: number;
+  type: number;
+  user_uid?: string
+  article_id?: number;
+  group_id?: number;
+  invited_from?: {
+    uid: string;
+    name: string;
+    nickname?: string;
+  }
+  created_at: number;
+  read: boolean;
+}
+
 interface IOutletContext {
   imgs: IImage[];
   getImagesResult: UseQueryStateDefaultResult<QueryDefinition<string, BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>, never, IGetImgsByUidResponse, 'image'>>

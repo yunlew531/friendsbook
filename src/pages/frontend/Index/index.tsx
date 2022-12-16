@@ -34,7 +34,6 @@ const Index: React.FC = () => {
   const [chatroomType, setChatroomType] = useState<ChatroomType>(null);
   const [users, setUsers] = useState<IFriend[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<IFriend[]>([]);
-
   const closeCreateChatRoomModel = () => setIsModelShow(false);
   const showCreateChatRoomModel = () => setIsModelShow(true);
 
