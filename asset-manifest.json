@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/friendsbook/static/css/main.22d6567a.css",
-    "main.js": "/friendsbook/static/js/main.c8406590.js",
+    "main.css": "/friendsbook/static/css/main.5b63d4bf.css",
+    "main.js": "/friendsbook/static/js/main.be997f35.js",
     "static/js/787.cc1f71a6.chunk.js": "/friendsbook/static/js/787.cc1f71a6.chunk.js",
     "static/media/material-icons-two-tone.woff": "/friendsbook/static/media/material-icons-two-tone.3baa5b8f3469222b822d.woff",
     "static/media/material-icons-two-tone.woff2": "/friendsbook/static/media/material-icons-two-tone.4ef4218c522f1eb6b5b1.woff2",
@@ -14,12 +14,12 @@
     "static/media/material-icons-sharp.woff2": "/friendsbook/static/media/material-icons-sharp.219aa9140e099e6c72ed.woff2",
     "static/media/material-icons.woff2": "/friendsbook/static/media/material-icons.0c35d18bf06992036b69.woff2",
     "index.html": "/friendsbook/index.html",
-    "main.22d6567a.css.map": "/friendsbook/static/css/main.22d6567a.css.map",
-    "main.c8406590.js.map": "/friendsbook/static/js/main.c8406590.js.map",
+    "main.5b63d4bf.css.map": "/friendsbook/static/css/main.5b63d4bf.css.map",
+    "main.be997f35.js.map": "/friendsbook/static/js/main.be997f35.js.map",
     "787.cc1f71a6.chunk.js.map": "/friendsbook/static/js/787.cc1f71a6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.22d6567a.css",
-    "static/js/main.c8406590.js"
+    "static/css/main.5b63d4bf.css",
+    "static/js/main.be997f35.js"
   ]
 }
