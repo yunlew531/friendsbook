@@ -179,6 +179,11 @@ interface IOutletContext {
   refreshImages: () => void;
 }
 
+interface IEmail {
+  email: string;
+  isEdit: boolean;
+}
+
 type ChatroomType = 'oneToOne' | 'multiple' | 'multipleCreate' | null;
 
 type RequiredPick<T, K extends keyof T> = Required<Pick<T, K>>;

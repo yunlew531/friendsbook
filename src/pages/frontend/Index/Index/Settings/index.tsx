@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 
 const Wrap = styled.div`
   display: flex;
-  margin: -21px -30px;
+  margin: -21px -30px -70px;
 `;
 
 const Main = styled.main<IThemeProps>`

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
 import { useAppSelector } from 'hooks';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Wrap = styled.div`
   height: 100%;
@@ -39,12 +39,14 @@ const SettingItemContent = styled.div`
 `;
 
 const SettingItemTitle = styled.h4`
+  align-self: flex-start;
+  line-height: 20px;
   width: 100px;
 `;
 
 const SettingItemMain = styled.div<IThemeProps>`
   flex-grow: 1;
-  .main-email-span {
+  .email-note {
     color: ${({ theme }) => theme.color.gray_300};
     font-size: ${({ theme }) => theme.fontSizes.fs_5};
   }
@@ -70,6 +72,47 @@ const EditButton = styled(Btn)<IThemeProps>`
   }
   .delete-icon {
     color: ${({ theme }) => theme.color.red_100};
+  }
+`;
+
+const CitiesSelectContainer = styled.div<IThemeProps>`
+  position: relative;
+  max-width: 120px;
+  input {
+    &:focus {
+      outline: 1px solid ${({ theme }) => theme.color.secondary};
+    }
+  }
+  .selected-city {
+    width: 100%;
+    background-color: ${({ theme }) => theme.color.white_100};
+    border: 1px solid ${({ theme }) => theme.color.gray_100};
+    box-shadow: ${({ theme }) => theme.shadow.s};
+    border-radius: 8px;
+    padding: 5px 10px;
+  }
+`;
+
+const CitiesSelectList = styled.ul<IThemeProps & { show: boolean }>`
+  display: ${({ show }) => (show ? 'block' : 'none')};
+  position: absolute;
+  width: 100%;
+  bottom: -3px;
+  background-color: ${({ theme }) => theme.color.white_100};
+  list-style: none;
+  box-shadow: ${({ theme }) => theme.shadow.s};
+  border: 1px solid ${({ theme }) => theme.color.gray_100};
+  border-radius: 8px;
+  transform: translateY(100%);
+  overflow: hidden;
+  li {
+    text-align: center;
+    cursor: default;
+    background-color: ${({ theme }) => theme.color.white_100};
+    padding: 6px;
+    &:hover {
+      filter: brightness(0.95);
+    }
   }
 `;
 
@@ -126,6 +169,7 @@ const EmailList = styled.ul`
 const EmailItem = styled.li`
   display: flex;
   align-items: center;
+  margin-bottom: 10px;
   p {
     margin-right: 10px;
   }
@@ -153,9 +197,47 @@ const AddEmailBtn = styled(Btn)<IThemeProps>`
   }
 `;
 
-// eslint-disable-next-line arrow-body-style
 const General: React.FC = () => {
   const profile = useAppSelector((state) => state.userInfo.profile);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [emails, setEmails] = useState([{ email: 'aaa@gmail.com', isEdit: false }, { email: 'bbb@gmail.com', isEdit: false }]);
+  const cities = ['台北市', '桃園市', '新北市', '高雄市'];
+  const [matchedCities, setMatchCities] = useState<string[]>([]);
+  const [isCitySelectShow, setIsCitySelectShow] = useState(false);
+  const [inputs, setInputs] = useState({
+    name: {
+      value: '',
+      isEdit: false,
+    },
+    email: {
+      value: JSON.parse(JSON.stringify(emails)) as IEmail[],
+      isEdit: false,
+      addEmail: '',
+    },
+    city: {
+      value: '',
+      isEdit: false,
+    },
+  });
+
+  const hideCitiesList = (e: React.MouseEvent<HTMLElement> | Event) => {
+    if ((e.target as Element).closest('.cities-selector')) return;
+    setIsCitySelectShow(false);
+    document.body.removeEventListener('click', hideCitiesList);
+  };
+
+  useEffect(() => {
+    const filterMatchInputCities = () => {
+      const matchCitiesData = cities.filter((city) => city.match(inputs.city.value));
+      setMatchCities(matchCitiesData);
+    };
+
+    filterMatchInputCities();
+  }, [inputs.city.value]);
+
+  useEffect(() => () => {
+    document.body.removeEventListener('click', hideCitiesList);
+  }, []);
 
   return (
     <Wrap>
@@ -163,60 +245,241 @@ const General: React.FC = () => {
         <Title>一般設定</Title>
         <SettingList>
           <SettingItem>
-            <SettingItemContent>
-              <SettingItemTitle>姓名</SettingItemTitle>
-              <SettingItemMain>
-                <p>{profile.name}</p>
-              </SettingItemMain>
-              <EditButton type="button">
-                <span className="material-icons-outlined">settings</span>
-              </EditButton>
-            </SettingItemContent>
-            <SettingItemEditPanel>
-              <SettingItemEditPanelTitle>姓名</SettingItemEditPanelTitle>
-              <SettingItemEditPanelInput value="王小花" onChange={() => {}} />
-              <SettingItemEditPanelSaveBtn type="button">
-                <span className="material-icons-outlined">save</span>儲存
-              </SettingItemEditPanelSaveBtn>
-            </SettingItemEditPanel>
+            {inputs.name.isEdit ? (
+              <SettingItemEditPanel>
+                <SettingItemEditPanelTitle>姓名</SettingItemEditPanelTitle>
+                <SettingItemEditPanelInput
+                  value={inputs.name.value}
+                  onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Escape') {
+                      setInputs((prev) => ({
+                        ...prev,
+                        name: {
+                          value: prev.name.value,
+                          isEdit: false,
+                        },
+                      }));
+                    }
+                  }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setInputs((prev) => ({
+                      ...prev,
+                      name: { value: e.target.value, isEdit: true },
+                    }));
+                  }}
+                />
+                <SettingItemEditPanelSaveBtn type="button">
+                  <span className="material-icons-outlined">save</span>儲存
+                </SettingItemEditPanelSaveBtn>
+              </SettingItemEditPanel>
+            ) : (
+              <SettingItemContent>
+                <SettingItemTitle>姓名</SettingItemTitle>
+                <SettingItemMain>
+                  <p>{profile.name}</p>
+                </SettingItemMain>
+                <EditButton
+                  type="button"
+                  onClick={() => setInputs((prev) => ({
+                    ...prev,
+                    name: { value: profile.name!, isEdit: true },
+                  }))}
+                >
+                  <span className="material-icons-outlined">settings</span>
+                </EditButton>
+              </SettingItemContent>
+            )}
           </SettingItem>
           <SettingItem>
-            <SettingItemContent>
-              <SettingItemTitle>聯絡資料</SettingItemTitle>
-              <SettingItemMain>
-                <p>{profile.email}</p>
-              </SettingItemMain>
-              <EditButton type="button">
-                <span className="material-icons-outlined">settings</span>
-              </EditButton>
-            </SettingItemContent>
-            <SettingItemEditPanel>
-              <SettingItemEditPanelTitle>聯絡資料</SettingItemEditPanelTitle>
-              <SettingItemMain>
-                <p>{profile.email} <span className="main-email-span">(主要)</span></p>
-                <EmailList>
-                  <EmailItem>
-                    <SettingItemEditPanelInput value="aaa@gmail.com" onChange={() => {}} />
-                    <p>aaa@gmail.com</p>
-                    <EditButton type="button">
-                      <span className="material-icons-outlined">settings</span>
-                    </EditButton>
-                    <EditButton type="button">
-                      <span className="material-icons-outlined delete-icon">delete</span>
-                    </EditButton>
-                  </EmailItem>
-                </EmailList>
-                <AddEmailGroup>
-                  <SettingItemEditPanelInput placeholder="填寫想新增的Email" value="" onChange={() => {}} />
-                  <AddEmailBtn type="button">
-                    <span className="material-icons-round">add</span>新增Email
-                  </AddEmailBtn>
-                </AddEmailGroup>
-              </SettingItemMain>
-              <SettingItemEditPanelSaveBtn type="button">
-                <span className="material-icons-outlined">logout</span>關閉
-              </SettingItemEditPanelSaveBtn>
-            </SettingItemEditPanel>
+            {inputs.email.isEdit ? (
+              <SettingItemEditPanel>
+                <SettingItemEditPanelTitle>聯絡資料</SettingItemEditPanelTitle>
+                <SettingItemMain>
+                  <p>{profile.email} <span className="email-note">(主要)</span></p>
+                  <EmailList>
+                    {emails.map((emailItem, key) => (
+                      <EmailItem key={emailItem.email}>
+                        {inputs.email.value[key].isEdit ? (
+                          <SettingItemEditPanelInput
+                            value={inputs.email.value[key].email}
+                            onKeyUp={(e) => {
+                              if (e.code === 'Escape') {
+                                setInputs((prev) => {
+                                  const temp = { ...prev };
+                                  temp.email.value[key].isEdit = false;
+
+                                  return temp;
+                                });
+                              }
+                            }}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              setInputs((prev) => {
+                                const temp = { ...prev };
+                                temp.email.value[key].email = e.target.value;
+
+                                return temp;
+                              });
+                            }}
+                          />
+                        ) : <p>{emailItem.email} <span className="email-note">(備用)</span></p>}
+                        <EditButton
+                          type="button"
+                          onClick={() => setInputs((prev) => {
+                            const tempInputs = { ...prev };
+                            tempInputs.email.value[key].isEdit = true;
+
+                            return tempInputs;
+                          })}
+                        >
+                          <span className="material-icons-outlined">settings</span>
+                        </EditButton>
+                        <EditButton type="button">
+                          <span className="material-icons-outlined delete-icon">delete</span>
+                        </EditButton>
+                      </EmailItem>
+                    ))}
+                  </EmailList>
+                  <AddEmailGroup>
+                    <SettingItemEditPanelInput
+                      placeholder="填寫想新增的Email"
+                      value={inputs.email.addEmail}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setInputs((prev) => ({
+                          ...prev,
+                          email: {
+                            value: prev.email.value,
+                            isEdit: true,
+                            addEmail: e.target.value,
+                          },
+                        }));
+                      }}
+                    />
+                    <AddEmailBtn type="button">
+                      <span className="material-icons-round">add</span>新增Email
+                    </AddEmailBtn>
+                  </AddEmailGroup>
+                </SettingItemMain>
+                <SettingItemEditPanelSaveBtn
+                  type="button"
+                  onClick={() => setInputs((prev) => ({
+                    ...prev,
+                    email: {
+                      value: prev.email.value.map(
+                        (email) => ({ email: email.email, isEdit: false }),
+                      ),
+                      isEdit: false,
+                      addEmail: '',
+                    },
+                  }))}
+                >
+                  <span className="material-icons-outlined">logout</span>關閉
+                </SettingItemEditPanelSaveBtn>
+              </SettingItemEditPanel>
+            ) : (
+              <SettingItemContent>
+                <SettingItemTitle>聯絡資料</SettingItemTitle>
+                <SettingItemMain>
+                  <p>{profile.email} <span className="email-note">(主要)</span></p>
+                  <EmailList>
+                    {emails.map((emailItem) => (
+                      <EmailItem key={emailItem.email}>
+                        <p>{emailItem.email} <span className="email-note">(備用)</span></p>
+                      </EmailItem>
+                    ))}
+                  </EmailList>
+                </SettingItemMain>
+                <EditButton
+                  type="button"
+                  onClick={() => setInputs((prev) => ({
+                    ...prev,
+                    email: {
+                      value: prev.email.value,
+                      isEdit: true,
+                      addEmail: prev.email.addEmail,
+                    },
+                  }))}
+                >
+                  <span className="material-icons-outlined">settings</span>
+                </EditButton>
+              </SettingItemContent>
+            )}
+          </SettingItem>
+          <SettingItem>
+            {inputs.city.isEdit ? (
+              <SettingItemEditPanel>
+                <SettingItemEditPanelTitle>現居住地</SettingItemEditPanelTitle>
+                <SettingItemMain>
+                  <CitiesSelectContainer className="cities-selector">
+                    <input
+                      className="selected-city"
+                      value={inputs.city.value}
+                      onFocus={() => {
+                        setIsCitySelectShow(true);
+                        document.body.addEventListener('click', hideCitiesList);
+                      }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setInputs((prev) => ({
+                          ...prev,
+                          city: {
+                            value: e.target.value,
+                            isEdit: true,
+                          },
+                        }));
+                      }}
+                    />
+                    <CitiesSelectList show={isCitySelectShow}>
+                      {matchedCities.map((city) => (
+                        <li
+                          key={city}
+                          onClick={() => {
+                            setInputs((prev) => ({
+                              ...prev,
+                              city: {
+                                value: city,
+                                isEdit: true,
+                              },
+                            }));
+                            setIsCitySelectShow(false);
+                          }}
+                        >{city}
+                        </li>
+                      ))}
+                    </CitiesSelectList>
+                  </CitiesSelectContainer>
+                </SettingItemMain>
+                <SettingItemEditPanelSaveBtn
+                  type="button"
+                  onClick={() => setInputs((prev) => ({
+                    ...prev,
+                    city: {
+                      value: prev.city.value,
+                      isEdit: false,
+                    },
+                  }))}
+                >
+                  <span className="material-icons-outlined">logout</span>關閉
+                </SettingItemEditPanelSaveBtn>
+              </SettingItemEditPanel>
+            ) : (
+              <SettingItemContent>
+                <SettingItemTitle>現居住地</SettingItemTitle>
+                <SettingItemMain>
+                  <p>台北市</p>
+                </SettingItemMain>
+                <EditButton
+                  type="button"
+                  onClick={() => setInputs((prev) => ({
+                    ...prev,
+                    city: {
+                      value: prev.city.value,
+                      isEdit: true,
+                    },
+                  }))}
+                >
+                  <span className="material-icons-outlined">settings</span>
+                </EditButton>
+              </SettingItemContent>
+            )}
           </SettingItem>
         </SettingList>
       </SettingPanel>

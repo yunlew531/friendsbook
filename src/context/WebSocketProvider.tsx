@@ -40,9 +40,8 @@ const WebSocketProvide: React.FC<PropsWithChildren> = ({ children }) => {
         if (process.env.NODE_ENV === 'development') console.log(msg);
       });
 
-      ws.on('join-chatrooms-success', (msg: string) => {
+      ws.on('join-chatrooms-success', () => {
         dispatch(joinWebSocketChatroom());
-        if (process.env.NODE_ENV === 'development') console.log(msg);
       });
     }
   };
