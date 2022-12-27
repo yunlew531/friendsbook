@@ -33,11 +33,18 @@ export const userInfoSlice = createSlice({
       state.isLogin = false;
       state.profile = {};
     },
+    updateProfile(state, { payload }: PayloadAction<IProfile>) {
+      const keys = Object.keys(payload);
+      keys.forEach((key) => {
+        // @ts-ignore
+        state.profile[key as keyof IProfile] = payload[key as keyof IProfile];
+      });
+    },
   },
 });
 
 export const {
-  getProfile, postBannerImg, postAvatarImg, logout,
+  getProfile, postBannerImg, postAvatarImg, logout, updateProfile,
 } = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;

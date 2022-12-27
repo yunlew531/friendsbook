@@ -12,6 +12,11 @@ interface IGetProfileByUidResponse {
   profile: IProfile;
 }
 
+interface IPatchProfileResponse {
+  message: string;
+  [key: string]: any;
+}
+
 const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
@@ -36,6 +41,13 @@ const userApi = createApi({
     getUserByUid: builder.query<IGetProfileByUidResponse, string>({
       query: (userUid) => `/user/${userUid}`,
     }),
+    patchProfile: builder.mutation<IPatchProfileResponse, { value: string, profileKey: string }>({
+      query: (body) => ({
+        url: `/user/profile/${body.profileKey}`,
+        method: 'PATCH',
+        body: { value: body.value },
+      }),
+    }),
   }),
 });
 
@@ -44,6 +56,7 @@ export const {
   useGetUserByTokenQuery,
   useLazyGetUserByTokenQuery,
   useLazyGetUserByUidQuery,
+  usePatchProfileMutation,
 } = userApi;
 
 export default userApi;

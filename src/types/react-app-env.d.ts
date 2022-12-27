@@ -21,6 +21,8 @@ interface IProfile {
   name?: string;
   photo_url?: string;
   email?: string;
+  city?: string;
+  alternate_email?: string[];
   password?: string;
   last_seen?: number;
   banner_url?: string;

@@ -1,7 +1,9 @@
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
-import { useAppSelector } from 'hooks';
-import React, { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from 'hooks';
+import { usePatchProfileMutation } from 'services/user';
+import { updateProfile } from 'slices/userInfoSlice';
 
 const Wrap = styled.div`
   height: 100%;
@@ -77,7 +79,7 @@ const EditButton = styled(Btn)<IThemeProps>`
 
 const CitiesSelectContainer = styled.div<IThemeProps>`
   position: relative;
-  max-width: 120px;
+  max-width: 150px;
   input {
     &:focus {
       outline: 1px solid ${({ theme }) => theme.color.secondary};
@@ -97,6 +99,8 @@ const CitiesSelectList = styled.ul<IThemeProps & { show: boolean }>`
   display: ${({ show }) => (show ? 'block' : 'none')};
   position: absolute;
   width: 100%;
+  max-height: 500px;
+  overflow: auto;
   bottom: -3px;
   background-color: ${({ theme }) => theme.color.white_100};
   list-style: none;
@@ -104,7 +108,6 @@ const CitiesSelectList = styled.ul<IThemeProps & { show: boolean }>`
   border: 1px solid ${({ theme }) => theme.color.gray_100};
   border-radius: 8px;
   transform: translateY(100%);
-  overflow: hidden;
   li {
     text-align: center;
     cursor: default;
@@ -148,7 +151,6 @@ const SettingItemEditPanelSaveBtn = styled.button<IThemeProps>`
   align-items: center;
   border: none;
   color: ${({ theme }) => theme.color.green_100};
-  margin-left: 30px;
   &:hover {
     transform: scale(1.1);
   }
@@ -198,12 +200,14 @@ const AddEmailBtn = styled(Btn)<IThemeProps>`
 `;
 
 const General: React.FC = () => {
+  const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [emails, setEmails] = useState([{ email: 'aaa@gmail.com', isEdit: false }, { email: 'bbb@gmail.com', isEdit: false }]);
-  const cities = ['台北市', '桃園市', '新北市', '高雄市'];
+  const [cities, setCities] = useState<string[]>();
   const [matchedCities, setMatchCities] = useState<string[]>([]);
   const [isCitySelectShow, setIsCitySelectShow] = useState(false);
+  const [patchProfileTrigger, patchProfileResult] = usePatchProfileMutation();
   const [inputs, setInputs] = useState({
     name: {
       value: '',
@@ -220,6 +224,38 @@ const General: React.FC = () => {
     },
   });
 
+  const importCities = () => {
+    fetch(`${process.env.PUBLIC_URL}/json/city.json`)
+      .then((res) => res.json())
+      .then((res: { city: string }[]) => {
+        const citiesData = res.map((city) => city.city);
+        setCities(citiesData);
+      });
+  };
+
+  useEffect(() => {
+    const handlePatchProfile = () => {
+      const { isSuccess, data: resData } = patchProfileResult;
+      if (!isSuccess || !resData) return;
+      const keys = Object.keys(resData);
+      const key = keys.filter((k) => k !== 'message')[0];
+      dispatch(updateProfile({ [key]: resData[key] }));
+      setInputs((prev) => ({
+        ...prev,
+        [key]: {
+          value: prev.name.value,
+          isEdit: false,
+        },
+      }));
+    };
+
+    handlePatchProfile();
+  }, [patchProfileResult]);
+
+  useEffect(() => {
+    importCities();
+  }, []);
+
   const hideCitiesList = (e: React.MouseEvent<HTMLElement> | Event) => {
     if ((e.target as Element).closest('.cities-selector')) return;
     setIsCitySelectShow(false);
@@ -228,12 +264,12 @@ const General: React.FC = () => {
 
   useEffect(() => {
     const filterMatchInputCities = () => {
-      const matchCitiesData = cities.filter((city) => city.match(inputs.city.value));
-      setMatchCities(matchCitiesData);
+      const matchCitiesData = cities?.filter((city) => city.match(inputs.city.value));
+      if (matchCitiesData) setMatchCities(matchCitiesData);
     };
 
     filterMatchInputCities();
-  }, [inputs.city.value]);
+  }, [inputs.city.value, cities]);
 
   useEffect(() => () => {
     document.body.removeEventListener('click', hideCitiesList);
@@ -268,8 +304,23 @@ const General: React.FC = () => {
                     }));
                   }}
                 />
-                <SettingItemEditPanelSaveBtn type="button">
+                <SettingItemEditPanelSaveBtn
+                  type="button"
+                  onClick={() => patchProfileTrigger({ profileKey: 'name', value: inputs.name.value })}
+                >
                   <span className="material-icons-outlined">save</span>儲存
+                </SettingItemEditPanelSaveBtn>
+                <SettingItemEditPanelSaveBtn
+                  type="button"
+                  onClick={() => setInputs((prev) => ({
+                    ...prev,
+                    name: {
+                      value: inputs.name.value,
+                      isEdit: false,
+                    },
+                  }))}
+                >
+                  <span className="material-icons-outlined">logout</span>關閉
                 </SettingItemEditPanelSaveBtn>
               </SettingItemEditPanel>
             ) : (
@@ -427,7 +478,7 @@ const General: React.FC = () => {
                         }));
                       }}
                     />
-                    <CitiesSelectList show={isCitySelectShow}>
+                    <CitiesSelectList show={isCitySelectShow && matchedCities.length !== 0}>
                       {matchedCities.map((city) => (
                         <li
                           key={city}
@@ -449,6 +500,12 @@ const General: React.FC = () => {
                 </SettingItemMain>
                 <SettingItemEditPanelSaveBtn
                   type="button"
+                  onClick={() => patchProfileTrigger({ profileKey: 'city', value: inputs.city.value })}
+                >
+                  <span className="material-icons-outlined">save</span>儲存
+                </SettingItemEditPanelSaveBtn>
+                <SettingItemEditPanelSaveBtn
+                  type="button"
                   onClick={() => setInputs((prev) => ({
                     ...prev,
                     city: {
@@ -464,14 +521,14 @@ const General: React.FC = () => {
               <SettingItemContent>
                 <SettingItemTitle>現居住地</SettingItemTitle>
                 <SettingItemMain>
-                  <p>台北市</p>
+                  <p>{profile.city}</p>
                 </SettingItemMain>
                 <EditButton
                   type="button"
                   onClick={() => setInputs((prev) => ({
                     ...prev,
                     city: {
-                      value: prev.city.value,
+                      value: profile.city || '',
                       isEdit: true,
                     },
                   }))}
