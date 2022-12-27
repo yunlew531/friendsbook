@@ -17,9 +17,14 @@ interface IPatchProfileResponse {
   [key: string]: any;
 }
 
-interface IIncreaseAlternateEmailResponse {
+interface IAlternateEmailResponse {
   message: string;
   alternate_email: string[];
+}
+
+interface IPatchAlternateEmailRequest {
+  email: string;
+  new_email: string;
 }
 
 const userApi = createApi({
@@ -47,17 +52,24 @@ const userApi = createApi({
       query: (userUid) => `/user/${userUid}`,
     }),
     patchProfile: builder.mutation<IPatchProfileResponse, { value: string, profileKey: string }>({
-      query: (body) => ({
-        url: `/user/profile/${body.profileKey}`,
+      query: ({ profileKey, value }) => ({
+        url: `/user/profile/${profileKey}`,
         method: 'PATCH',
-        body: { value: body.value },
+        body: { value },
       }),
     }),
-    increaseAlternateEmail: builder.mutation<IIncreaseAlternateEmailResponse, string>({
+    increaseAlternateEmail: builder.mutation<IAlternateEmailResponse, string>({
       query: (email) => ({
         url: `/user/profile/email/${email}`,
         method: 'POST',
         body: '',
+      }),
+    }),
+    patchAlternateEmail: builder.mutation<IAlternateEmailResponse, IPatchAlternateEmailRequest>({
+      query: ({ email, new_email }) => ({
+        url: `/user/profile/email/${email}`,
+        method: 'PATCH',
+        body: { email: new_email },
       }),
     }),
     deleteAlternateEmail: builder.mutation({
@@ -77,6 +89,7 @@ export const {
   usePatchProfileMutation,
   useIncreaseAlternateEmailMutation,
   useDeleteAlternateEmailMutation,
+  usePatchAlternateEmailMutation,
 } = userApi;
 
 export default userApi;

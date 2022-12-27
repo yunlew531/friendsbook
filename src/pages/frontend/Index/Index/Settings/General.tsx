@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { useDeleteAlternateEmailMutation, useIncreaseAlternateEmailMutation, usePatchProfileMutation } from 'services/user';
+import {
+  useDeleteAlternateEmailMutation, useIncreaseAlternateEmailMutation,
+  usePatchAlternateEmailMutation, usePatchProfileMutation,
+} from 'services/user';
 import { updateProfile } from 'slices/userInfoSlice';
 
 const Wrap = styled.div`
@@ -213,6 +216,9 @@ const General: React.FC = () => {
   const [
     deleteAlternateEmailTrigger, deleteAlternateEmailResult,
   ] = useDeleteAlternateEmailMutation();
+  const [
+    patchAlternateEmailTrigger, patchAlternateEmailResult,
+  ] = usePatchAlternateEmailMutation();
   const [inputs, setInputs] = useState({
     name: {
       value: '',
@@ -299,6 +305,16 @@ const General: React.FC = () => {
 
     handlePatchProfile();
   }, [patchProfileResult]);
+
+  useEffect(() => {
+    const handlePatchAlternateEmailApi = () => {
+      const { isSuccess, data } = patchAlternateEmailResult;
+      if (!isSuccess) return;
+      dispatch(updateProfile({ alternate_email: data.alternate_email }));
+    };
+
+    handlePatchAlternateEmailApi();
+  }, [patchAlternateEmailResult]);
 
   useEffect(() => {
     importCities();
@@ -408,6 +424,11 @@ const General: React.FC = () => {
                                   temp.email.value[key].isEdit = false;
 
                                   return temp;
+                                });
+                              } else if (e.code.match('Enter')) {
+                                patchAlternateEmailTrigger({
+                                  email: emailItem,
+                                  new_email: inputs.email.value[key].email,
                                 });
                               }
                             }}
