@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import Btn from 'components/Btn';
 import { useAppDispatch, useAppSelector } from 'hooks';
-import { usePatchProfileMutation } from 'services/user';
+import { useDeleteAlternateEmailMutation, useIncreaseAlternateEmailMutation, usePatchProfileMutation } from 'services/user';
 import { updateProfile } from 'slices/userInfoSlice';
 
 const Wrap = styled.div`
@@ -187,6 +187,7 @@ const AddEmailBtn = styled(Btn)<IThemeProps>`
   align-items: center;
   transition: transform .1s ease-in-out;
   color: ${({ theme }) => theme.color.primary};
+  margin-right: 16px;
   &:hover {
     transform: scale(1.1);
   }
@@ -202,19 +203,23 @@ const AddEmailBtn = styled(Btn)<IThemeProps>`
 const General: React.FC = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.userInfo.profile);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [emails, setEmails] = useState([{ email: 'aaa@gmail.com', isEdit: false }, { email: 'bbb@gmail.com', isEdit: false }]);
   const [cities, setCities] = useState<string[]>();
   const [matchedCities, setMatchCities] = useState<string[]>([]);
   const [isCitySelectShow, setIsCitySelectShow] = useState(false);
   const [patchProfileTrigger, patchProfileResult] = usePatchProfileMutation();
+  const [
+    increaseAlternateEmailTrigger, increaseAlternateEmailResult,
+  ] = useIncreaseAlternateEmailMutation();
+  const [
+    deleteAlternateEmailTrigger, deleteAlternateEmailResult,
+  ] = useDeleteAlternateEmailMutation();
   const [inputs, setInputs] = useState({
     name: {
       value: '',
       isEdit: false,
     },
     email: {
-      value: JSON.parse(JSON.stringify(emails)) as IEmail[],
+      value: [] as IEmail[],
       isEdit: false,
       addEmail: '',
     },
@@ -232,6 +237,49 @@ const General: React.FC = () => {
         setCities(citiesData);
       });
   };
+
+  useEffect(() => {
+    const formatEmails = () => {
+      if (!profile.alternate_email?.length) return;
+      setInputs((prev) => {
+        const tempInputs = { ...prev };
+        tempInputs.email.value = profile.alternate_email
+          ?.map((email) => ({ email, isEdit: false })) || [];
+
+        return tempInputs;
+      });
+    };
+
+    formatEmails();
+  }, [profile.alternate_email]);
+
+  useEffect(() => {
+    const handleIncreaseAlternateEmail = () => {
+      const { isSuccess, data } = increaseAlternateEmailResult;
+      if (!isSuccess) return;
+      dispatch(updateProfile({ alternate_email: data.alternate_email }));
+      setInputs((prev) => ({
+        ...prev,
+        email: {
+          value: prev.email.value,
+          isEdit: false,
+          addEmail: '',
+        },
+      }));
+    };
+
+    handleIncreaseAlternateEmail();
+  }, [increaseAlternateEmailResult]);
+
+  useEffect(() => {
+    const handleDeleteAlternateEmailApi = () => {
+      const { isSuccess, data } = deleteAlternateEmailResult;
+      if (!isSuccess) return;
+      dispatch(updateProfile({ alternate_email: data.alternate_email }));
+    };
+
+    handleDeleteAlternateEmailApi();
+  }, [deleteAlternateEmailResult]);
 
   useEffect(() => {
     const handlePatchProfile = () => {
@@ -348,9 +396,9 @@ const General: React.FC = () => {
                 <SettingItemMain>
                   <p>{profile.email} <span className="email-note">(主要)</span></p>
                   <EmailList>
-                    {emails.map((emailItem, key) => (
-                      <EmailItem key={emailItem.email}>
-                        {inputs.email.value[key].isEdit ? (
+                    {profile.alternate_email?.map((emailItem, key) => (
+                      <EmailItem key={emailItem}>
+                        {inputs.email.value[key]?.isEdit ? (
                           <SettingItemEditPanelInput
                             value={inputs.email.value[key].email}
                             onKeyUp={(e) => {
@@ -372,7 +420,7 @@ const General: React.FC = () => {
                               });
                             }}
                           />
-                        ) : <p>{emailItem.email} <span className="email-note">(備用)</span></p>}
+                        ) : <p>{emailItem} <span className="email-note">(備用)</span></p>}
                         <EditButton
                           type="button"
                           onClick={() => setInputs((prev) => {
@@ -384,7 +432,10 @@ const General: React.FC = () => {
                         >
                           <span className="material-icons-outlined">settings</span>
                         </EditButton>
-                        <EditButton type="button">
+                        <EditButton
+                          type="button"
+                          onClick={() => deleteAlternateEmailTrigger(emailItem)}
+                        >
                           <span className="material-icons-outlined delete-icon">delete</span>
                         </EditButton>
                       </EmailItem>
@@ -405,7 +456,10 @@ const General: React.FC = () => {
                         }));
                       }}
                     />
-                    <AddEmailBtn type="button">
+                    <AddEmailBtn
+                      type="button"
+                      onClick={() => increaseAlternateEmailTrigger(inputs.email.addEmail)}
+                    >
                       <span className="material-icons-round">add</span>新增Email
                     </AddEmailBtn>
                   </AddEmailGroup>
@@ -431,13 +485,15 @@ const General: React.FC = () => {
                 <SettingItemTitle>聯絡資料</SettingItemTitle>
                 <SettingItemMain>
                   <p>{profile.email} <span className="email-note">(主要)</span></p>
-                  <EmailList>
-                    {emails.map((emailItem) => (
-                      <EmailItem key={emailItem.email}>
-                        <p>{emailItem.email} <span className="email-note">(備用)</span></p>
-                      </EmailItem>
-                    ))}
-                  </EmailList>
+                  {profile.alternate_email?.length !== 0 ? (
+                    <EmailList>
+                      {profile.alternate_email?.map((emailItem) => (
+                        <EmailItem key={emailItem}>
+                          <p>{emailItem} <span className="email-note">(備用)</span></p>
+                        </EmailItem>
+                      ))}
+                    </EmailList>
+                  ) : ''}
                 </SettingItemMain>
                 <EditButton
                   type="button"

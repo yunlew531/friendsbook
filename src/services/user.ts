@@ -17,6 +17,11 @@ interface IPatchProfileResponse {
   [key: string]: any;
 }
 
+interface IIncreaseAlternateEmailResponse {
+  message: string;
+  alternate_email: string[];
+}
+
 const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
@@ -48,6 +53,19 @@ const userApi = createApi({
         body: { value: body.value },
       }),
     }),
+    increaseAlternateEmail: builder.mutation<IIncreaseAlternateEmailResponse, string>({
+      query: (email) => ({
+        url: `/user/profile/email/${email}`,
+        method: 'POST',
+        body: '',
+      }),
+    }),
+    deleteAlternateEmail: builder.mutation({
+      query: (email) => ({
+        url: `/user/profile/email/${email}`,
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
@@ -57,6 +75,8 @@ export const {
   useLazyGetUserByTokenQuery,
   useLazyGetUserByUidQuery,
   usePatchProfileMutation,
+  useIncreaseAlternateEmailMutation,
+  useDeleteAlternateEmailMutation,
 } = userApi;
 
 export default userApi;
