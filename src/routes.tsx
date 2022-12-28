@@ -23,6 +23,7 @@ import User from 'pages/frontend/Index/Index/User';
 import UserIndex from 'pages/frontend/Index/Index/User/index';
 import Friends from 'pages/frontend/Index/Index/User/Friends';
 import Photos from 'pages/frontend/Index/Index/User/Photos';
+import About from 'pages/frontend/Index/Index/User/About';
 
 const routes: RouteObject[] = [
   {
@@ -107,10 +108,10 @@ const routes: RouteObject[] = [
             path: '/:uid',
             element: <UserIndex />,
           },
-          // {
-          //   path: '/:uid/about',
-          //   element: <FanAbout />,
-          // },
+          {
+            path: '/:uid/about',
+            element: <About />,
+          },
           {
             path: '/:uid/photos',
             element: <Photos />,

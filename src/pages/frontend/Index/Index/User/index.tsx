@@ -58,7 +58,6 @@ const UserIndex: React.FC = () => {
   const { imgs, refreshImages, getImagesResult }: IOutletContext = useOutletContext();
   const [getArticlesByUidTrigger, getArticlesByUidResult] = useLazyGetArticlesByUidQuery();
   const [uploadImgTrigger, uploadImgResult] = useUploadImgMutation();
-
   const [articles, setArticles] = useState<IArticle[]>([]);
 
   const refreshThumbsUpData = (articleId: string, thumbsUpData: IThumbsUp[]) => {

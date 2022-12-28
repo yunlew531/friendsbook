@@ -299,7 +299,11 @@ const User: React.FC = () => {
       </Header>
       <Navbar links={navLinks} />
       <Outlet context={{
-        imgs, refreshImages, getImagesResult,
+        imgs,
+        refreshImages,
+        getImagesResult,
+        user,
+        isGetProfileFetching: getUserProfileByUidResult.isFetching,
       }}
       />
     </Wrap>

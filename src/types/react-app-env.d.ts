@@ -180,6 +180,8 @@ interface IOutletContext {
   imgs: IImage[];
   getImagesResult: UseQueryStateDefaultResult<QueryDefinition<string, BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>, never, IGetImgsByUidResponse, 'image'>>
   refreshImages: () => void;
+  user: IProfile;
+  isGetProfileFetching: boolean;
 }
 
 interface IEmail {
