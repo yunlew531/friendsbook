@@ -237,16 +237,18 @@ const Header: React.FC = () => {
   const [isUserInfoShow, setIsUserInfoShow] = useState(false);
   const [notifications, setNotifications] = useState<INotification[]>([]);
 
+  const hideNotification = () => setIsNotificationShow(false);
+
   useEffect(() => {
-    const hideNotification = ({ target }: MouseEvent) => {
+    const handleNotifications = ({ target }: MouseEvent) => {
       const isParentIncludeNoticeContainer = (target as HTMLElement).closest('.notice-container');
-      if (!isParentIncludeNoticeContainer) { setIsNotificationShow(false); }
+      if (!isParentIncludeNoticeContainer) hideNotification();
     };
 
-    if (isNotificationShow) document.body.addEventListener('click', hideNotification);
-    else document.body.removeEventListener('click', hideNotification);
+    if (isNotificationShow) document.body.addEventListener('click', handleNotifications);
+    else document.body.removeEventListener('click', handleNotifications);
 
-    return () => document.body.removeEventListener('click', hideNotification);
+    return () => document.body.removeEventListener('click', handleNotifications);
   }, [isNotificationShow]);
 
   useEffect(() => {
@@ -280,6 +282,7 @@ const Header: React.FC = () => {
                 <Notifications
                   isNotificationShow={isNotificationShow}
                   notifications={notifications}
+                  hideNotification={hideNotification}
                 />
               </NoticeContainer>
               <NavLink to="/chatrooms" className={({ isActive }) => (isActive ? 'active' : '')}>聊天室</NavLink>

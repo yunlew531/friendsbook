@@ -316,10 +316,6 @@ const General: React.FC = () => {
     handlePatchAlternateEmailApi();
   }, [patchAlternateEmailResult]);
 
-  useEffect(() => {
-    importCities();
-  }, []);
-
   const hideCitiesList = (e: React.MouseEvent<HTMLElement> | Event) => {
     if ((e.target as Element).closest('.cities-selector')) return;
     setIsCitySelectShow(false);
@@ -335,8 +331,12 @@ const General: React.FC = () => {
     filterMatchInputCities();
   }, [inputs.city.value, cities]);
 
-  useEffect(() => () => {
-    document.body.removeEventListener('click', hideCitiesList);
+  useEffect(() => {
+    importCities();
+
+    return () => {
+      document.body.removeEventListener('click', hideCitiesList);
+    };
   }, []);
 
   return (

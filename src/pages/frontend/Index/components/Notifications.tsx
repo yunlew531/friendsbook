@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import Btn from 'components/Btn';
 import Card from 'components/Card';
 import dayjs from 'utils/dayjs';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'hooks';
 
@@ -150,7 +150,7 @@ const NotificationContent = styled.div<IThemeProps & INotificationContentProps>`
 const NotificationNameBtn = styled(Btn)<IThemeProps>`
   color: ${({ theme }) => theme.color.primary};
   font-weight: 700;
-  padding: 0;
+  padding: 0; 
 `;
 
 const NotificationTime = styled.p<IThemeProps>`
@@ -175,29 +175,75 @@ const ChooseBtn = styled(Btn)<IThemeProps>`
 interface INotificationsProps {
   isNotificationShow: boolean;
   notifications: INotification[];
+  hideNotification: ()=> void;
 }
 
-const Notifications: React.FC<INotificationsProps> = ({ isNotificationShow, notifications }) => {
+type CurrentDisplay = '全部' | '未讀' | '已讀';
+
+const Notifications: React.FC<INotificationsProps> = ({
+  isNotificationShow, notifications, hideNotification,
+}) => {
   const navigate = useNavigate();
   const profile = useAppSelector((state) => state.userInfo.profile);
+  const [currentDisplay, setCurrentDisplay] = useState<CurrentDisplay>('全部');
+  const [currentNotifications, setCurrentNotifications] = useState<INotification[]>([]);
+
+  useEffect(() => {
+    const handleCurrentNotifications = () => {
+      let notificationsData = notifications;
+      if (currentDisplay === '已讀') {
+        notificationsData = notificationsData
+          .filter((notification) => notification.read);
+      } else if (currentDisplay === '未讀') {
+        notificationsData = notificationsData
+          .filter((notification) => !notification.read);
+      }
+      setCurrentNotifications(notificationsData);
+    };
+
+    handleCurrentNotifications();
+  }, [notifications, currentDisplay]);
 
   return (
     <Wrap isNotificationShow={isNotificationShow}>
       <Title>通知</Title>
       <ReadBtnGroup>
-        <ReadBtn type="button" anime active>全部</ReadBtn>
-        <ReadBtn type="button" anime active={false}>未讀</ReadBtn>
-        <ReadBtn type="button" anime active={false}>已讀</ReadBtn>
+        <ReadBtn
+          type="button"
+          anime
+          active={currentDisplay === '全部'}
+          onClick={() => setCurrentDisplay('全部')}
+        >全部
+        </ReadBtn>
+        <ReadBtn
+          type="button"
+          anime
+          active={currentDisplay === '未讀'}
+          onClick={() => setCurrentDisplay('未讀')}
+        >未讀
+        </ReadBtn>
+        <ReadBtn
+          type="button"
+          anime
+          active={currentDisplay === '已讀'}
+          onClick={() => setCurrentDisplay('已讀')}
+        >已讀
+        </ReadBtn>
       </ReadBtnGroup>
       <NotificationList>
-        {notifications.map((notification) => (
-          <NotificationItem key={notification.id} read={notification.read} onClick={() => navigate(`/${profile.uid}/friends`)}>
+        {currentNotifications.map((notification) => (
+          <NotificationItem
+            key={notification.id}
+            read={notification.read}
+            onClick={() => {
+              navigate(`/${profile.uid}/friends`);
+              hideNotification();
+            }}
+          >
             <span className={`material-icons-outlined read-icon ${notification.read ? 'read' : ''}`}>done_all</span>
             <img src="https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3087&q=80" alt="notice" />
-
             <NotificationMain>
               <NotificationContent read={notification.read}>
-
                 {/* friend invited */}
                 {notification.type === 1 && (
                 <>
@@ -207,6 +253,7 @@ const Notifications: React.FC<INotificationsProps> = ({ isNotificationShow, noti
                     onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                       e.stopPropagation();
                       navigate(`/${notification.invited_from?.uid}`);
+                      hideNotification();
                     }}
                   >{notification.invited_from?.nickname || notification.invited_from?.name}
                   </NotificationNameBtn>
